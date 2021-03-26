@@ -8,6 +8,6 @@ from rest_framework.parsers import JSONParser
 
 class Health(APIView):
 
-    def get(self, request):
+    @staticmethod
+    def get(request) -> Response:
         return Response({"status": "ok"})
-
