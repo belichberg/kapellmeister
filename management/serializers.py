@@ -1,8 +1,10 @@
 from rest_framework import serializers
 
+from .models import Container
 
-# class Serializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model =
-#         fields = "__all__"
+
+class ContainerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Container
+        fields = "__all__"

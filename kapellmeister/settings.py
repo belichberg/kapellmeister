@@ -23,11 +23,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Our application
     'management.apps.ManagementConfig',
+    # Other application
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -35,7 +40,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Kapellmeister.urls'
+CORS_ORIGIN_WHITELIST = config('CORS_ORIGIN_WHITELIST', cast=lambda v: [s.strip() for s in v.split(',')])
+
+ROOT_URLCONF = 'kapellmeister.urls'
 
 TEMPLATES = [
     {
@@ -53,8 +60,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Kapellmeister.wsgi.application'
-
+WSGI_APPLICATION = 'kapellmeister.wsgi.application'
 
 # Database
 
@@ -74,6 +80,12 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
