@@ -19,14 +19,14 @@ def health(request):
 class ContainerView(APIView):
 
     permission_classes = (IsAuthenticated,)
+    serializer_class = ContainerSerializer
 
-    @staticmethod
-    def get(request, project_slug, channel_slug) -> Response:
+    def get(self, request, project_slug, channel_slug) -> Response:
         project = get_object_or_404(Project, slug=project_slug)
         channel = get_object_or_404(Channel, slug=channel_slug)
 
         containers = Container.objects.filter(project=project, channel=channel)
-        serializer = ContainerSerializer(containers, many=True)
+        serializer = self.serializer_class(containers, many=True)
 
         return Response(serializer.data)
 
@@ -39,6 +39,8 @@ class ContainerView(APIView):
         channel = get_object_or_404(Channel, slug=channel_slug)
 
         containers = Container.objects.filter(project=project, channel=channel)
-        serializer = ContainerSerializer(containers, many=True)
+        serializer = self.serializer_class(containers, data=data, many=True)
+        serializer.is_valid(raise_exception=True)
+        updated_containers = serializer.validated_data
 
         return Response(serializer.data)

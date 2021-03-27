@@ -4,7 +4,7 @@ from .models import Container, Project, Channel
 
 @admin.register(Container)
 class ContainerAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug', 'project', 'channel']
+    list_display = ['slug', 'project', 'channel']
 
 
 @admin.register(Project)
