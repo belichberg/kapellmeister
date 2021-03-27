@@ -42,7 +42,7 @@ class ContainerUpdateSerializer(serializers.BaseSerializer):
 
         if hash_data is None:
             raise serializers.ValidationError(
-                'A slug is required field.'
+                'A digest is required field.'
             )
 
         return {

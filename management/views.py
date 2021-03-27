@@ -44,17 +44,21 @@ class ContainerView(APIView):
 
         for container in containers.values():
 
-            data_container = data.pop(data.index([d for d in data if d['slug'] == container['slug']][0]))
+            try:
+                data_container = data.pop(data.index([d for d in data if d['slug'] == container['slug']][0]))
 
-            rewrite = False
-            for key, value in data_container.items():
-                if container[key] != value:
-                    container[key] = value
-                    rewrite = True
+                rewrite = False
+                for key, value in data_container.items():
+                    if container[key] != value:
+                        container[key] = value
+                        rewrite = True
 
-            if rewrite:
-                new_container = Container(**container)
-                new_container.save()
+                if rewrite:
+                    new_container = Container(**container)
+                    new_container.save()
+
+            except IndexError:
+                Container(**container).delete()
 
         if data:
             for container in data:
