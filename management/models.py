@@ -25,11 +25,18 @@ class Channel(models.Model):
 class Container(models.Model):
 
     slug = models.SlugField(max_length=128, unique=True)
-    path = models.URLField(max_length=512, null=True, blank=True, unique=True)
+    path = models.URLField(max_length=512, null=True, blank=True)
     auth = models.CharField(max_length=2000, null=True, blank=True)
     hash = models.CharField(max_length=255)
+    parameters = models.CharField(max_length=2000)
     project = models.ForeignKey(Project, related_name='containers', null=True, blank=True, on_delete=models.CASCADE)
     channel = models.ForeignKey(Channel, related_name='containers', null=True, blank=True, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        ordering = ['slug']
+        unique_together = [
+            ('slug', 'project', 'channel'),
+        ]
 
     def __str__(self):
         return self.slug
