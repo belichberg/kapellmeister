@@ -4,14 +4,14 @@ from .models import Container, Project, Channel
 
 @admin.register(Container)
 class ContainerAdmin(admin.ModelAdmin):
-    list_display = ['slug', 'project', 'channel']
+    list_display = ["slug", "project", "channel"]
 
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug']
+    list_display = ["name", "slug"]
 
 
 @admin.register(Channel)
 class ChannelAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug']
+    list_display = ["name", "slug"]
