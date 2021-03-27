@@ -1,12 +1,9 @@
 from rest_framework import serializers
 
-from .models import Container
-
 
 class ContainerSerializer(serializers.BaseSerializer):
 
     def to_representation(self, instance):
-
         return {
             'slug': instance.slug,
             'digest': instance.hash,
@@ -24,8 +21,13 @@ class ContainerSerializer(serializers.BaseSerializer):
             }
         }
 
-    def to_internal_value(self, data):
 
+class ContainerUpdateSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, instance):
+        return instance
+
+    def to_internal_value(self, data):
         slug = data.get('slug', None)
         hash_data = data.get('digest', None)
         auth_data = data.get('auth', None)['auths']
@@ -33,16 +35,19 @@ class ContainerSerializer(serializers.BaseSerializer):
         path = list(auth_data.keys())[0]
         auth = auth_data[path]['auth']
 
-        container, created = Container.objects.get_or_create(
-            slug=slug,
-            defaults={
-                'path': path,
-                'auth': auth,
-                'hash': hash_data,
-            }
-        )
+        if slug is None:
+            raise serializers.ValidationError(
+                'A slug is required field.'
+            )
 
-        return container
+        if hash_data is None:
+            raise serializers.ValidationError(
+                'A slug is required field.'
+            )
 
-    def update(self, instance, validated_data):
-        pass
+        return {
+            'slug': slug,
+            'hash': hash_data,
+            'path': path,
+            'auth': auth
+        }
