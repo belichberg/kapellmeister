@@ -17,7 +17,7 @@ class ContainerSerializer(serializers.BaseSerializer):
     def to_internal_value(self, data):
         slug = data.get("slug", None)
         hash_data = data.get("digest", None)
-        auth = data.get("auth", None)
+        auth = json.dumps(data.get("auth", None))
         parameters = json.dumps(data.get("parameters", None))
         project = data.get("project", None)
         channel = data.get("channel", None)
