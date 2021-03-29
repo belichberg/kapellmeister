@@ -1,15 +1,16 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from typing import Dict
 
 from django.http import HttpResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import get_object_or_404
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .helpers import method_permission_classes
-from .serializers import ContainerSerializer
 from .models import Container, Project, Channel
-from rest_framework.parsers import JSONParser
+from .serializers import ContainerSerializer
 
 
 @api_view(["GET"])
@@ -23,7 +24,6 @@ def index(request):
 
 
 class ContainerView(APIView):
-
     permission_classes = (IsAuthenticated,)
     serializer_class = ContainerSerializer
 
@@ -38,7 +38,7 @@ class ContainerView(APIView):
 
     @method_permission_classes((IsAdminUser,))
     def post(self, request, project_slug, channel_slug):
-        data = JSONParser().parse(request)
+        data: Dict = request.data
 
         project = get_object_or_404(Project, slug=project_slug)
         channel = get_object_or_404(Channel, slug=channel_slug)
