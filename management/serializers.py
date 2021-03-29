@@ -11,7 +11,7 @@ class ContainerSerializer(serializers.BaseSerializer):
             "slug": instance.slug,
             "digest": instance.hash,
             "auth": instance.auth,
-            "parameters": instance.parameters,
+            "parameters": json.loads(instance.parameters),
         }
 
     def to_internal_value(self, data):
