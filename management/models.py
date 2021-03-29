@@ -31,7 +31,7 @@ class Channel(models.Model):
 class Container(models.Model):
 
     slug = models.SlugField(max_length=128, unique=True)
-    path = models.URLField(max_length=512, null=True, blank=True)
+    # image_path = models.URLField(max_length=512, null=True, blank=True)
     auth = models.CharField(max_length=2000, null=True, blank=True)
     hash = models.CharField(max_length=255)
     parameters = models.CharField(max_length=2000)
