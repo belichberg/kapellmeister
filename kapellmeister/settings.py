@@ -41,10 +41,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ORIGIN_WHITELIST = config(
-    "CORS_ORIGIN_WHITELIST", cast=lambda v: [s.strip() for s in v.split(",")]
-)
-
 ROOT_URLCONF = "kapellmeister.urls"
 
 TEMPLATES = [
