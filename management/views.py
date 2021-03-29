@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
+from django.http import HttpResponse
+
 from .helpers import method_permission_classes
 from .serializers import ContainerSerializer
 from .models import Container, Project, Channel
@@ -14,6 +16,10 @@ from rest_framework.parsers import JSONParser
 @permission_classes([AllowAny])
 def health(request):
     return Response({"status": "ok"})
+
+
+def index(request):
+    return HttpResponse("Kapellmeister")
 
 
 class ContainerView(APIView):
