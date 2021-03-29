@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+.gitlab-ci.yml
+.dockerignore
+# CI
+.codeclimate.yml
+.travis.yml
+# Docker
+docker-compose.yml
+.docker
+# Byte-compiled / optimized / DLL files
+__pycache__
+*/__pycache__
+*/*/__pycache__
+*/*/*/__pycache__
+*.py[cod]
+*/*.py[cod]
+*/*/*.py[cod]
+.pytest_cache
+.paho
+# C extensions
+*.so
+# Virtual environment
+.env
+# IDES
+.idea/
+data/

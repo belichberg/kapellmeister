@@ -1,0 +1,13 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - /tmp/data:/app/data
+    environment:
+      - SECRET_KEY="fbb9b29397f949dde2a33977a9685b51a22bbbe2"
+      - DEBUG=True
+      - ALLOWED_HOSTS="localhost, 127.0.0.1, 0.0.0.0"
+      - CORS_ORIGIN_WHITELIST="https://localhost:8080, https://127.0.0.1:8080"
