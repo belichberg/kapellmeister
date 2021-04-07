@@ -36,7 +36,7 @@ class Channel(models.Model):
 
 class Container(models.Model):
 
-    slug = models.SlugField(max_length=128)
+    slug = models.CharField(max_length=128)
     auth = models.CharField(max_length=2000, null=True, blank=True)
     hash = models.CharField(max_length=255)
     parameters = models.CharField(max_length=2000)
@@ -60,6 +60,3 @@ class Container(models.Model):
         unique_together = [
             ("slug", "project", "channel"),
         ]
-
-    def __str__(self):
-        return self.slug
