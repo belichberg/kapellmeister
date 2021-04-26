@@ -1,6 +1,5 @@
 pytz
 Django~=2.2
-django-cors-headers~=3.7
 djangorestframework~=3.12
 djangorestframework-yaml~=2.0
 python-decouple~=3.4
