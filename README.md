@@ -4,13 +4,15 @@ Kapellmeister management server
 Manage agents, store running parameters and latest image versions
 
 
-#Description
+Description
+===============================
 
 Kapellmeister server has 2 endpoints which serve agents  and receive updates after your gitlab CI pipeline was started.
 Agents using  their endpoint for requesting new images and run parameters, and has token which have read access.
 When you run your gitlab CI pipeline endpoint for pipelines receiving new image version and container run parameters  and store at sqlite db. Every 5 minutes (by default) agents requesting updates
 
-#Quick start
+Quick start
+===============================
 
 Generate your secret key and type at  env.list
 ```angular2html
@@ -21,7 +23,9 @@ Define username and password for your super user at docker-entrypoint.sh
 ```angular2html
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('YOUR_USERNAME', 'username@yourdomain.com', 'PASSWORD')" | python manage.py shell
 ```
-#Starting server
+Starting server
+===============================
+
 We're ready to go, lets start Kapellmeister management server with docker
 ```angular2html
 docker run -it  -p 0.0.0.0:8000:8000  --env-file env.list kapellmeister_server
