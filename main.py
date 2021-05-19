@@ -1,14 +1,16 @@
 from envyaml import EnvYAML
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 import sentry_sdk
-from src.database import db
 from fastapi.responses import PlainTextResponse
-
+from src.routers import manager
+# from src.database.db import database
+from src.database.db import SessionLocal
 
 # read env.yaml config file
 env = EnvYAML()
 
 DEBUG: bool = env.get("DEBUG", False)
+API_ROUTE_PREFIX: str = "/api/v1"
 
 # Fast api start
 app = FastAPI(
@@ -16,7 +18,8 @@ app = FastAPI(
     debug=DEBUG,
     version=env["version"],
     redoc_url=None,
-    docs_url="/docs" if DEBUG else None,
+    # docs_url="/docs" if DEBUG else None,
+    docs_url="/docs",
 )
 
 # Sentry integration
@@ -24,17 +27,31 @@ if not env.get("DEBUG"):
     sentry_sdk.init(env.get("SENTRY_DSN"), traces_sample_rate=1.0)
 
 
+@app.middleware("http")
+async def db_session_middleware(request: Request, call_next):
+    response: Response = Response("Internal server error", status_code=500)
+
+    try:
+        request.state.db = SessionLocal()
+        response = await call_next(request)
+    finally:
+        request.state.db.close()
+
+    return response
+
+# @app.on_event("startup")
+# async def startup():
+#     await database.connect()
+#
+#
+# @app.on_event("shutdown")
+# async def shutdown():
+#     await database.disconnect()
+
+
 @app.get("/")
 async def root():
-    dbms = db.MyDatabase(db.SQLITE, dbname='mydb.sqlite')
-    # Create Tables
-    dbms.create_db_tables()
-    # dbms.insert_single_data()
-    dbms.print_all_data(db.PROJECTS)
-    dbms.print_all_data(db.CHANNELS)
-    dbms.print_all_data(db.CONTAINERS)
-    # dbms.sample_query()  # simple query
-    # dbms.sample_delete()  # delete data
-    # dbms.sample_insert()  # insert data
-    # dbms.sample_update()  # update data
-    return PlainTextResponse("⇚ B.M.R.F © 2021 ⇛")
+    return PlainTextResponse("Kapellmeister")
+
+# include routes
+app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
