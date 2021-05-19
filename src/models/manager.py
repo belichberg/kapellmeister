@@ -11,3 +11,18 @@ class ContainerAPI(BaseModel):
     parameters: constr(max_length=2000)
     project_id: Optional[int]
     channel_id: Optional[int]
+
+
+class ProjectAPI(BaseModel):
+    id: Optional[int]
+    name: constr(max_length=64)
+    slug: constr(max_length=64)
+    description: Optional[constr(max_length=512)]
+
+
+class ChannelAPI(BaseModel):
+    id: Optional[int]
+    name: constr(max_length=64)
+    slug: constr(max_length=64)
+    description: Optional[constr(max_length=512)]
+    project_id: int

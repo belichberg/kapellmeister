@@ -1,31 +1,46 @@
 from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String
-
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
-from sqlalchemy.orm import relationship
+
+from src.helpers import ModelMixin
 
 Base: DeclarativeMeta = declarative_base()
 
 
-class Project(Base):
+class Project(ModelMixin, Base):
     __tablename__ = "projects"
 
     id = Column('id', Integer, nullable=False, primary_key=True, index=True, unique=True)
     name = Column('name', VARCHAR(64), nullable=False)
     slug = Column('slug', VARCHAR(64), nullable=False, unique=True)
-    description = Column('description', Text(512), nullable=False)
+    description = Column('description', Text(512), nullable=True)
+
+    def to_dict(self):
+        return dict(id=self.id,
+                    name=self.name,
+                    slug=self.slug,
+                    description=self.description,
+                    )
 
 
-class Channel(Base):
+class Channel(ModelMixin, Base):
     __tablename__ = "channels"
 
     id = Column('id', Integer, nullable=False, primary_key=True, index=True, unique=True)
     name = Column('name', VARCHAR(64), nullable=False)
     slug = Column('slug', VARCHAR(64), nullable=False)
-    description = Column('description', Text(512), nullable=False)
-    project_id = Column('project_id', Integer, ForeignKey('projects.id'), nullable=True)
+    description = Column('description', Text(512), nullable=True)
+    project_id = Column('project_id', Integer, ForeignKey('projects.id'))
+
+    def to_dict(self):
+        return dict(id=self.id,
+                    name=self.name,
+                    slug=self.slug,
+                    description=self.description,
+                    project_id=self.project_id,
+                    )
 
 
-class Container(Base):
+class Container(ModelMixin, Base):
     __tablename__ = "containers"
 
     id = Column('id', Integer, nullable=False, primary_key=True, index=True, unique=True)
@@ -34,6 +49,14 @@ class Container(Base):
     hash = Column('hash', VARCHAR(255), nullable=False)
     parameters = Column('parameters', String(2000), nullable=False)
     project_id = Column('project_id', Integer, ForeignKey('projects.id'), nullable=True)
-    # project = relationship("Project")
     channel_id = Column('channel_id', Integer, ForeignKey('channels.id'), nullable=True)
-    # channel = relationship("Channel")
+
+    def to_dict(self):
+        return dict(id=self.id,
+                    slug=self.slug,
+                    auth=self.auth,
+                    hash=self.hash,
+                    parameters=self.parameters,
+                    project_id=self.project_id,
+                    channel_id=self.channel_id
+                    )
