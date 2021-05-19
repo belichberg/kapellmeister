@@ -1,5 +1,5 @@
 from envyaml import EnvYAML
-from fastapi import FastAPI, Request, Response, Depends
+from fastapi import FastAPI, Request, Response, Depends, File, UploadFile, Form
 import sentry_sdk
 from fastapi.responses import PlainTextResponse
 
@@ -11,6 +11,7 @@ from src.database.db import SessionLocal
 from sqlalchemy.orm import Session
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
 
 # read env.yaml config file
 env = EnvYAML()
@@ -62,20 +63,38 @@ async def db_session_middleware(request: Request, call_next):
 #     await database.disconnect()
 
 
-@app.get("/")
-async def root(db: Session = Depends(get_db)):
-    # print(db.query(Container).first().__dict__)
-    return PlainTextResponse("Kapellmeister")
+# @app.get("/")
+# async def root(db: Session = Depends(get_db)):
+#     # print(db.query(Container).first().__dict__)
+#     return PlainTextResponse("Kapellmeister")
 
-@app.get("/login")
+# @app.get("/login")
+# async def login(request: Request):
+#     """Create user login page"""
+#     return templates.TemplateResponse(
+#             "login.html",
+#             {
+#                 "request": request
+#             }
+#     )
+
+@app.get("/")
 async def home(request: Request):
     """Create user login page"""
-    return templates.TemplateResponse(
-            "login.html",
-            {
-                "request": request
-            }
-    )
+
+    user: str = ""
+    if user:
+        return templates.TemplateResponse("index.html", {"request": request})
+    else:
+        return templates.TemplateResponse("login.html", {"request": request})
+
+@app.post("/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    print(username, password)
+    return PlainTextResponse("You Logined!")
+    # return templates.TemplateResponse("index.html", {"request": request})
+
+
 
 # include routes
 app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
