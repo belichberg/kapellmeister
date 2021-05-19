@@ -1,4 +1,4 @@
-envyaml~=1.8.210417
+envyaml
 fastapi~=0.63
 uvicorn~=0.13
 uvloop~=0.15
