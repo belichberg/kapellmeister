@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 .idea/
-migration/
 *.debug.json
+sqlite.db
