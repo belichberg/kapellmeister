@@ -1,10 +1,11 @@
+import sentry_sdk
 from envyaml import EnvYAML
 from fastapi import FastAPI, Request, Response
-import sentry_sdk
 from fastapi.responses import PlainTextResponse
-from src.routers import manager
+
 # from src.database.db import database
-from src.database.db import SessionLocal
+from src.database import SessionLocal
+from src.routers import manager
 
 # read env.yaml config file
 env = EnvYAML()
@@ -17,9 +18,9 @@ app = FastAPI(
     title="Kapellmeister Manager",
     debug=DEBUG,
     version=env["version"],
+    # default_response_class=ORJSONResponse,
     redoc_url=None,
-    # docs_url="/docs" if DEBUG else None,
-    docs_url="/docs",
+    docs_url="/docs" if DEBUG else None,
 )
 
 # Sentry integration
@@ -39,6 +40,7 @@ async def db_session_middleware(request: Request, call_next):
 
     return response
 
+
 # @app.on_event("startup")
 # async def startup():
 #     await database.connect()
@@ -52,6 +54,7 @@ async def db_session_middleware(request: Request, call_next):
 @app.get("/")
 async def root():
     return PlainTextResponse("Kapellmeister")
+
 
 # include routes
 app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
