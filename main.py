@@ -1,3 +1,4 @@
+import sentry_sdk
 from envyaml import EnvYAML
 from fastapi import FastAPI, Request, Response, Depends, File, UploadFile, Form
 import sentry_sdk
@@ -25,9 +26,9 @@ app = FastAPI(
     title="Kapellmeister Manager",
     debug=DEBUG,
     version=env["version"],
+    # default_response_class=ORJSONResponse,
     redoc_url=None,
-    # docs_url="/docs" if DEBUG else None,
-    docs_url="/docs",
+    docs_url="/docs" if DEBUG else None,
 )
 
 # add static files to project
