@@ -63,3 +63,18 @@ class Container(ModelMixin, Base):
             project_id=self.project_id,
             channel_id=self.channel_id,
         )
+
+
+class User(ModelMixin, Base):
+    __tablename__ = "users"
+
+    id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
+    username = Column("username", VARCHAR(64), nullable=False, unique=True)
+    password = Column("password", VARCHAR(64), nullable=False)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            username=self.username,
+            password=self.password
+        )

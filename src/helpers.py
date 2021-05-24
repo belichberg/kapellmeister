@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Dict
 
 from fastapi import Request, HTTPException, status
@@ -5,6 +6,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, Query
 
 from src.models.manager import ContainerAPI
+
+
+def time_utc_now(timestamp: int = None) -> datetime:
+    return datetime.fromtimestamp(timestamp, tz=timezone.utc) if timestamp else datetime.now(tz=timezone.utc)
 
 
 def get_db(request: Request):

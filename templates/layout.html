@@ -13,9 +13,11 @@
             <div class="uppercase font-bold">Kapellmeister</div>
             {% if username %}
             <div class="absolute right-20">{{ username }}</div>
-            <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow absolute right-0">
-                Logout
-            </button>
+            <form action="/logout" method="get">
+                <button class="bg-white hover:bg-gray-100 text-gray-800 top-4 font-semibold py-1 px-2 border border-gray-400 rounded shadow absolute right-0">
+                    Logout
+                </button>
+            </form>
             {% endif %}
         </div>
     </div>
