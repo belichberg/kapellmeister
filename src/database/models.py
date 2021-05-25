@@ -86,10 +86,14 @@ class User(ModelMixin, Base):
     id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
     username = Column("username", VARCHAR(64), nullable=False, unique=True)
     password = Column("password", VARCHAR(64), nullable=False)
+    super = Column("super", Boolean, unique=False, nullable=False, default=False)
+    is_active = Column("is_active", Boolean, unique=False, nullable=False, default=True)
 
     def to_dict(self):
         return dict(
             id=self.id,
             username=self.username,
-            password=self.password
+            password=self.password,
+            super=self.super,
+            is_active=self.is_active
         )

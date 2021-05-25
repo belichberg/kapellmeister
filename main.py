@@ -1,11 +1,21 @@
+import json
+
+import sentry_sdk
 from envyaml import EnvYAML
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, status, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, PlainTextResponse
 
 # from src.database.db import database
+from sqlalchemy.orm import Session
+from starlette.middleware.sessions import SessionMiddleware
+import itsdangerous
+
 from src.database import SessionLocal
+from src.dependencies import get_user
+from src.helpers import get_db
+from src.models.user import UserAPI, Token
 from src.routers import manager, auth
 
 # read env.yaml config file
@@ -29,7 +39,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # add templates to project
 templates = Jinja2Templates(directory="templates")
-
 
 # # Sentry integration
 # if not env.get("DEBUG"):
@@ -60,53 +69,40 @@ async def db_session_middleware(request: Request, call_next):
 
 
 @app.get("/")
-def home(request: Request):
+def home(request: Request, db: Session = Depends(get_db)):
     """Create home page"""
-    #
-    # for route in request.app.routes:
-    #     print(route)
-    # return RedirectResponse(url="/login/")
+
+    # print(f"token = {request.session.get('token')}")
+    # print(f"request.session = {request.session}")
+
+    if request.session.get('token'):
+        token: Token = Token.parse_obj(json.loads(request.session.get('token')))
+        user: UserAPI = get_user(token, db)
+
+        return templates.TemplateResponse("index.html",
+                                          {"request": request, "username": user.username})
+    return RedirectResponse(url='/login')
+    # return PlainTextResponse("⇚ B.M.R.F © 2021 ⇛")
+
+
+@app.get("/login")
+async def login(request: Request):
+    """Create login page"""
+
     return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get("/logout/")
+async def logout(request: Request):
+    """Clear session and logout user"""
+
+    request.session.clear()
+    return RedirectResponse(url='/')
 
 
 # include routes
 app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
 app.include_router(auth.router, prefix=API_ROUTE_PREFIX)
 
-
-# @app.post("/login/")
-# async def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
-#     """Create login page"""
-#     username: str = form.username
-#     password: str = form.password
-#     #  get user from fake_db
-#     check_user = load_user(username)
-#
-#     # validate user
-#     if not check_user or password != check_user['password']:
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN, detail="Invalid user or password"
-#         )
-#     access_token = login_manager.create_access_token(data={"sub": username})
-#     login_manager.set_cookie(RedirectResponse(url="/private"), access_token)
-#     login_manager.cookie_name: str = username
-
-# # build data
-# data: TokenData = TokenData(
-#     sub=username
-# )
-
-# return RedirectResponse(url="/private")
-
-# @app.post("/private/")
-# async def getPrivateendpoint(request: Request, db: Session = Depends(get_db)):
-#     # print(db.query(Container).first().__dict__)
-#     # print(db.query(Container).all())
-#     # RedirectResponse(url="/")
-#     return templates.TemplateResponse("index.html", {"request": request, "username": login_manager.cookie_name})
-
-# @app.get("/logout/")
-# async def logout():
-#     resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-#     login_manager.set_cookie(resp, "")
-#     return resp
+# we need this to save temporary code & state in session
+app.add_middleware(SessionMiddleware, secret_key=env["security.key"])

@@ -8,9 +8,9 @@ from passlib.context import CryptContext
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from src.database.models import Token
+from src.database.models import Token, User
 from src.models.manager import TokenAPI
-from src.models.user import TokenData, JWTToken
+from src.models.user import TokenData, JWTToken, UserAPI
 
 env_dep: EnvYAML = EnvYAML()
 
@@ -37,12 +37,27 @@ def pwd_hash(plain_password: str) -> str:
 def token_validate(token: str) -> Optional[TokenData]:
     try:
         return TokenData.parse_obj(jwt.decode(token, JWT_KEY, JWT_ALGORITHM))
-    except JWTError:
+    except JWTError as error:
+        print(error)
         pass
 
 
-def get_user():
-    pass
+# def get_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> UserAPI:
+def get_user(token: Token, db: Session) -> UserAPI:
+
+    # get user data
+    token_data: Optional[TokenData] = token_validate(token.access_token)
+
+    if token_data:
+        user: UserAPI = UserAPI.parse_obj(db.query(User).filter_by(username=token_data.sub).first().to_dict())
+        return user
+
+    # if not found or error
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 
 def token_create(key: str, algorithm: str, data: TokenData) -> JWTToken:
