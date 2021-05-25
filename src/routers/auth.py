@@ -10,6 +10,7 @@ from src.database.models import User
 from src.dependencies import pwd_hash, pwd_verify, get_user, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM
 from src.helpers import get_db, time_utc_now
 from src.models.user import UserAPI, TokenData, Token
+from fastapi.responses import RedirectResponse
 
 
 router = APIRouter()
@@ -24,12 +25,12 @@ def create_user(user: UserAPI, db: Session = Depends(get_db)) -> UserAPI:
 
 
 @router.post("/login/")
-def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """Create login page"""
 
     username: str = form.username
     password: str = form.password
-    print(f'username = {username}')
+    # print(f'username = {username}')
     user: Optional[UserAPI] = UserAPI.parse_obj(db.query(User).filter_by(username=username).first().to_dict())
 
     # validate user
@@ -47,7 +48,11 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     # generate token
     token: Token = token_create(JWT_KEY, JWT_ALGORITHM, data)
 
+    request.session['token'] = token.json()
+
     # all ok
     return token
-    # return get_user()
-    # return templates.TemplateResponse("login.html", {"request": request})
+    # return request.session.get('token')
+    # return RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
+    # return templates.TemplateResponse("index.html",
+    #                                       {"request": request, "username": username})
