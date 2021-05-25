@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import sentry_sdk
 from envyaml import EnvYAML
@@ -13,8 +14,8 @@ from starlette.middleware.sessions import SessionMiddleware
 import itsdangerous
 
 from src.database import SessionLocal
-from src.dependencies import get_user
-from src.helpers import get_db
+from src.dependencies import get_user, token_validate
+from src.helpers import get_db, time_utc_now
 from src.models.user import UserAPI, Token
 from src.routers import manager, auth
 
@@ -40,9 +41,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # add templates to project
 templates = Jinja2Templates(directory="templates")
 
-# # Sentry integration
-# if not env.get("DEBUG"):
-#     sentry_sdk.init(env.get("SENTRY_DSN"), traces_sample_rate=1.0)
+# Sentry integration
+if not env.get("DEBUG"):
+    sentry_sdk.init(env.get("SENTRY_DSN"), traces_sample_rate=1.0)
 
 
 @app.middleware("http")
@@ -72,15 +73,20 @@ async def db_session_middleware(request: Request, call_next):
 def home(request: Request, db: Session = Depends(get_db)):
     """Create home page"""
 
-    # print(f"token = {request.session.get('token')}")
-    # print(f"request.session = {request.session}")
-
+    # check if token exists
     if request.session.get('token'):
         token: Token = Token.parse_obj(json.loads(request.session.get('token')))
-        user: UserAPI = get_user(token, db)
 
-        return templates.TemplateResponse("index.html",
-                                          {"request": request, "username": user.username})
+        # when access token time is run out redirect to login page
+        if token_validate(token.access_token) is None:
+            return RedirectResponse(url='/login')
+
+        # if all is ok return home page
+        else:
+            # token: Token = Token.parse_obj(json.loads(request.session.get('token')))
+            user: UserAPI = get_user(token, db)
+            return templates.TemplateResponse("index.html", {"request": request, "username": user.username})
+
     return RedirectResponse(url='/login')
     # return PlainTextResponse("⇚ B.M.R.F © 2021 ⇛")
 

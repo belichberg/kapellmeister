@@ -47,7 +47,6 @@ def get_user(token: Token, db: Session) -> UserAPI:
     # get user data
     token_data: Optional[TokenData] = token_validate(token.access_token)
 
-
     if token_data:
         user: UserAPI = UserAPI.parse_obj(db.query(User).filter_by(username=token_data.sub).first().to_dict())
         return user

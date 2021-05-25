@@ -18,19 +18,21 @@ router = APIRouter()
 # add templates to project
 templates = Jinja2Templates(directory="templates")
 
+
 @router.post("/user/", response_model=UserAPI)
 def create_user(user: UserAPI, db: Session = Depends(get_db)) -> UserAPI:
+    """Create user, password and add to database"""
+
     user.password = pwd_hash(user.password)
     return UserAPI.parse_obj(User.create(db, user.dict()).to_dict())
 
 
 @router.post("/login/")
 def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    """Create login page"""
+    """Check user validation and create token"""
 
     username: str = form.username
     password: str = form.password
-    # print(f'username = {username}')
     user: Optional[UserAPI] = UserAPI.parse_obj(db.query(User).filter_by(username=username).first().to_dict())
 
     # validate user
@@ -42,7 +44,8 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Ses
     # build data
     data: TokenData = TokenData(
         sub=user.username,
-        exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE)
+        # exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE)
+        exp=time_utc_now() + timedelta(seconds=30)
     )
 
     # generate token
@@ -51,8 +54,6 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Ses
     request.session['token'] = token.json()
 
     # all ok
-    return token
-    # return request.session.get('token')
-    # return RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
-    # return templates.TemplateResponse("index.html",
-    #                                       {"request": request, "username": username})
+    # return token
+    return RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
+
