@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON
+from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
-from src.helpers import ModelMixin
+from src.database.helpers import ModelMixin
 
 Base: DeclarativeMeta = declarative_base()
 
@@ -62,6 +62,21 @@ class Container(ModelMixin, Base):
             parameters=self.parameters,
             project_id=self.project_id,
             channel_id=self.channel_id,
+        )
+
+
+class Token(ModelMixin, Base):
+    __tablename__ = "tokens"
+
+    id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
+    token = Column("token", VARCHAR(64), nullable=False, unique=True)
+    read_only = Column("read_only", Boolean, nullable=False)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            token=self.token,
+            read_only=self.read_only
         )
 
 

@@ -1,11 +1,16 @@
 from typing import Optional
 
 from envyaml import EnvYAML
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status, Request
+from fastapi.security import OAuth2PasswordBearer, OAuth2
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
-from src.models.user import TokenData, Token
+from src.database.models import Token
+from src.models.manager import TokenAPI
+from src.models.user import TokenData, JWTToken
 
 env_dep: EnvYAML = EnvYAML()
 
@@ -40,8 +45,28 @@ def get_user():
     pass
 
 
-def token_create(key: str, algorithm: str, data: TokenData) -> Token:
-    return Token(
+def token_create(key: str, algorithm: str, data: TokenData) -> JWTToken:
+    return JWTToken(
         access_token=jwt.encode(data.dict(), key=key, algorithm=algorithm),
         token_expire=data.exp,
     )
+
+
+def get_api_token(request: Request, token: str = Depends(OAuth2())) -> TokenAPI:
+    # create connection to database
+    session: Session = request.state.db
+
+    try:
+        # get and compare tokens
+        access_token: Token = session.query(Token).filter_by(token=token).first()
+        if access_token is None or token != access_token.token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Token"},
+            )
+
+        return TokenAPI.parse_obj(access_token.to_dict())
+
+    except SQLAlchemyError as err:
+        print("Database error:", err)

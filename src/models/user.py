@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -12,7 +13,7 @@ class TokenData(BaseModel):
     exp: datetime
 
 
-class Token(BaseModel):
+class JWTToken(BaseModel):
     access_token: str
     token_type: str = "bearer"
     token_expire: datetime

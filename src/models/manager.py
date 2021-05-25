@@ -25,3 +25,8 @@ class ChannelAPI(BaseModel):
     slug: constr(max_length=64)
     description: Optional[constr(max_length=512)]
     project_id: int
+
+
+class TokenAPI(BaseModel):
+    token: str
+    read_only: bool
