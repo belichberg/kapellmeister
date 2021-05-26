@@ -59,8 +59,8 @@ def token_validate(token: str) -> Optional[TokenData]:
 
 
 def get_token(request: Request) -> Optional[JWTToken]:
-    if request.session.get('token'):
-        return JWTToken.parse_obj(json.loads(request.session.get('token')))
+    if request.session.get("token"):
+        return JWTToken.parse_obj(json.loads(request.session.get("token")))
 
     return None
 
@@ -78,7 +78,7 @@ def get_user(token: Optional[JWTToken] = Depends(get_token)) -> Optional[UserAPI
 
 
 def generate_api_token():
-    return str(''.join(secrets.choice(string.ascii_letters + string.digits) for x in range(40)))
+    return str("".join(secrets.choice(string.ascii_letters + string.digits) for x in range(40)))
 
 
 def get_api_token(token: str = Depends(OAuth2())) -> TokenAPI:

@@ -73,11 +73,7 @@ class Token(ModelMixin, Base):
     read_only = Column("read_only", Boolean, nullable=False)
 
     def to_dict(self):
-        return dict(
-            id=self.id,
-            token=self.token,
-            read_only=self.read_only
-        )
+        return dict(id=self.id, token=self.token, read_only=self.read_only)
 
 
 class User(ModelMixin, Base):
@@ -91,9 +87,5 @@ class User(ModelMixin, Base):
 
     def to_dict(self):
         return dict(
-            id=self.id,
-            username=self.username,
-            password=self.password,
-            super=self.super,
-            is_active=self.is_active
+            id=self.id, username=self.username, password=self.password, super=self.super, is_active=self.is_active
         )

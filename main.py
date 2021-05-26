@@ -39,7 +39,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
 async def startup():
-    User.get_or_create(dict(username='defaultuser', password=pwd_hash('defaultpassword'), super=True), id=1)
+    User.get_or_create(dict(username="defaultuser", password=pwd_hash("defaultpassword"), super=True), id=1)
 
 
 # @app.get("/")
@@ -70,9 +70,8 @@ def home(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     if user:
         # user: UserAPI = get_user(token, db)
 
-        return templates.TemplateResponse("index.html",
-                                          {"request": request, "username": user.username})
-    return RedirectResponse(url='/login')
+        return templates.TemplateResponse("index.html", {"request": request, "username": user.username})
+    return RedirectResponse(url="/login")
 
 
 @app.get("/login")
@@ -86,7 +85,7 @@ async def logout(request: Request):
     """Clear session and logout user"""
     # response.delete_cookie("session")
     request.session.clear()
-    return RedirectResponse(url='/')
+    return RedirectResponse(url="/")
 
 
 # add static files to project
