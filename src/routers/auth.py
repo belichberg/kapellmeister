@@ -2,16 +2,13 @@ from datetime import timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
 
 from src.database.models import User
-from src.dependencies import pwd_hash, pwd_verify, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM
-from src.helpers import get_db, time_utc_now
+from src.dependencies import time_utc_now, pwd_hash, pwd_verify, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM
 from src.models.user import UserAPI, TokenData, JWTToken
-from fastapi.responses import RedirectResponse
-
 
 router = APIRouter()
 
@@ -20,19 +17,19 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/user/", response_model=UserAPI)
-def create_user(user: UserAPI, db: Session = Depends(get_db)) -> UserAPI:
+def create_user(user: UserAPI) -> UserAPI:
     user.password = pwd_hash(user.password)
-    return UserAPI.parse_obj(User.create(db, user.dict()).to_dict())
+    return UserAPI.parse_obj(User.create(user.dict()).to_dict())
 
 
 @router.post("/login/")
-def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
     """Create login page"""
 
     username: str = form.username
     password: str = form.password
-    # print(f'username = {username}')
-    user: Optional[UserAPI] = UserAPI.parse_obj(db.query(User).filter_by(username=username).first().to_dict())
+
+    user: Optional[UserAPI] = UserAPI.parse_obj(User.get(username=username).to_dict())
 
     # validate user
     if not user or not pwd_verify(password, user.password if user else ""):
@@ -50,10 +47,11 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Ses
     token: JWTToken = token_create(JWT_KEY, JWT_ALGORITHM, data)
 
     request.session['token'] = token.json()
+    # response.set_cookie("session", token.access_token)
 
     # all ok
-    return token
+    # return token
     # return request.session.get('token')
-    # return RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
     # return templates.TemplateResponse("index.html",
     #                                       {"request": request, "username": username})

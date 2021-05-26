@@ -1,21 +1,15 @@
-import json
+from typing import Optional
 
-import sentry_sdk
 from envyaml import EnvYAML
-from fastapi import FastAPI, Request, Response, status, Depends
+from fastapi import FastAPI, Request, Depends
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse, HTMLResponse, PlainTextResponse
-
-# from src.database.db import database
-from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
-import itsdangerous
 
-from src.database import SessionLocal
-from src.dependencies import get_user
-from src.helpers import get_db
-from src.models.user import UserAPI, Token
+from src.database.models import User
+from src.dependencies import get_user, pwd_hash
+from src.models.user import UserAPI
 from src.routers import manager, auth
 
 # read env.yaml config file
@@ -23,6 +17,10 @@ env = EnvYAML()
 
 DEBUG: bool = env.get("DEBUG", False)
 API_ROUTE_PREFIX: str = "/api/v1"
+
+# # Sentry integration
+# if not env.get("DEBUG"):
+#     sentry_sdk.init(env.get("SENTRY_DSN"), traces_sample_rate=1.0)
 
 # Fast api start
 app = FastAPI(
@@ -34,71 +32,65 @@ app = FastAPI(
     docs_url="/docs" if DEBUG else None,
 )
 
-# add static files to project
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # add templates to project
 templates = Jinja2Templates(directory="templates")
 
-# # Sentry integration
-# if not env.get("DEBUG"):
-#     sentry_sdk.init(env.get("SENTRY_DSN"), traces_sample_rate=1.0)
+
+@app.on_event("startup")
+async def startup():
+    User.get_or_create(dict(username='defaultuser', password=pwd_hash('defaultpassword'), super=True), id=1)
 
 
-@app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    response: Response = Response("Internal server error", status_code=500)
-
-    try:
-        request.state.db = SessionLocal()
-        response = await call_next(request)
-    finally:
-        request.state.db.close()
-
-    return response
-
-
-# @app.on_event("startup")
-# async def startup():
-#     await database.connect()
+# @app.get("/")
+# def home(request: Request, user: UserAPI = Depends(get_user)):
+#     """Create home page"""
 #
+#     # print(f"token = {request.session.get('token')}")
+#     # print(f"request.session = {request.session}")
 #
-# @app.on_event("shutdown")
-# async def shutdown():
-#     await database.disconnect()
+#     # if request.session.get('token'):
+#     print(user)
+#     if user:
+#         # token: JWTToken = JWTToken.parse_obj(json.loads(request.session.get('token')))
+#         # user: UserAPI = get_user(token, db)
+#
+#         return templates.TemplateResponse("index.html",
+#                                           {"request": request, "username": user.username})
+#     return RedirectResponse(url='/login')
 
 
 @app.get("/")
-def home(request: Request, db: Session = Depends(get_db)):
+def home(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create home page"""
 
     # print(f"token = {request.session.get('token')}")
     # print(f"request.session = {request.session}")
 
-    if request.session.get('token'):
-        token: Token = Token.parse_obj(json.loads(request.session.get('token')))
-        user: UserAPI = get_user(token, db)
+    if user:
+        # user: UserAPI = get_user(token, db)
 
         return templates.TemplateResponse("index.html",
                                           {"request": request, "username": user.username})
     return RedirectResponse(url='/login')
-    # return PlainTextResponse("⇚ B.M.R.F © 2021 ⇛")
 
 
 @app.get("/login")
 async def login(request: Request):
     """Create login page"""
-
     return templates.TemplateResponse("login.html", {"request": request})
 
 
 @app.get("/logout/")
 async def logout(request: Request):
     """Clear session and logout user"""
-
+    # response.delete_cookie("session")
     request.session.clear()
     return RedirectResponse(url='/')
 
+
+# add static files to project
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # include routes
 app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
