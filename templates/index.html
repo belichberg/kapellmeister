@@ -4,58 +4,20 @@
 {% endblock %}
 
 {% block content %}
-<div class="absolute top-1/2 text-green-600 text-center"> Hello, {{ username }}</div>
+{#    <div>#}
+{#        #}
+{#        <div>Projects: [[ projects ]]</div>#}
+{#        <form @submit.prevent="createProject">#}
+{#            <input type="text" v-model="newProject" placeholder="Create project"/>#}
+{#            <button type="submit"></button>#}
+{#        </form>#}
+{##}
+{#        <form @submit.prevent="unitAdd">#}
+{#            <input type="text" v-model="newProject" placeholder="Create project"/>#}
+{#            <button type="submit"></button>#}
+{#        </form>#}
+{#        <div>[[ username ]]</div>#}
+{#        <div class="text-green-600" v-text="projects"></div>#}
+{#    </div>#}
 
-<div class="flex flex-no-wrap h-screen">
-    <!-- Sidebar starts -->
-    <!-- Remove class [ hidden ] and replace [ sm:flex ] with [ flex ] -->
-    <div class="w-64 absolute sm:relative bg-gray-100 shadow md:h-full flex-col justify-between hidden sm:flex">
-        <div class="px-8">
-            <ul class="mt-12 font-bold">
-                <li class="flex w-full justify-between text-gray-700 hover:text-gray-400 cursor-pointer items-center mb-6">
-                    <div class="flex items-center">
-                        <span class="text-sm ml-2">Projects</span>
-                    </div>
-                    <div class="py-1 px-3 rounded bg-gray-200 flex items-center justify-center text-xs">
-                        8
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- content -->
-    <div class="text-gray-700 p-10">
-        <div class="flex-1 text-xl font-bold my-50">
-            content goes here
-        </div>
-        <div>Project-1
-            <ul>
-                <li>Slug: </li>
-                <li>Description: </li>
-            </ul>
-        </div>
-        <p>------------------------------------------------ </p>
-        <div>Channel: Name
-            <ul>
-                <li>Slug:</li>
-                <li>Description:</li>
-            </ul>
-        </div>
-        <p>------------------------------------------------ </p>
-        <div>Container: Name
-            <ul>
-                <li>Slug:</li>
-                <li>Auth:</li>
-                <li>Hash:</li>
-                <li>Parameters:</li>
-            </ul>
-        </div>
-
-    </div>
-</div>
 {% endblock content %}
-
-<script>
-
-</script>

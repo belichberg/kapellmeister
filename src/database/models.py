@@ -1,9 +1,17 @@
-from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean
+import enum
+
+from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 
 from src.database.helpers import ModelMixin
 
 Base: DeclarativeMeta = declarative_base()
+
+
+class UserRole(str, enum.Enum):
+    super = "super"
+    admin = "admin"
+    user = "user"
 
 
 class Project(ModelMixin, Base):
@@ -65,7 +73,7 @@ class Container(ModelMixin, Base):
         )
 
 
-class Token(ModelMixin, Base):
+class APIToken(ModelMixin, Base):
     __tablename__ = "tokens"
 
     id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
@@ -82,10 +90,10 @@ class User(ModelMixin, Base):
     id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
     username = Column("username", VARCHAR(64), nullable=False, unique=True)
     password = Column("password", VARCHAR(64), nullable=False)
-    super = Column("super", Boolean, unique=False, nullable=False, default=False)
-    is_active = Column("is_active", Boolean, unique=False, nullable=False, default=True)
+    role = Column('role', Enum(UserRole), nullable=False, default=UserRole.user)
+    is_active = Column("is_active", Boolean, nullable=False, default=True)
 
     def to_dict(self):
         return dict(
-            id=self.id, username=self.username, password=self.password, super=self.super, is_active=self.is_active
+            id=self.id, username=self.username, password=self.password, role=self.role, is_active=self.is_active
         )

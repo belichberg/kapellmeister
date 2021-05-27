@@ -1,39 +1,98 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Query
 
-from src.database.models import Container, Project, Channel, Token
-from src.dependencies import get_api_token, generate_api_token
+from src.database.models import Container, Project, Channel, APIToken
+from src.dependencies import get_api_token, generate_api_token, get_user
 from src.models.manager import ContainerAPI, ProjectAPI, ChannelAPI, TokenAPI
+from src.models.user import UserAPI, UserRole
 
 router = APIRouter()
 
 
-@router.post("/token/", response_model=TokenAPI)
-def create_project(read_only: bool = True) -> TokenAPI:
+@router.get("/tokens/", response_model=List[TokenAPI])
+def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenAPI]:
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
+    return [TokenAPI.parse_obj(token.to_dict()) for token in APIToken.get_all()]
+
+
+@router.post("/tokens/", response_model=TokenAPI)
+def create_token(read_only: bool = True, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
     data = dict(token=generate_api_token(), read_only=read_only)
-    return TokenAPI.parse_obj(Token.create(data).to_dict())
+    return TokenAPI.parse_obj(APIToken.create(data).to_dict())
 
 
-@router.post("/project/", response_model=ProjectAPI)
-def create_project(data: ProjectAPI, token: TokenAPI = Depends(get_api_token)) -> ProjectAPI:
-    if token.read_only:
-        raise HTTPException(status.HTTP_403_FORBIDDEN)
+@router.get("/projects/", response_model=List[ProjectAPI])
+def get_projects(user: Optional[UserAPI] = Depends(get_user)) -> List[ProjectAPI]:
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
 
-    return ProjectAPI.parse_obj(Project.create(data.dict()).to_dict())
+    projects: List[ProjectAPI] = [ProjectAPI.parse_obj(project.to_dict()) for project in Project.get_all()]
+    for project in projects:
+        project.channels = [
+            ChannelAPI.parse_obj(channel.to_dict()) for channel in Channel.get_all(project_id=project.id)
+        ]
+
+    return projects
+    # return [item.dict() for item in projects]
 
 
-@router.post("/channel/", response_model=ChannelAPI)
-def create_channel(data: ChannelAPI, token: TokenAPI = Depends(get_api_token)) -> ChannelAPI:
-    if token.read_only:
-        raise HTTPException(status.HTTP_403_FORBIDDEN)
+@router.post("/projects/", response_model=ProjectAPI)
+def create_project(data: ProjectAPI, user: Optional[UserAPI] = Depends(get_user)) -> ProjectAPI:
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
+    return ProjectAPI.parse_obj(Project.create(data.dict(exclude_none=True)).to_dict())
+
+
+@router.post("/channels/", response_model=ChannelAPI)
+def create_channel(data: ChannelAPI, user: Optional[UserAPI] = Depends(get_user)) -> ChannelAPI:
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
 
     return ChannelAPI.parse_obj(Channel.create(data.dict()).to_dict())
 
 
 @router.get("/{project_slug}/{channel_slug}/", response_model=List[ContainerAPI])
-def get_containers(project_slug: str, channel_slug: str, token: any = Depends(get_api_token)) -> List[ContainerAPI]:
+def get_containers(
+    project_slug: str,
+    channel_slug: str,
+    token: Optional[TokenAPI] = Depends(get_api_token),
+    user: Optional[UserAPI] = Depends(get_user),
+) -> List[ContainerAPI]:
+    if user is None and token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
     project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
     channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(slug=channel_slug, project_id=project.id).to_dict())
     containers: Query = Container.get_all(project_id=project.id, channel_id=channel.id)
@@ -43,9 +102,19 @@ def get_containers(project_slug: str, channel_slug: str, token: any = Depends(ge
 
 @router.post("/{project_slug}/{channel_slug}/", response_model=ContainerAPI)
 def set_container(
-    project_slug: str, channel_slug: str, data: ContainerAPI, token: any = Depends(get_api_token)
+    project_slug: str,
+    channel_slug: str,
+    data: ContainerAPI,
+    token: Optional[TokenAPI] = Depends(get_api_token),
+    user: Optional[UserAPI] = Depends(get_user),
 ) -> ContainerAPI:
-    if token.read_only:
+    if user is None and token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+    elif (token and token.read_only) or (user and user.role != UserRole.super):
         raise HTTPException(status.HTTP_403_FORBIDDEN)
 
     project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
@@ -61,10 +130,14 @@ def set_container(
 
 @router.delete("/{project_slug}/{channel_slug}/{container_slug}", response_model=ContainerAPI)
 def delete_container(
-    project_slug: str, channel_slug: str, container_slug: str, token: any = Depends(get_api_token)
+    project_slug: str, channel_slug: str, container_slug: str, user: Optional[UserAPI] = Depends(get_user)
 ) -> ContainerAPI:
-    if token.read_only:
-        raise HTTPException(status.HTTP_403_FORBIDDEN)
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
 
     project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
     channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(slug=channel_slug, project_id=project.id).to_dict())

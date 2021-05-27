@@ -5,13 +5,12 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from envyaml import EnvYAML
-from fastapi import Depends, HTTPException, status, Request
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2
 from jose import jwt, JWTError
 from passlib.context import CryptContext
-from sqlalchemy.exc import SQLAlchemyError
 
-from src.database.models import Token, User
+from src.database.models import APIToken, User
 from src.models.manager import TokenAPI
 from src.models.user import TokenData, JWTToken, UserAPI
 
@@ -54,7 +53,7 @@ def token_validate(token: str) -> Optional[TokenData]:
     try:
         return TokenData.parse_obj(jwt.decode(token, JWT_KEY, JWT_ALGORITHM))
     except JWTError as error:
-        # print(error)
+        print(error)
         pass
 
 
@@ -72,7 +71,8 @@ def get_user(token: Optional[JWTToken] = Depends(get_token)) -> Optional[UserAPI
 
         if token_data:
             user: UserAPI = UserAPI.parse_obj(User.get(username=token_data.sub).to_dict())
-            return user
+            if user.is_active:
+                return user
 
     return None
 
@@ -81,18 +81,10 @@ def generate_api_token():
     return str("".join(secrets.choice(string.ascii_letters + string.digits) for x in range(40)))
 
 
-def get_api_token(token: str = Depends(OAuth2())) -> TokenAPI:
-    try:
-        # get and compare tokens
-        access_token: Token = Token.get(token=token)
-        if access_token is None or token != access_token.token:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-                headers={"WWW-Authenticate": "Token"},
-            )
-
+def get_api_token(token: str = Depends(OAuth2())) -> Optional[TokenAPI]:
+    # get and compare tokens
+    access_token: APIToken = APIToken.get(token=token)
+    if access_token is not None and token == access_token.token:
         return TokenAPI.parse_obj(access_token.to_dict())
 
-    except SQLAlchemyError as err:
-        print("Database error:", err)
+    return None

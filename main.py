@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.database.models import User
+from src.database.models import User, UserRole
 from src.dependencies import get_user, pwd_hash
 from src.models.user import UserAPI
 from src.routers import manager, auth
@@ -39,25 +39,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
 async def startup():
-    User.get_or_create(dict(username="defaultuser", password=pwd_hash("defaultpassword"), super=True), id=1)
-
-
-# @app.get("/")
-# def home(request: Request, user: UserAPI = Depends(get_user)):
-#     """Create home page"""
-#
-#     # print(f"token = {request.session.get('token')}")
-#     # print(f"request.session = {request.session}")
-#
-#     # if request.session.get('token'):
-#     print(user)
-#     if user:
-#         # token: JWTToken = JWTToken.parse_obj(json.loads(request.session.get('token')))
-#         # user: UserAPI = get_user(token, db)
-#
-#         return templates.TemplateResponse("index.html",
-#                                           {"request": request, "username": user.username})
-#     return RedirectResponse(url='/login')
+    User.get_or_create(dict(username=env["default_user.username"], password=pwd_hash(env["default_user.password"]), role=UserRole.super), id=1)
 
 
 @app.get("/")
@@ -80,12 +62,13 @@ async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@app.get("/logout/")
+@app.post("/logout/")
 async def logout(request: Request):
     """Clear session and logout user"""
     # response.delete_cookie("session")
     request.session.clear()
-    return RedirectResponse(url="/")
+    return {"status": "ok"}
+    # return RedirectResponse(url="/")
 
 
 # add static files to project

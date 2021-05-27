@@ -5,27 +5,128 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link href="/static/tailwind.css" rel="stylesheet">
-{#    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">#}
+    {#    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">#}
 </head>
-<body class="bg-gray-200 ">
-    <nav class="bg-gray-800">
-        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 text-white">
-            <div class="relative flex items-center justify-between h-16">
-                <div class="uppercase font-bold">Kapellmeister</div>
-                {% if username %}
-                <div class="absolute right-20 ">{{ username }}</div>
-                <form action="/logout" method="get">
-                    <button class="bg-white hover:bg-gray-100 text-gray-800 top-4 font-semibold py-1 px-2 border border-gray-400 rounded shadow absolute right-0">
+<body class="bg-gray-200">
+    <div id="app">
+        <nav class="bg-gray-800">
+            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 text-white">
+                <div class="relative flex items-center justify-between h-16">
+                    <div class="uppercase font-bold">Kapellmeister</div>
+                    {% if username %}
+                    <div class="absolute right-20 ">{{ username }}</div>
+                    <button @click="logout" class="bg-white hover:bg-gray-100 text-gray-800 top-4 font-semibold py-1 px-2 border border-gray-400 rounded shadow absolute right-0">
                         Logout
                     </button>
-                </form>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
+        </nav>
+
+        <div>
+
+        <div>Projects: [[ projects ]]</div>
+        <form @submit.prevent="createProject">
+            <input type="text" v-model="newProject" placeholder="Create project"/>
+            <button type="submit" class="p-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-400">Create project</button>
+        </form>
+
+        <div>
+            Channel
         </div>
-    </nav>
+        <form @submit.prevent="createChannel">
+            <input type="text" v-model="newChannel" placeholder="Create channel"/>
+            <select v-model="selectedProject">
+                <option value="0" disabled>Select Project</option>
+                <option v-for="project in projects" :key="project.id" :value="project.id">[[ project.name ]]</option>
+            </select>
+            <p>selected project id -> [[ selectedProject ]]</p>
+            <button type="submit" class="p-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-400">Create channel</button>
+        </form>
 
+        <div>
+            Token
+        </div>
+        <form @submit.prevent="createToken">
+            <label for="readOnly">Read Only</label>
+            <input id="readOnly" type="checkbox" v-model="readOnly" placeholder="Create API token"/>
+            <button type="submit" class="p-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-400">Create token</button>
+        </form>
 
-    {% block content %}
-    {% endblock content %}
+        <p>Tokens: [[ tokens ]]</p>
+{#        <div>[[ username ]]</div>#}
+{#        <div class="text-green-600" v-text="projects"></div>#}
+    </div>
+
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: "#app",
+
+            delimiters: ['[[',']]'],
+
+            data () {
+                return{
+                    projects: [],
+                    newProject: '',
+                    newChannel: '',
+                    selectedProject: 0,
+                    readOnly: true,
+                    tokens: []
+                }
+            },
+
+            methods: {
+                logout() {
+                    fetch("/logout", { method: "POST" }).then(() => {
+                        window.location.reload();
+                    })
+                },
+
+                createProject: async function() {
+                    const data = {
+                        name: this.newProject,
+                        slug: this.newProject
+                    }
+                    const proj = await fetch("/api/v1/projects/", { method: "POST", body: JSON.stringify(data) }).then(r => r.json())
+                    this.projects.push(proj)
+                    this.newProject = ''
+                },
+
+                createChannel () {
+                    const data = {
+                        name: this.newChannel,
+                        slug: this.newChannel,
+                        project_id: this.selectedProject
+                    }
+                    fetch("/api/v1/channels/", { method: "POST", body: JSON.stringify(data) }).then(() => {
+                        this.newChannel = ''
+                    })
+                },
+
+                createToken: async function() {
+                    this.tokens = await fetch(`/api/v1/tokens/?read_only=${this.readOnly}`, { method: "POST"}).then(r => r.json())
+                    this.readOnly = true
+                },
+
+                async getTokens () {
+                    return await fetch("/api/v1/tokens/").then(r => r.json())
+                },
+
+                async getProjects () {
+                    return await fetch("/api/v1/projects/").then(r => r.json())
+                }
+            },
+
+            mounted: async function() {
+                this.projects = await this.getProjects()
+                this.tokens = await this.getTokens()
+            }
+        })
+    </script>
 </body>
 </html>
