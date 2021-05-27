@@ -28,25 +28,24 @@ class ModelMixin(object):
     @classmethod
     def get(cls, **kwargs):
         obj: cls = session.query(cls).filter_by(**kwargs).first()
-        if obj:
-            return obj
-
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return obj
+        # if obj:
+        #     return obj
+        #
+        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     @classmethod
     def get_all(cls, **kwargs) -> Query:
         obj: Query = session.query(cls).filter_by(**kwargs)
-        if obj.first():
-            return obj
+        # if obj.first():
+        return obj
 
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     @classmethod
     def get_or_create(cls, body: Dict, **kwargs):
         try:
-            obj: cls = (
-                cls.get(**kwargs)
-            )
+            obj: cls = cls.get(**kwargs)
         except HTTPException as err:
             if err.status_code != 404:
                 raise err
@@ -64,9 +63,7 @@ class ModelMixin(object):
     @classmethod
     def update_or_create(cls, body: Dict, **kwargs):
         try:
-            obj: cls = (
-                cls.get(**kwargs)
-            )
+            obj: cls = cls.get(**kwargs)
             cls.update_obj(obj, body)
         except HTTPException as err:
             if err.status_code != 404:

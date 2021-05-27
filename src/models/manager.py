@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 from pydantic import constr, BaseModel
 
@@ -12,19 +12,20 @@ class ContainerAPI(BaseModel):
     project_id: Optional[int]
 
 
-class ProjectAPI(BaseModel):
-    id: Optional[int]
-    name: constr(max_length=64)
-    slug: constr(max_length=64)
-    description: Optional[constr(max_length=512)]
-
-
 class ChannelAPI(BaseModel):
     id: Optional[int]
     name: constr(max_length=64)
     slug: constr(max_length=64)
     description: Optional[constr(max_length=512)]
     project_id: int
+
+
+class ProjectAPI(BaseModel):
+    id: Optional[int]
+    name: constr(max_length=64)
+    slug: constr(max_length=64)
+    description: Optional[constr(max_length=512)]
+    channels: Optional[List[ChannelAPI]]
 
 
 class TokenAPI(BaseModel):

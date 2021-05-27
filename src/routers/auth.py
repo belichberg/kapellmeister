@@ -33,25 +33,20 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
 
     # validate user
     if not user or not pwd_verify(password, user.password if user else ""):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid user or password"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid user or password")
 
     # build data
-    data: TokenData = TokenData(
-        sub=user.username,
-        exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE)
-    )
+    data: TokenData = TokenData(sub=user.username, exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE))
 
     # generate token
     token: JWTToken = token_create(JWT_KEY, JWT_ALGORITHM, data)
 
-    request.session['token'] = token.json()
+    request.session["token"] = token.json()
     # response.set_cookie("session", token.access_token)
 
     # all ok
     # return token
     # return request.session.get('token')
-    return RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     # return templates.TemplateResponse("index.html",
     #                                       {"request": request, "username": username})
