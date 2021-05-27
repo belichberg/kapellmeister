@@ -54,7 +54,7 @@ def token_validate(token: str) -> Optional[TokenData]:
     try:
         return TokenData.parse_obj(jwt.decode(token, JWT_KEY, JWT_ALGORITHM))
     except JWTError as error:
-        print(error)
+        # print(error)
         pass
 
 
