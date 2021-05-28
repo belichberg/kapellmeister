@@ -64,7 +64,7 @@ def create_project(data: ProjectAPI, user: Optional[UserAPI] = Depends(get_user)
             headers={"WWW-Authenticate": "Token"},
         )
 
-    return ProjectAPI.parse_obj(Project.create(data.dict(exclude_none=True)).to_dict())
+    return ProjectAPI.parse_obj(Project.create(data.dict(exclude_defaults=True)).to_dict())
 
 
 @router.post("/channels/", response_model=ChannelAPI)

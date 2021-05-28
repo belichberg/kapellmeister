@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from src.database.models import User
 from src.dependencies import time_utc_now, pwd_hash, pwd_verify, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM
 from src.models.user import UserAPI, TokenData, JWTToken
+from sqlalchemy.orm import Query
 
 router = APIRouter()
 
@@ -44,9 +45,13 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
     request.session["token"] = token.json()
     # response.set_cookie("session", token.access_token)
 
-    # all ok
-    # return token
-    # return request.session.get('token')
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    # return templates.TemplateResponse("index.html",
-    #                                       {"request": request, "username": username})
+
+
+@router.get("/users/")
+async def users(request: Request):
+    """Get all users"""
+
+    # all_users: Query = User.get_all()
+
+    return [UserAPI.parse_obj(user.to_dict()) for user in User.get_all()]

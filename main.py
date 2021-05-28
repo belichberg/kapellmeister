@@ -11,6 +11,7 @@ from src.database.models import User, UserRole
 from src.dependencies import get_user, pwd_hash
 from src.models.user import UserAPI
 from src.routers import manager, auth
+from sqlalchemy.orm import Query
 
 # read env.yaml config file
 env = EnvYAML()
@@ -68,6 +69,13 @@ async def logout(request: Request):
     request.session.clear()
     return {"status": "ok"}
     # return RedirectResponse(url="/")
+
+
+@app.get("/users")
+async def users(request: Request):
+    """Create users page"""
+
+    return templates.TemplateResponse("users.html", {"request": request})
 
 
 # add static files to project
