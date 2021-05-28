@@ -45,7 +45,6 @@ async def startup():
 @app.get("/")
 def home(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create home page"""
-
     # print(f"token = {request.session.get('token')}")
     # print(f"request.session = {request.session}")
 
