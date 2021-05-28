@@ -12,7 +12,7 @@
                     <button
                             v-if="!showChoices"
                             @click="show" type="button"
-                            class="absolute right-20 mx-5 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
+                            class="mx-5 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
             shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
             focus:ring-rose-500">
                         + User
@@ -20,25 +20,26 @@
                     <button
                             v-if="showChoices"
                             @click="hide"
-                            class="absolute right-20 mx-5 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
-            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-            focus:ring-rose-500"
+                            class="mx-5 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
+                            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-rose-500"
                     >Hide
                     </button>
+
                     <div v-if="showChoices" class="grid justify-items-center">
                         <div class="text-gray-600 font-extrabold tracking-wider uppercase">Create User</div>
                         <form @submit.prevent="createUser()">
                             <input class="bg-gray-100" type="text" v-model="newUser" placeholder="Create User"/>
                             <input class="bg-gray-100" type="text" v-model="newPassword" placeholder="Create Password"/>
-                            <select class="bg-gray-100" v-model="selectedRole">
+                            <select class="bg-gray-100 w-auto" v-model="selectedRole">
                                 <option value="0" disabled>User role</option>
                                 <option>super</option>
                                 <option>admin</option>
                                 <option>user</option>
                             </select>
                             <button type="submit" class="p-0.5 border border-transparent text-sm font-medium rounded-md
-            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-            focus:ring-rose-500">
+                            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-rose-500">
                                 Create
                             </button>
                         </form>
@@ -87,7 +88,7 @@
         data() {
             return {
                 users: [],
-                showChoices: true,
+                showChoices: false,
                 newUser: '',
                 newPassword: "",
                 selectedRole: "",
@@ -100,30 +101,12 @@
                 return await fetch("/api/v1/users/").then(r => r.json())
             },
 
-            initializeChoices: function () {
-                let list = []
-                // lets load up our select with many choices
-                // so it will use a lot of memory
-                for (let i = 0; i < 1000; i++) {
-                    list.push({
-                        label: "Item " + i,
-                        value: i
-                    })
-                }
-                new Choices("#choices-single-default", {
-                    searchEnabled: true,
-                    removeItemButton: true,
-                    choices: list
-                })
-            },
-
+            // show input form
             show: function () {
                 this.showChoices = true
-                this.$nextTick(() => {
-                    this.initializeChoices()
-                })
             },
 
+            // hide input form
             hide: function () {
                 this.showChoices = false
             },
