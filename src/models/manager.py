@@ -24,8 +24,8 @@ class ProjectAPI(BaseModel):
     id: Optional[int]
     name: constr(max_length=64)
     slug: constr(max_length=64)
-    description: Optional[constr(max_length=512)]
-    channels: Optional[List[ChannelAPI]]
+    description: Optional[constr(max_length=512)] = ""
+    channels: Optional[List[ChannelAPI]] = []
 
 
 class TokenAPI(BaseModel):
