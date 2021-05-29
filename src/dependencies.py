@@ -81,7 +81,7 @@ def generate_api_token():
     return str("".join(secrets.choice(string.ascii_letters + string.digits) for x in range(40)))
 
 
-def get_api_token(token: str = Depends(OAuth2())) -> Optional[TokenAPI]:
+def get_api_token(token: str = Depends(OAuth2(auto_error=False))) -> Optional[TokenAPI]:
     # get and compare tokens
     access_token: APIToken = APIToken.get(token=token)
     if access_token is not None and token == access_token.token:

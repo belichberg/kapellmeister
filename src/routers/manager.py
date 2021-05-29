@@ -105,8 +105,8 @@ def set_container(
     project_slug: str,
     channel_slug: str,
     data: ContainerAPI,
-    token: Optional[TokenAPI] = Depends(get_api_token),
     user: Optional[UserAPI] = Depends(get_user),
+    token: Optional[TokenAPI] = Depends(get_api_token)
 ) -> ContainerAPI:
     if user is None and token is None:
         raise HTTPException(

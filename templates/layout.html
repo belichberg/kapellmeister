@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <link href="/static/style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body class="bg-gray-200">
 <div id="app">
@@ -95,7 +96,7 @@
                     >Home</a>
 
                     <a :href="selectedProject ? `/tokens?project=${selectedProject.slug}` : '/tokens'"
-                       class="hover:bg-gray-50 block rounded-md py-2 px-3 text-base font-medium text-gray-900"
+                       class="block rounded-md py-2 px-3 text-base font-medium"
                        :class="checkWindowLocation('/tokens') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50'"
                     >Tokens</a>
 
@@ -114,7 +115,8 @@
                                class="group flex items-center px-3 py-2 text-sm font-medium rounded-md"
                                :class="checkWindowLocation('/') ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-50'"
                             >
-                                <svg class="text-gray-500 flex-shrink-0 -ml-1 mr-3 h-6 w-6"
+                                <svg class="flex-shrink-0 -ml-1 mr-3 h-6 w-6"
+                                     :class="checkWindowLocation('/') ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500'"
                                      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -125,10 +127,11 @@
                             </a>
 
                             <a :href="selectedProject ? `/tokens?project=${selectedProject.slug}` : '/tokens'"
-                               class="text-gray-600 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                               class="group flex items-center px-3 py-2 text-sm font-medium rounded-md"
                                :class="checkWindowLocation('/tokens') ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-50'"
                             >
-                                <svg class="text-gray-400 group-hover:text-gray-500 flex-shrink-0 -ml-1 mr-3 h-6 w-6"
+                                <svg class="flex-shrink-0 -ml-1 mr-3 h-6 w-6"
+                                     :class="checkWindowLocation('/tokens') ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500'"
                                      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
@@ -153,7 +156,7 @@
                     </nav>
                 </div>
 
-                <main class="lg:mt-0 mt-16 lg:col-span-9 xl:col-span-10">
+                <main class="lg:mt-0 mt-16 lg:col-span-9 xl:col-span-9">
                     {% block content %}
                     {% endblock content %}
                 </main>
