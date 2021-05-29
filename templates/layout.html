@@ -4,14 +4,12 @@
     <title>Kapellmeister</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link href="/static/tailwind.css" rel="stylesheet">
-    {#
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    #}
+    <link href="/static/style.css" rel="stylesheet">
 </head>
 <body class="bg-gray-200">
 <div id="app">
-    <div class="min-h-screen bg-gray-100">
+    <div class="min-h-screen bg-gray-100 font-sans">
         <!--
           When the mobile menu is open, add `overflow-hidden` to the `body` element to prevent double scrollbars
 
@@ -21,14 +19,14 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="relative flex py-4 justify-between xl:grid xl:grid-cols-12 lg:gap-8">
                     <div class="flex md:left-0 md:inset-y-0 lg:static xl:col-span-6">
-                        <div class="flex-shrink-0 flex items-center">
-                            <a href="#">
+                        <a :href="selectedProject ? `/?project=${selectedProject.slug}` : '/'" class="flex-shrink-0 flex items-center">
+
                                 <img class="block h-8 w-auto"
                                      src="https://tailwindui.com/img/logos/workflow-mark.svg?color=pink&shade=500"
                                      alt="Workflow">
-                            </a>
+
                             <div class="uppercase font-bold px-2 text-gray-700 cursor-pointer">Kapellmeister</div>
-                        </div>
+                        </a>
                     </div>
 {#                    <div class="min-w-0 flex-1 md:px-8 lg:px-0 xl:col-span-4">#}
 {#                        <div class="flex items-center px-6 py-4 md:max-w-3xl md:mx-auto lg:max-w-none lg:mx-0 xl:px-0">#}
@@ -91,9 +89,15 @@
             <nav v-if="openMobileNav" class="lg:hidden z-40 overflow-y-auto">
                 <div class="max-w-3xl mx-auto px-2 pt-2 pb-3 space-y-1 sm:px-4">
                     <!-- Current: "bg-gray-100 text-gray-900", Default: "hover:bg-gray-50" -->
-                    <a href="#" aria-current="page" class="bg-gray-100 text-gray-900 block rounded-md py-2 px-3 text-base font-medium text-gray-900">Home</a>
+                    <a :href="selectedProject ? `/?project=${selectedProject.slug}` : '/'"
+                        class="block rounded-md py-2 px-3 text-base font-medium"
+                        :class="checkWindowLocation('/') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50'"
+                    >Home</a>
 
-                    <a href="#" class="hover:bg-gray-50 block rounded-md py-2 px-3 text-base font-medium text-gray-900">Tokens</a>
+                    <a :href="selectedProject ? `/tokens?project=${selectedProject.slug}` : '/tokens'"
+                       class="hover:bg-gray-50 block rounded-md py-2 px-3 text-base font-medium text-gray-900"
+                       :class="checkWindowLocation('/tokens') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50'"
+                    >Tokens</a>
 
                     <a href="#" class="hover:bg-gray-50 block rounded-md py-2 px-3 text-base font-medium text-gray-900">Users</a>
                 </div>
@@ -106,9 +110,10 @@
                     <nav aria-label="Sidebar" class="sticky top-4 divide-y divide-gray-300">
                         <div class="pb-8 space-y-1">
                             <!-- Current: "bg-gray-200 text-gray-900", Default: "text-gray-600 hover:bg-gray-50" -->
-                            <a href="#"
-                               class="bg-gray-200 text-gray-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md"
-                               aria-current="page">
+                            <a :href="selectedProject ? `/?project=${selectedProject.slug}` : '/'"
+                               class="group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                               :class="checkWindowLocation('/') ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-50'"
+                            >
                                 <svg class="text-gray-500 flex-shrink-0 -ml-1 mr-3 h-6 w-6"
                                      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor" aria-hidden="true">
@@ -119,7 +124,10 @@
                                 </span>
                             </a>
 
-                            <a href="#" class="text-gray-600 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                            <a :href="selectedProject ? `/tokens?project=${selectedProject.slug}` : '/tokens'"
+                               class="text-gray-600 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                               :class="checkWindowLocation('/tokens') ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-50'"
+                            >
                                 <svg class="text-gray-400 group-hover:text-gray-500 flex-shrink-0 -ml-1 mr-3 h-6 w-6"
                                      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor" aria-hidden="true">
@@ -155,6 +163,24 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<script>
+    Vue.directive('click-outside', {
+        bind: function (el, binding, vnode) {
+            el.clickOutsideEvent = function (event) {
+                // here I check that click was outside the el and his children
+                if (!(el == event.target || el.contains(event.target))) {
+                    // and if it did, call method provided in attribute value
+                    vnode.context[binding.expression](event);
+                }
+            };
+            document.body.addEventListener('click', el.clickOutsideEvent)
+        },
+        unbind: function (el) {
+            document.body.removeEventListener('click', el.clickOutsideEvent)
+        },
+    });
+</script>
 
 {% block vuejs %}
 {% endblock %}

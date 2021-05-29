@@ -70,6 +70,12 @@ async def logout(request: Request):
     # return RedirectResponse(url="/")
 
 
+@app.get("/tokens")
+async def tokens(request: Request):
+    """Create login page"""
+    return templates.TemplateResponse("tokens.html", {"request": request})
+
+
 # add static files to project
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

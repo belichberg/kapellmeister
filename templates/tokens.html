@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+
+{% block heading %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block vuejs %}
+    <script>
+        new Vue({
+            el: "#app",
+
+            delimiters: ['[[', ']]'],
+
+            data() {
+                return {
+                    showProjects: false,
+                    openMobileNav: false,
+
+                    selectedProject: null,
+
+                    projects: [],
+                    tokens: [],
+
+                    readOnly: true
+                }
+            },
+
+            methods: {
+                logout() {
+                    fetch("/logout", {method: "POST"}).then(() => {
+                        window.location.reload();
+                    })
+                },
+
+                checkWindowLocation (path) {
+                    return window.location.pathname === path
+                },
+
+                getProjectName () {
+                  return this.selectedProject.name || 'Project'
+                },
+
+                createToken: async function () {
+                    const token = await fetch(`/api/v1/tokens/?read_only=${this.readOnly}`, { method: "POST" }).then(r => r.json())
+                    this.tokens.push(token)
+                    this.readOnly = true
+                },
+
+                async getProjects () {
+                    return await fetch("/api/v1/projects/").then(r => r.json())
+                },
+
+                async getTokens () {
+                    return await fetch("/api/v1/tokens/").then(r => r.json())
+                },
+
+                hideProjects: function () {
+                    this.showProjects = false
+                },
+
+                selectProject (project) {
+                    this.selectedProject = project
+                    if (history.pushState) {
+                        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?project=' + project.slug;
+                        window.history.pushState({ path: newUrl }, '', newUrl);
+                    }
+                }
+            },
+
+            mounted: async function () {
+                const project = new URLSearchParams(window.location.search).get('project');
+
+                this.projects = await this.getProjects()
+                this.tokens = await this.getTokens()
+                this.selectedProject = this.projects.filter(item => item.slug === project)[0]
+            }
+        })
+    </script>
+{% endblock %}
