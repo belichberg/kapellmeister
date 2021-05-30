@@ -11,7 +11,7 @@
                 <div id="add_user">
                     <button
                             v-if="!showChoices"
-                            @click="show" type="button"
+                            @click="showUserForm" type="button"
                             class="mx-5 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
             shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
             focus:ring-rose-500">
@@ -19,7 +19,7 @@
                     </button>
                     <button
                             v-if="showChoices"
-                            @click="hide"
+                            @click="hideUserForm"
                             class="mx-5 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
                             shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
                             focus:ring-rose-500"
@@ -78,7 +78,7 @@
 </main>
 {% endblock content %}
 
-{% block tail_js %}
+{% block vuejs %}
 <script>
     new Vue({
         el: '#app',
@@ -101,13 +101,13 @@
                 return await fetch("/api/v1/users/").then(r => r.json())
             },
 
-            // show input form
-            show: function () {
+            // show input user form
+            showUserForm: function () {
                 this.showChoices = true
             },
 
-            // hide input form
-            hide: function () {
+            // hide input user form
+            hideUserForm: function () {
                 this.showChoices = false
             },
 
@@ -128,11 +128,8 @@
 
         mounted: async function () {
             this.users = await this.getUsers()
-            this.initializeChoices()
-        },
-        // function() {
-        //     this.initializeChoices()
-        // }
+        }
+
     });
 </script>
 {% endblock %}

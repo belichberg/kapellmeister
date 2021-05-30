@@ -83,8 +83,8 @@ def create_channel(data: ChannelAPI, user: Optional[UserAPI] = Depends(get_user)
 def get_containers(
     project_slug: str,
     channel_slug: str,
-    token: Optional[TokenAPI] = Depends(get_api_token),
     user: Optional[UserAPI] = Depends(get_user),
+    token: Optional[TokenAPI] = Depends(get_api_token)
 ) -> List[ContainerAPI]:
     if user is None and token is None:
         raise HTTPException(

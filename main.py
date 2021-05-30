@@ -77,6 +77,11 @@ async def users(request: Request):
 
     return templates.TemplateResponse("users.html", {"request": request})
 
+@app.get("/tokens")
+async def tokens(request: Request):
+    """Create users page"""
+
+    return templates.TemplateResponse("tokens.html", {"request": request})
 
 # add static files to project
 app.mount("/static", StaticFiles(directory="static"), name="static")
