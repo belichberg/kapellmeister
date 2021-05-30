@@ -6,7 +6,7 @@
 {% block content %}
 
     <div class="flex">
-        <div class="w-44 mb-4" v-click-outside="hideProjects">
+        <div class="w-44 mb-4 flex-initial" v-click-outside="hideProjects">
             {#            <label class="block text-sm font-medium text-gray-700">#}
             {#                Project#}
             {#            </label>#}
@@ -72,7 +72,7 @@
             </div>
         </div>
 
-        <div class="w-44 mb-4 ml-6" v-click-outside="hideChannels">
+        <div class="w-44 mb-4 ml-6 flex-initial" v-click-outside="hideChannels">
             {#            <label class="block text-sm font-medium text-gray-700">#}
             {#                Project#}
             {#            </label>#}
@@ -137,55 +137,91 @@
                 </ul>
             </div>
         </div>
+
+        <div class="w-60 mb-4 ml-6 flex-grow flex justify-end">
+            {#            <label class="block text-sm font-medium text-gray-700">#}
+            {#                Project#}
+            {#            </label>#}
+            <div class="mt-1 relative">
+                <label for="search" class="sr-only">Search</label>
+                <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center z-10">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <input type="search" id="search" name="search"
+                       v-model="search"
+                       class="bg-white relative w-full text-gray-700 rounded-md shadow pl-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                       placeholder="Search..."
+                />
+            </div>
+        </div>
     </div>
 
     <div class="flex flex-col cursor-default">
         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+{#                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">#}
+                <div class="overflow-x-auto border-b border-gray-200 sm:rounded-lg rounded-lg shadow overflow-y-auto relative">
+{#                    <table class="divide-y divide-gray-200 table-striped relative">#}
+                    <table class="divide-y divide-gray-200 border-collapse min-w-full table-striped relative cursor-default">
+                        <thead class="bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                         <tr>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-5 py-2.5">
                                 Name
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Title
+                                class="px-5 py-2.5">
+                                Auth
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
+                                class="px-5 py-2.5">
+                                Digest
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Role
+                                class="py-2.5">
+                                Parameters
                             </th>
                             <th scope="col" class="relative px-6 py-3">
-                                <span class="sr-only">Edit</span>
+                                <span class="sr-only">Delete</span>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-if="containers" v-for="container in containers" :key="container.slug" class="container-row">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <tr v-if="filteredContainers" v-for="container in filteredContainers" :key="container.slug" class="container-row text-center">
+                            <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                                 [[ container.slug ]]
                             </td>
-                            <td v-if="container.auth" class="px-6 py-5 flex items-center text-sm text-gray-500">
-                                <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[ key ]]</p>
-                                <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
+                            <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
+                                <div class="flex items-center">
+                                    <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[ key ]]</p>
+                                    <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
+                                </div>
                             </td>
-                            <td v-else class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                 <p class="sr-only">Empty</p>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                [[ container.digest ]]
+                            <td class="p-3 text-sm text-gray-500">
+                                <div class="flex items-center">
+                                    <p class="w-44 pl-1.5 truncate">[[ container.digest ]]</p>
+                                    <span class="text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
+                                </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                [[ container.parameters ]]
+                            <td class="p-3 whitespace-nowrap text-sm text-gray-500">
+                                <div class="flex justify-center items-center text-center">
+
+{#                                    <div>#}
+{#                                        <p v-for="key in Object.keys(container.parameters)" :key="key">[[ key ]]</p>#}
+{#                                    </div>#}
+{#                                    <p>[[ Object.keys(container.parameters) ]]</p>#}
+{#                                    <p v-for="key in Object.keys(container.parameters)" :key="key" class="p-0.5">[[ key ]]</p>#}
+{#                                    <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-sm">show</span>#}
+                                    <span class="px-2 py-0.5 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer">open</span>
+                                </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
                                 <a href="#" class="text-indigo-600 hover:text-indigo-900">
                                     <span class="material-icons text-red-500">
                                         delete_outline
@@ -210,6 +246,8 @@
 
             data() {
                 return {
+                    search: '',
+
                     showProjects: false,
                     showChannels: false,
                     openMobileNav: false,
@@ -223,6 +261,23 @@
                     newProject: '',
                     newChannel: '',
                     readOnly: true
+                }
+            },
+
+            computed: {
+                filteredContainers () {
+                    let containers_ = this.containers
+
+                    // apply filtering
+                      if (this.search) {
+                        const search = this.search.toLowerCase().split(' ')
+                        containers_ = containers_.filter((c) => {
+                          const text = ([c.slug, c.auth].join(' ')).toLowerCase()
+                          return search.every(u => text.includes(u))
+                        })
+                      }
+
+                      return containers_
                 }
             },
 
@@ -312,6 +367,7 @@
 
                 this.projects = await this.getProjects()
                 this.selectedProject = this.projects.filter(item => item.slug === project)[0]
+
                 if (channel) {
                     this.selectedChannel = this.selectedProject.channels.filter(item => item.slug === channel)[0]
                     this.containers = await this.getContainers()
