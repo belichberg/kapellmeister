@@ -1,36 +1,57 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <div class="min-h-screen bg-gray-100 font-sans">
+        <header class="bg-white shadow-sm lg:static lg:overflow-y-visible fixed inset-x-0 z-40"
+                :class="{ 'rounded-b-xl': openMobileNav }">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="relative flex py-4 justify-between xl:grid xl:grid-cols-12 lg:gap-8">
+                    <div class="flex md:left-0 md:inset-y-0 lg:static xl:col-span-6 flex-shrink-0 flex items-center">
+                        <img class="block h-8 w-auto"
+                             src="https://tailwindui.com/img/logos/workflow-mark.svg?color=pink&shade=500"
+                             alt="Workflow">
+                        <div class="uppercase font-bold px-2 text-gray-700">Kapellmeister</div>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-{% block heading %}
-<title>Login</title>
-{% endblock %}
-
-{% block content %}
-<div class="w-full max-w-xs mx-auto">
-    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 absolute top-1/4" method="post" action="/api/v1/login/">
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-                Username
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   id="username" type="text" name="username" placeholder="Username">
+        <div class="w-full max-w-xs mx-auto">
+            <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 absolute top-1/4" method="post"
+                  action="/api/v1/login/">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+                        Username
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                           id="username" type="text" name="username" placeholder="Username">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                        Password
+                    </label>
+                    <input class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                           id="password" type="password" name="password" placeholder="******************">
+                    <p class="text-red-500 text-xs italic">Please choose a password.</p>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            type="submit">
+                        Sign In
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="mb-6">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                Password
-            </label>
-            <input class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                   id="password" type="password" name="password" placeholder="******************">
-            <p class="text-red-500 text-xs italic">Please choose a password.</p>
-        </div>
-        <div class="flex items-center justify-between">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    type="submit">
-                Sign In
-            </button>
-            <!--            <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">-->
-            <!--                Forgot Password?-->
-            <!--            </a>-->
-        </div>
-    </form>
+    </div>
 </div>
-{% endblock content %}
+</body>
+</html>

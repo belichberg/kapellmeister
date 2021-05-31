@@ -29,37 +29,57 @@
                     <div v-if="showChoices" class="grid justify-items-center">
                         <div class="text-gray-600 font-extrabold tracking-wider uppercase">Create token</div>
                         <form @submit.prevent="createToken">
-                            <label for="readOnly">Read Only</label>
-                            <input id="readOnly" class="bg-gray-100" type="checkbox" v-model="readOnly" placeholder="Create API token"/>
-                            <button type="submit" class="p-0.5 border border-transparent text-sm font-medium rounded-md
+                            <div class="bg-gray-100 px-3 py-2 rounded-md inline-block">
+                                <label for="readOnly">Read Only</label>
+                                <input id="readOnly" type="checkbox" v-model="readOnly"
+                                       placeholder="Create API token"/>
+                            </div>
+                            <button type="submit" class="inline-block p-1.5 border border-transparent text-sm font-medium rounded-md
                             shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
                             focus:ring-rose-500">
                                 Create
                             </button>
                         </form>
                     </div>
-<!--                    <div>Tokens: [[ tokens ]]</div>-->
                 </div>
-                 <article>
-                    <div class="mt-10 p-6 text-lg font-normal text-center text-gray-400">
-                        <table class="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped relative cursor-default">
-                            <thead>
-                            <tr class="text-center">
-                                <th class="bg-gray-300 sticky top-0 border-b border-gray-200 px-6 py-4 text-gray-600 font-extrabold tracking-wider uppercase text-xs">
-                                    Token
-                                </th>
-                                <th class="bg-gray-300 sticky top-0 border-b border-gray-200 px-6 py-4 text-gray-600 font-extrabold tracking-wider uppercase text-xs">
-                                    Read only
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="token in tokens" class="text-center hover:bg-gray-50">
-                                <td class="border-dashed border-t border-gray-200" v-text="token.token"/>
-                                <td class="border-dashed border-t border-gray-200" v-text="token.read_only"/>
-                            </tr>
-                            </tbody>
-                        </table>
+                <article>
+                    <div v-if="!tokens.length"
+                         class="mt-10 p-6 grid justify-items-center text-gray-600 font-extrabold tracking-wider uppercase">
+                        no tokens yet!
+                    </div>
+                    <div v-else>
+                        <div v-if="curr_token"
+                             class="text-center mt-10 text-gray-600 font-bold"
+                        >Token: [[ curr_token["token"] ]]
+                        </div>
+                        <div class="mt-10 p-6 font-normal text-center text-gray-400">
+                            <table class="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped relative cursor-default">
+                                <thead class="bg-gray-200 sticky top-0 border-b border-gray-200 text-center text-gray-600 font-bold tracking-wider uppercase text-xs">
+                                <tr>
+                                    <th class="px-5 py-2.5">
+                                        Token
+                                    </th>
+                                    <th class="px-5 py-2.5">
+                                        Read Only
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="token in tokens" class="text-center hover:bg-gray-50">
+                                    <td class="text-m text-gray-500 border-dashed border-t border-gray-200"
+                                        v-text="token.token"/>
+                                    <td v-if="token.read_only" class="border-dashed border-t border-gray-200 py-2">
+                                        <span class="material-icons">&#10004;</span>
+                                        <!--                                    <i class="material-icons">check_circle_outline</i>-->
+                                    </td>
+                                    <td v-else class="border-dashed border-t border-gray-200 py-2">
+                                        <span class="material-icons"> &#10006;</span>
+                                        <!--                                    <i class="material-icons">highlight_off</i>-->
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </article>
             </li>
@@ -69,86 +89,88 @@
 {% endblock %}
 
 {% block vuejs %}
-    <script>
-        new Vue({
-            el: "#app",
+<script>
+    new Vue({
+        el: "#app",
 
-            delimiters: ['[[', ']]'],
+        delimiters: ['[[', ']]'],
 
-            data() {
-                return {
-                    showProjects: false,
-                    openMobileNav: false,
+        data() {
+            return {
+                showProjects: false,
+                openMobileNav: false,
 
-                    selectedProject: null,
+                selectedProject: null,
 
-                    projects: [],
-                    tokens: [],
+                projects: [],
+                tokens: [],
 
-                    readOnly: true,
-                    showChoices: false
+                readOnly: true,
+                showChoices: false,
+                curr_token: ''
+            }
+        },
+
+        methods: {
+            logout() {
+                fetch("/logout", {method: "POST"}).then(() => {
+                    window.location.reload();
+                })
+            },
+
+            checkWindowLocation(path) {
+                return window.location.pathname === path
+            },
+
+            getProjectName() {
+                return this.selectedProject.name || 'Project'
+            },
+
+            createToken: async function () {
+                const token = await fetch(`/api/v1/tokens/?read_only=${this.readOnly}`, {method: "POST"}).then(r => r.json())
+                this.tokens.push(token)
+                this.readOnly = true
+                this.curr_token = token
+            },
+
+            async getProjects() {
+                return await fetch("/api/v1/projects/").then(r => r.json())
+            },
+
+            async getTokens() {
+                return await fetch("/api/v1/tokens/").then(r => r.json())
+            },
+
+            hideProjects: function () {
+                this.showProjects = false
+            },
+
+            selectProject(project) {
+                this.selectedProject = project
+                if (history.pushState) {
+                    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?project=' + project.slug;
+                    window.history.pushState({path: newUrl}, '', newUrl);
                 }
             },
 
-            methods: {
-                logout() {
-                    fetch("/logout", {method: "POST"}).then(() => {
-                        window.location.reload();
-                    })
-                },
-
-                checkWindowLocation (path) {
-                    return window.location.pathname === path
-                },
-
-                getProjectName () {
-                  return this.selectedProject.name || 'Project'
-                },
-
-                createToken: async function () {
-                    const token = await fetch(`/api/v1/tokens/?read_only=${this.readOnly}`, { method: "POST" }).then(r => r.json())
-                    this.tokens.push(token)
-                    this.readOnly = true
-                },
-
-                async getProjects () {
-                    return await fetch("/api/v1/projects/").then(r => r.json())
-                },
-
-                async getTokens () {
-                    return await fetch("/api/v1/tokens/").then(r => r.json())
-                },
-
-                hideProjects: function () {
-                    this.showProjects = false
-                },
-
-                selectProject (project) {
-                    this.selectedProject = project
-                    if (history.pushState) {
-                        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?project=' + project.slug;
-                        window.history.pushState({ path: newUrl }, '', newUrl);
-                    }
-                },
-
-                // show input user form
-                showTokenForm: function () {
-                    this.showChoices = true
-                },
-
-                // hide input user form
-                hideTokenForm: function () {
-                    this.showChoices = false
-                },
+            // show input token form
+            showTokenForm: function () {
+                this.showChoices = true
             },
 
-            mounted: async function () {
-                const project = new URLSearchParams(window.location.search).get('project');
+            // hide input token form
+            hideTokenForm: function () {
+                this.showChoices = false
+            },
+        },
 
-                this.projects = await this.getProjects()
-                this.tokens = await this.getTokens()
-                this.selectedProject = this.projects.filter(item => item.slug === project)[0]
-            }
-        })
-    </script>
+        mounted: async function () {
+            const project = new URLSearchParams(window.location.search).get('project');
+
+            this.projects = await this.getProjects()
+            this.tokens = await this.getTokens()
+            this.selectedProject = this.projects.filter(item => item.slug === project)[0]
+        }
+    })
+</script>
 {% endblock %}

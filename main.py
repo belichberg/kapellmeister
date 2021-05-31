@@ -61,13 +61,14 @@ async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@app.post("/logout/")
+# @app.post("/logout/")
+@app.get("/logout/")
 async def logout(request: Request):
     """Clear session and logout user"""
     # response.delete_cookie("session")
     request.session.clear()
-    return {"status": "ok"}
-    # return RedirectResponse(url="/")
+    # return {"status": "ok"}
+    return RedirectResponse(url="/")
 
 
 @app.get("/tokens")
