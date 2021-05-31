@@ -4,6 +4,68 @@
 {% endblock %}
 
 {% block content %}
+<main class="lg:col-span-9 xl:col-span-10">
+    <div class="">
+        <ul class="space-y-4">
+            <li class="bg-white px-4 py-6 shadow sm:p-6 sm:rounded-lg">
+                <div id="add_token">
+                    <button
+                            v-if="!showChoices"
+                            @click="showTokenForm" type="button"
+                            class="mx-5 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
+                            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-rose-500">
+                        + Token
+                    </button>
+                    <button
+                            v-if="showChoices"
+                            @click="hideTokenForm"
+                            class="mx-5 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
+                            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-rose-500"
+                    >Hide
+                    </button>
+
+                    <div v-if="showChoices" class="grid justify-items-center">
+                        <div class="text-gray-600 font-extrabold tracking-wider uppercase">Create token</div>
+                        <form @submit.prevent="createToken">
+                            <label for="readOnly">Read Only</label>
+                            <input id="readOnly" class="bg-gray-100" type="checkbox" v-model="readOnly" placeholder="Create API token"/>
+                            <button type="submit" class="p-0.5 border border-transparent text-sm font-medium rounded-md
+                            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-rose-500">
+                                Create
+                            </button>
+                        </form>
+                    </div>
+<!--                    <div>Tokens: [[ tokens ]]</div>-->
+                </div>
+                 <article>
+                    <div class="mt-10 p-6 text-lg font-normal text-center text-gray-400">
+                        <table class="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped relative cursor-default">
+                            <thead>
+                            <tr class="text-center">
+                                <th class="bg-gray-300 sticky top-0 border-b border-gray-200 px-6 py-4 text-gray-600 font-extrabold tracking-wider uppercase text-xs">
+                                    Token
+                                </th>
+                                <th class="bg-gray-300 sticky top-0 border-b border-gray-200 px-6 py-4 text-gray-600 font-extrabold tracking-wider uppercase text-xs">
+                                    Read only
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="token in tokens" class="text-center hover:bg-gray-50">
+                                <td class="border-dashed border-t border-gray-200" v-text="token.token"/>
+                                <td class="border-dashed border-t border-gray-200" v-text="token.read_only"/>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </li>
+        </ul>
+    </div>
+</main>
 {% endblock %}
 
 {% block vuejs %}
@@ -23,7 +85,8 @@
                     projects: [],
                     tokens: [],
 
-                    readOnly: true
+                    readOnly: true,
+                    showChoices: false
                 }
             },
 
@@ -66,7 +129,17 @@
                         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?project=' + project.slug;
                         window.history.pushState({ path: newUrl }, '', newUrl);
                     }
-                }
+                },
+
+                // show input user form
+                showTokenForm: function () {
+                    this.showChoices = true
+                },
+
+                // hide input user form
+                hideTokenForm: function () {
+                    this.showChoices = false
+                },
             },
 
             mounted: async function () {
