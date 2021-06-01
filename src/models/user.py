@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -11,6 +12,7 @@ class UserRole(str, Enum):
 
 
 class UserAPI(BaseModel):
+    id: Optional[int]
     username: str
     password: str
     role: UserRole

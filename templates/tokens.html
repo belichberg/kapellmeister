@@ -62,19 +62,27 @@
                                     <th class="px-5 py-2.5">
                                         Read Only
                                     </th>
+                                    <th class="px-5 py-2.5">
+                                        <span class="sr-only">Delete</span>
+                                    </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr v-for="token in tokens" class="text-center hover:bg-gray-50">
-                                    <td class="text-m text-gray-500 border-dashed border-t border-gray-200"
+                                    <td class="text-m text-gray-500 border-t border-gray-200"
                                         v-text="token.token"/>
-                                    <td v-if="token.read_only" class="border-dashed border-t border-gray-200 py-2">
-                                        <span class="material-icons">&#10004;</span>
-                                        <!--                                    <i class="material-icons">check_circle_outline</i>-->
+                                    <td class="border-t border-gray-200 py-2">
+                                        <div v-if="token.read_only"><span class="material-icons">&#10004;</span></div>
+                                        <div v-else><span class="material-icons"> &#10006;</span></div>
                                     </td>
-                                    <td v-else class="border-dashed border-t border-gray-200 py-2">
-                                        <span class="material-icons"> &#10006;</span>
-                                        <!--                                    <i class="material-icons">highlight_off</i>-->
+                                    <td class="border-t p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
+                                        <button
+                                                @click="deleteToken(token.id)"
+                                                class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
+                                            <span class="material-icons text-red-500">
+                                                delete_outline
+                                            </span>
+                                        </button>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -161,6 +169,11 @@
             // hide input token form
             hideTokenForm: function () {
                 this.showChoices = false
+            },
+
+            async deleteToken(token) {
+                await fetch(`/api/v1/token/${token}/`, {method: "DELETE"})
+                this.tokens = await this.getTokens()
             },
         },
 

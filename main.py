@@ -45,12 +45,8 @@ async def startup():
 @app.get("/")
 def home(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create home page"""
-    # print(f"token = {request.session.get('token')}")
-    # print(f"request.session = {request.session}")
-
     if user:
         # user: UserAPI = get_user(token, db)
-
         return templates.TemplateResponse("index.html", {"request": request, "username": user.username})
     return RedirectResponse(url="/login")
 
@@ -61,11 +57,9 @@ async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-# @app.post("/logout/")
 @app.get("/logout/")
 async def logout(request: Request):
     """Clear session and logout user"""
-    # response.delete_cookie("session")
     request.session.clear()
     # return {"status": "ok"}
     return RedirectResponse(url="/")
@@ -74,14 +68,12 @@ async def logout(request: Request):
 @app.get("/tokens")
 async def tokens(request: Request):
     """Create tokens page"""
-
     return templates.TemplateResponse("tokens.html", {"request": request})
 
 
 @app.get("/users")
 async def users(request: Request):
     """Create users page"""
-
     return templates.TemplateResponse("users.html", {"request": request})
 
 # add static files to project

@@ -29,5 +29,6 @@ class ProjectAPI(BaseModel):
 
 
 class TokenAPI(BaseModel):
+    id: Optional[int]
     token: str
     read_only: bool
