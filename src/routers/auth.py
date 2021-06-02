@@ -61,15 +61,18 @@ def delete_user(user_id: int):
     return UserAPI.parse_obj(User.delete(id=user_id).to_dict())
 
 
-@router.post("/is_active/{user_id}/{is_active}")
+@router.patch("/is_active/{user_id}/{is_active}")
 def change_user_is_active(user_id: str, is_active: bool):
     """Change users status"""
-    user: Optional[UserAPI] = UserAPI.parse_obj(User.get(id=user_id).to_dict())
-    user.is_active = is_active
-    # UserAPI.parse_obj(User.get(id=user_id).update(user.dict()).to_dict())
 
-    # UserAPI.parse_obj(User.update_obj(body=user.dict()).to_dict())
+    # user: Optional[User] = User.get(id=user_id)
+    # user = User.update_obj(user, {"is_active": is_active})
+
+    # user = User.update({"is_active": is_active}, id=user_id)
+    # print(user.is_active)
+
     # return {"status": "ok"}
+    return UserAPI.parse_obj(User.update({"is_active": is_active}, id=user_id).to_dict())
 
 
 @router.delete("/token/{token_id}/")

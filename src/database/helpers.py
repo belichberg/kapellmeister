@@ -54,8 +54,8 @@ class ModelMixin(object):
         return obj
 
     @classmethod
-    def update(cls, slug: str, body: Dict):
-        obj: cls = cls.get(slug=slug)
+    def update(cls, body: Dict, **kwargs):
+        obj: cls = cls.get(**kwargs)
         cls.update_obj(obj, body)
 
         return obj

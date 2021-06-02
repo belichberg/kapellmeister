@@ -93,7 +93,7 @@
                                     <div v-else class="inline-block"><span class="material-icons"> &#10006;</span></div>
 
                                     <button v-if="user.role != 'super'"
-                                            @click="showIsActive"
+                                            @click="showIsActive(user.id)"
                                             type="button"
                                             class="bg-white relative w-7 h-7 rounded-md shadow text-center
                                             cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
@@ -104,14 +104,14 @@
                                     <ul v-if="user.role != 'super'"
                                             class="absolute z-10 bg-white shadow-lg rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                                         <li>
-                                            <span v-if="menuIsActive"
+                                            <span v-if="menuIsActive == user.id"
                                                   @click="changeIsActive(user.id, true)"
                                                   role="option"
                                                   class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"
                                             >active</span>
                                         </li>
                                         <li>
-                                            <span v-if="menuIsActive"
+                                            <span v-if="menuIsActive == user.id"
                                                   @click="changeIsActive(user.id, false)"
                                                   class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"
                                             >no active</span>
@@ -157,7 +157,7 @@
                 openMobileNav: false,
                 selectedProject: null,
                 show_pass: false,
-                menuIsActive: false
+                menuIsActive: 0
             }
         },
 
@@ -219,15 +219,17 @@
             },
 
             async changeIsActive(user_id, status) {
-                await fetch(`/api/v1/is_active/${user_id}/${status}/`, {method: "POST"})
+                await fetch(`/api/v1/is_active/${user_id}/${status}/`, {method: "PATCH"})
                 this.users = await this.getUsers()
             },
 
-            showIsActive: function () {
+            showIsActive: function (user_id) {
+
                 if (this.menuIsActive) {
-                    this.menuIsActive = false
+                    // this.menuIsActive = false
+                    this.menuIsActive = user_id
                 } else {
-                    this.menuIsActive = true
+                    this.menuIsActive = 0
                 }
             },
         },
