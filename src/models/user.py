@@ -16,7 +16,7 @@ class UserAPI(BaseModel):
     username: str
     password: str
     role: UserRole
-    is_active: bool
+    is_active: Optional[bool]
 
 
 class TokenData(BaseModel):
