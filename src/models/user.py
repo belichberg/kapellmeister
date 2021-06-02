@@ -28,3 +28,8 @@ class JWTToken(BaseModel):
     access_token: str
     token_type: str = "bearer"
     token_expire: datetime
+
+
+class UserProject(BaseModel):
+    user_id: int
+    project_id: int
