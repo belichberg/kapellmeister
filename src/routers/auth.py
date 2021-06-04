@@ -6,10 +6,10 @@ from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 
-from src.database.models import User, APIToken
+from src.database.models import User, APIToken, user_project_table, Project
 from src.dependencies import time_utc_now, pwd_hash, pwd_verify, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM, get_user
 from src.models.manager import TokenAPI
-from src.models.user import UserAPI, TokenData, JWTToken
+from src.models.user import UserAPI, TokenData, JWTToken, UserProject
 
 router = APIRouter()
 
@@ -64,13 +64,6 @@ def delete_user(user_id: int):
 @router.patch("/is_active/{user_id}/{is_active}")
 def change_user_is_active(user_id: str, is_active: bool):
     """Change users status"""
-
-    # user: Optional[User] = User.get(id=user_id)
-    # user = User.update_obj(user, {"is_active": is_active})
-
-    # user = User.update({"is_active": is_active}, id=user_id)
-    # print(user.is_active)
-
     # return {"status": "ok"}
     return UserAPI.parse_obj(User.update({"is_active": is_active}, id=user_id).to_dict())
 
@@ -79,3 +72,42 @@ def change_user_is_active(user_id: str, is_active: bool):
 def delete_token(token_id: int):
     """Delete chosen token"""
     return TokenAPI.parse_obj(APIToken.delete(id=token_id).to_dict())
+
+
+# @router.get("/project/{user_id}/")
+@router.get("/allprojects/")
+def get_user_projects():
+    """Get all users projects"""
+    print(f'get all projects')
+    # print([UserProject.parse_obj(user_project.to_dict() for user_project in user_project_table.get_children())])
+    # users = [UserAPI.parse_obj(user.to_dict()) for user in User.get_all()]
+    # print(users)
+
+    # print(user_project_table.get_children())
+    # print(user_project_table.table_valued)
+    # print(user_project_table.foreign_keys)
+    # print(user_project_table.join(User))
+    #
+    # print(UserAPI.parse_obj(User.get_all().filter(Project.id)))
+
+
+
+    # return [UserProject.parse_obj(user_project.to_dict() for user_project in user_project_table.get_children())]
+    # return UserProject.parse_obj(user_project_table.get_children())
+
+    return {"status": "ok"}
+
+
+# @router.post("/add/{user_id}/{project_id}/")
+# def add_user_project(user_id: int, project_id: int):
+#     """Add project to user"""
+#     print(f'add {project_id} to {user_id}')
+#     return {"status": "ok"}
+
+
+# @router.post("/logout/")
+# async def logout(request: Request):
+#     """Clear session and logout user"""
+#     request.session.clear()
+#     return {"status": "ok"}
+

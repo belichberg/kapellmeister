@@ -120,11 +120,11 @@
         },
 
         methods: {
-            logout() {
-                fetch("/logout", {method: "POST"}).then(() => {
-                    window.location.reload();
-                })
-            },
+            // logout() {
+            //     fetch("/logout/", {method: "GET"}).then(() => {
+            //         window.location.reload();
+            //     })
+            // },
 
             checkWindowLocation(path) {
                 return window.location.pathname === path

@@ -1,12 +1,18 @@
 import enum
 
-from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum
+from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
+from sqlalchemy.orm import relationship
 
 from src.database.helpers import ModelMixin
 
+
 Base: DeclarativeMeta = declarative_base()
 
+user_project_table = Table('user_project', Base.metadata,
+                           Column('user_id', Integer, ForeignKey('users.id')),
+                           Column('project_id', Integer, ForeignKey('projects.id'))
+                           )
 
 class UserRole(str, enum.Enum):
     super = "super"
@@ -92,6 +98,8 @@ class User(ModelMixin, Base):
     password = Column("password", VARCHAR(64), nullable=False)
     role = Column('role', Enum(UserRole), nullable=False, default=UserRole.user)
     is_active = Column("is_active", Boolean, nullable=False, default=True)
+    children = relationship("Child",
+                            secondary=user_project_table)
 
     def to_dict(self):
         return dict(
