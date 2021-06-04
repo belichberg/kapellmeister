@@ -44,12 +44,9 @@ class ModelMixin(object):
 
     @classmethod
     def get_or_create(cls, body: Dict, **kwargs):
-        try:
-            obj: cls = cls.get(**kwargs)
-        except HTTPException as err:
-            if err.status_code != 404:
-                raise err
-            obj = cls.create(body)
+        obj: cls = cls.get(**kwargs)
+        if obj is None:
+            obj: cls = cls.create(body)
 
         return obj
 

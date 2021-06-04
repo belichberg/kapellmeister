@@ -16,33 +16,139 @@
                         Add a name and description to your project
                     </p>
                 </div>
-                <form class="my-5 divide-y divide-gray-200">
+                <form class="mt-5" @submit.prevent="createProject">
                     <div class="w-full sm:max-w-xs">
-                        <label for="email" class="sr-only">Email</label>
+                        <label for="project_name" class="sr-only">Name</label>
+                        <label for="project_description" class="sr-only">Description</label>
                         <input type="text" id="project_name" name="project_name"
+                               required
                                v-model="newProjectName"
                                class="bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
                                placeholder="Project name"
                         />
                         <textarea name="project_description" id="project_description" rows="3"
+                                  v-model="newProjectDescription"
                                   placeholder="Project description (optional)"
                                   class="bg-white my-4 relative w-full text-gray-700 rounded-md shadow pl-5 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
                         ></textarea>
                     </div>
-                    <div >
+                    <div class="flex items-center justify-end">
                         <button type="submit"
-                                class="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                class="mt-3 w-full inline-flex px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             Save
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-        {#        <form class="relative py-3 sm:max-w-xl sm:mx-auto" @submit.prevent="createProject">#}
-        {#            <div v-click-outside="closeProjectForm" class="relative px-4 py-10 mx-8 bg-gray-50 md:mx-0 shadow rounded-lg sm:p-10">#}
-        {#                Hello#}
-        {#            </div>#}
-        {#        </form>#}
+    </div>
+
+    <div v-if="showChannelForm"
+         class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
+        <div v-click-outside="closeChannelForm" class="bg-gray-50 mb-44 shadow sm:rounded-xl sm:max-w-xl sm:mx-auto">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Create a new channel
+                </h3>
+                <div class="mt-2 max-w-xl text-sm text-gray-500">
+                    <p>
+                        Add a name and description to your channel
+                    </p>
+                </div>
+                <form class="mt-5" @submit.prevent="createChannel">
+                    <div class="w-full sm:max-w-xs">
+                        <label for="channel_name" class="sr-only">Name</label>
+                        <label for="channel_description" class="sr-only">Description</label>
+                        <div class="flex">
+                            <input type="text" id="channel_name" name="channel_name"
+                                   required
+                                   v-model="newChannelName"
+                                   class="bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                                   placeholder="Channel name"
+                            />
+                            <div class="w-48 ml-3 flex-initial" v-click-outside="hideChannelProjects">
+                                {#            <label class="block text-sm font-medium text-gray-700">#}
+                                {#                Project#}
+                                {#            </label>#}
+                                <div class="relative">
+                                    <div class="flex">
+                                        <button
+                                                @click="showChannelProjects = !showChannelProjects"
+                                                type="button"
+                                                class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer"
+                                        >
+                                            <span v-if="selectedProject" class="block truncate text-sm font-medium text-gray-700 capitalize"
+                                                  v-text="selectedProject.name"></span>
+                                            <span v-else class="block truncate text-sm text-gray-400">Project</span>
+
+                                            <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                     fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                          d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                                          clip-rule="evenodd"/>
+                                                </svg>
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    <!--
+                                      Select popover, show/hide based on select state.
+
+                                      Entering: ""
+                                        From: ""
+                                        To: ""
+                                      Leaving: "transition ease-in duration-100"
+                                        From: "opacity-100"
+                                        To: "opacity-0"
+                                    -->
+                                    <ul v-if="showChannelProjects"
+                                        class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                                        tabindex="-1" role="listbox"
+                                    >
+                                        <li v-for="project in projects"
+                                            :key="project.id"
+                                            class="project-select text-gray-900 capitalize cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                                            role="option"
+                                            @click="selectProject(project)"
+                                        >
+                        <span class="block truncate"
+                              :class="project === selectedProject ? 'font-semibold' : 'font-normal'"
+                              v-text="project.name"></span>
+                                            <span v-if="project === selectedProject"
+                                                  class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 aria-hidden="true"
+                            >
+                                <path fill-rule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                                        </li>
+
+                                        <!-- More items... -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <textarea name="channel_description" id="channel_description" rows="3"
+                                  v-model="newChannelDescription"
+                                  placeholder="Channel description (optional)"
+                                  class="bg-white my-4 relative w-full text-gray-700 rounded-md shadow pl-5 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                        ></textarea>
+                    </div>
+                    <div class="flex items-center justify-end">
+                        <button type="submit"
+                                class="mt-3 w-full inline-flex px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <div class="flex">
@@ -71,7 +177,7 @@
                       </span>
                     </button>
 
-                    <button @click="showFormDelay('openProjectForm')"
+                    <button @click="openProjectForm"
                             class="ml-4 my-0.5 px-1.5 py-1 border border-transparent text-md font-medium rounded-md opacity-90
                             shadow text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-0">
                         +
@@ -145,7 +251,7 @@
                       </span>
                     </button>
 
-                    <button @click="showFormDelay('openChannelForm')"
+                    <button @click="openChannelForm"
                             class="ml-4 my-0.5 px-1.5 py-1 border border-transparent text-md font-medium rounded-md opacity-90
                             shadow text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-0">
                         +
@@ -318,8 +424,10 @@
 
                     showProjects: false,
                     showChannels: false,
+                    showChannelProjects: false,
                     openMobileNav: false,
                     showProjectForm: false,
+                    showChannelForm: false,
 
                     selectedProject: null,
                     selectedChannel: null,
@@ -327,11 +435,11 @@
                     projects: [],
                     containers: [],
 
-                    newProjectName: '',
-                    newProjectDescription: '',
+                    newProjectName: null,
+                    newProjectDescription: null,
 
-                    newChannelName: '',
-                    newChannelDescription: ''
+                    newChannelName: null,
+                    newChannelDescription: null
                 }
             },
 
@@ -359,6 +467,14 @@
                     })
                 },
 
+                slugify(str) {
+                    return str.toLowerCase()
+                        .trim()
+                        .replace(/[^\w\s-]/g, '')
+                        .replace(/[\s_-]+/g, '-')
+                        .replace(/^-+|-+$/g, '')
+                },
+
                 checkWindowLocation(path) {
                     return window.location.pathname === path
                 },
@@ -380,28 +496,39 @@
                     }
                 },
 
-                createProject: async function () {
+                async createProject() {
                     const data = {
-                        name: this.newProject,
-                        slug: this.newProject
+                        name: this.newProjectName,
+                        slug: this.slugify(this.newProjectName),
+                        description: this.newProjectDescription
                     }
                     const proj = await fetch("/api/v1/projects/", {
                         method: "POST",
                         body: JSON.stringify(data)
                     }).then(r => r.json())
+
                     this.projects.push(proj)
-                    this.newProject = ''
+                    this.closeProjectForm()
+                    this.newProjectName = null
+                    this.newProjectDescription = null
+                    this.selectedProject = proj
                 },
 
-                createChannel() {
+                async createChannel() {
                     const data = {
-                        name: this.newChannel,
-                        slug: this.newChannel,
-                        project_id: this.selectedProject
+                        name: this.newChannelName,
+                        slug: this.slugify(this.newChannelName),
+                        description: this.newChannelDescription,
+                        project_id: this.selectedProject.id
                     }
-                    fetch("/api/v1/channels/", {method: "POST", body: JSON.stringify(data)}).then(() => {
-                        this.newChannel = ''
-                    })
+                    const channel = await fetch("/api/v1/channels/", { method: "POST", body: JSON.stringify(data) }).then(r => r.json())
+
+                    this.closeChannelForm()
+                    this.newChannelName = ''
+                    this.newChannelDescription = ''
+                    this.projects = await this.getProjects()
+                    this.selectedChannel = channel
+                    this.selectedProject.channels.push(channel)
                 },
 
                 async getProjects() {
@@ -414,6 +541,10 @@
 
                 hideProjects: function () {
                     this.showProjects = false
+                },
+
+                hideChannelProjects: function () {
+                    this.showChannelProjects = false
                 },
 
                 hideChannels: function () {
@@ -437,28 +568,24 @@
                 },
 
                 openProjectForm() {
-                    this.showProjectForm = true
+                    setTimeout(() => {
+                        this.showProjectForm = true
+                    }, 0)
                 },
 
                 openChannelForm() {
-                    this.showChannelForm = true
+                    setTimeout(() => {
+                        this.showChannelForm = true
+                    }, 0)
                 },
 
-                showFormDelay: function (func) {
-                    if (func === 'openProjectForm') {
-                        setTimeout(() => this.openProjectForm(), 0)
-                    } else if (func === 'openChannelForm') {
-                        setTimeout(() => this.openChannelForm(), 0)
-                    }
-                },
-
-                closeProjectForm: function () {
+                closeProjectForm() {
                     if (this.showProjectForm) {
                         this.showProjectForm = false
                     }
                 },
 
-                closeChannelForm: function () {
+                closeChannelForm() {
                     if (this.showChannelForm) {
                         this.showChannelForm = false
                     }
