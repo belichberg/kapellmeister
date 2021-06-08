@@ -8,8 +8,9 @@ from fastapi.templating import Jinja2Templates
 
 from src.database.models import User, APIToken, user_project_table, Project
 from src.dependencies import time_utc_now, pwd_hash, pwd_verify, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM, get_user
-from src.models.manager import TokenAPI
+from src.models.manager import TokenAPI, ProjectAPI
 from src.models.user import UserAPI, TokenData, JWTToken, UserProject
+from src.database.helpers import ModelMixin, session
 
 router = APIRouter()
 
@@ -78,24 +79,14 @@ def delete_token(token_id: int):
 @router.get("/allprojects/")
 def get_user_projects():
     """Get all users projects"""
-    print(f'get all projects')
+    # print(User.get_all().join(Project, User.children))
+    # print([UserAPI.parse_obj(user.to_dict()) for user in User.get_all().join(Project, User.children)])
 
-    # print(user_project_table.get_children().join(User).all())
-    # print([UserProject.parse_obj(user_project.to_dict() for user_project in user_project_table.get_children())])
-    # users = [UserAPI.parse_obj(user.to_dict()) for user in User.get_all()]
-    # print(users)
-
-    print(user_project_table.get_children())
-    print(user_project_table.table_valued)
-    print(user_project_table.foreign_keys)
+    value23 = User.get_all().join(Project, User.children)
+    print(User.get_all().join(Project, User.children))
+    # print(user_project_table.join(Project))
     # print(user_project_table.join(User))
-    #
-    # print(UserAPI.parse_obj(User.get_all().filter(Project.id)))
 
-
-
-    # return [UserProject.parse_obj(user_project.to_dict() for user_project in user_project_table.get_children())]
-    # return UserProject.parse_obj(user_project_table.get_children())
 
     return {"status": "ok"}
 
