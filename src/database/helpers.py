@@ -90,3 +90,4 @@ class ModelMixin(object):
         session.commit()
 
         return obj
+

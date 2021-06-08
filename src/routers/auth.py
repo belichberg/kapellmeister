@@ -79,13 +79,15 @@ def delete_token(token_id: int):
 def get_user_projects():
     """Get all users projects"""
     print(f'get all projects')
+
+    # print(user_project_table.get_children().join(User).all())
     # print([UserProject.parse_obj(user_project.to_dict() for user_project in user_project_table.get_children())])
     # users = [UserAPI.parse_obj(user.to_dict()) for user in User.get_all()]
     # print(users)
 
-    # print(user_project_table.get_children())
-    # print(user_project_table.table_valued)
-    # print(user_project_table.foreign_keys)
+    print(user_project_table.get_children())
+    print(user_project_table.table_valued)
+    print(user_project_table.foreign_keys)
     # print(user_project_table.join(User))
     #
     # print(UserAPI.parse_obj(User.get_all().filter(Project.id)))
