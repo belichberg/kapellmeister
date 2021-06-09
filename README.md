@@ -22,8 +22,6 @@ security:
   token_expire: 604800 # token expire in seconds (7 days)
 ```
 **Define username and password for your superuser**
-
-
 ```angular2html
 default_user:
   username: "YOUR_USERNAME"
