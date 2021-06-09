@@ -107,5 +107,6 @@ class User(ModelMixin, Base):
 
     def to_dict(self):
         return dict(
-            id=self.id, username=self.username, password=self.password, role=self.role, is_active=self.is_active
+            id=self.id, username=self.username, password=self.password, role=self.role, is_active=self.is_active,
+            children=self.children
         )

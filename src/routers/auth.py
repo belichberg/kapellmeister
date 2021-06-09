@@ -81,12 +81,7 @@ def get_user_projects():
     """Get all users projects"""
     # print(User.get_all().join(Project, User.children))
     # print([UserAPI.parse_obj(user.to_dict()) for user in User.get_all().join(Project, User.children)])
-
-    value23 = User.get_all().join(Project, User.children)
-    print(User.get_all().join(Project, User.children))
-    # print(user_project_table.join(Project))
-    # print(user_project_table.join(User))
-
+    print([user.to_dict() for user in User.get_all().join(Project, User.children)])
 
     return {"status": "ok"}
 

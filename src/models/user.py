@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel
 
@@ -17,6 +17,7 @@ class UserAPI(BaseModel):
     password: str
     role: UserRole
     is_active: Optional[bool]
+    children: Any
 
 
 class TokenData(BaseModel):
@@ -28,8 +29,3 @@ class JWTToken(BaseModel):
     access_token: str
     token_type: str = "bearer"
     token_expire: datetime
-
-
-class UserProject(BaseModel):
-    user_id: int
-    project_id: int
