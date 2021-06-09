@@ -35,7 +35,8 @@ Starting server
 ```angular2html
 docker run -it  -p 0.0.0.0:8000:8000  kapellmeister_server
 ```
-Create read only  username  with default permissions, then move to tokens and add  token for created user.
+Log into kapellmeister server with https://localhost:8000    
+Click to tab USERS and then click create, type username and password for new user and choose the role
 This token you could already use for your kapellmeister agent.
 
 Here is an example how to run kapellmeister agent with it read only users token
