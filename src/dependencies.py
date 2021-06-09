@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-from src.database.models import APIToken, User
+from src.database.models import APIToken, User, Project
 from src.models.manager import TokenAPI
 from src.models.user import TokenData, JWTToken, UserAPI
 
@@ -88,3 +88,11 @@ def get_api_token(token: str = Depends(OAuth2(auto_error=False))) -> Optional[To
         return TokenAPI.parse_obj(access_token.to_dict())
 
     return None
+
+
+def get_projects_by_id(project_id: list) -> list:
+    """Convert list with projects id to list with projects as objects"""
+    projects_list: list = []
+    for item in project_id:
+        projects_list.append(Project.get(id=item))
+    return projects_list

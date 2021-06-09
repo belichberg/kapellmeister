@@ -27,9 +27,7 @@ class Project(ModelMixin, Base):
     name = Column("name", VARCHAR(64), nullable=False)
     slug = Column("slug", VARCHAR(64), nullable=False, unique=True)
     description = Column("description", Text(512), nullable=True)
-    parents = relationship("User",
-                        secondary=user_project_table,
-                        back_populates="children")
+
 
     def to_dict(self):
         return dict(
@@ -101,12 +99,11 @@ class User(ModelMixin, Base):
     password = Column("password", VARCHAR(64), nullable=False)
     role = Column('role', Enum(UserRole), nullable=False, default=UserRole.user)
     is_active = Column("is_active", Boolean, nullable=False, default=True)
-    children = relationship("Project",
-                            secondary=user_project_table,
-                            back_populates="parents")
+    projects = relationship("Project",
+                            secondary=user_project_table)
 
     def to_dict(self):
         return dict(
             id=self.id, username=self.username, password=self.password, role=self.role, is_active=self.is_active,
-            children=self.children
+            projects=self.projects
         )

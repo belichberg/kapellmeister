@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 from pydantic import BaseModel
 
@@ -17,7 +17,7 @@ class UserAPI(BaseModel):
     password: str
     role: UserRole
     is_active: Optional[bool]
-    children: Any
+    projects: List[Any] = []
 
 
 class TokenData(BaseModel):

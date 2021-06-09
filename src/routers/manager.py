@@ -44,8 +44,11 @@ def get_projects(user: Optional[UserAPI] = Depends(get_user)) -> List[ProjectAPI
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Token"},
         )
+    if user.role == "super":
+        projects: List[ProjectAPI] = [ProjectAPI.parse_obj(project.to_dict()) for project in Project.get_all()]
+    else:
+        projects: List[ProjectAPI] = [ProjectAPI.parse_obj(project.to_dict()) for project in user.projects]
 
-    projects: List[ProjectAPI] = [ProjectAPI.parse_obj(project.to_dict()) for project in Project.get_all()]
     for project in projects:
         project.channels = [
             ChannelAPI.parse_obj(channel.to_dict()) for channel in Channel.get_all(project_id=project.id)
