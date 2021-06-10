@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Dict, Any, List
 
 from pydantic import constr, BaseModel
@@ -8,6 +9,7 @@ class ContainerAPI(BaseModel):
     auth: Optional[constr(max_length=2000)]
     digest: constr(max_length=255)
     parameters: Dict[str, Any]
+    updated_time: Optional[datetime]
     channel_id: Optional[int]
     project_id: Optional[int]
 
@@ -32,3 +34,4 @@ class TokenAPI(BaseModel):
     id: Optional[int]
     token: str
     read_only: bool
+    project_id: Optional[int]

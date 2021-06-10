@@ -1,11 +1,8 @@
-import enum
-
-from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table
+from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table, TIMESTAMP, func
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
-from sqlalchemy.orm import relationship
 
 from src.database.helpers import ModelMixin
-
+from src.models.user import UserRole
 
 Base: DeclarativeMeta = declarative_base()
 
@@ -13,11 +10,6 @@ user_project_table = Table('user_project', Base.metadata,
                            Column('user_id', Integer, ForeignKey('users.id')),
                            Column('project_id', Integer, ForeignKey('projects.id'))
                            )
-
-class UserRole(str, enum.Enum):
-    super = "super"
-    admin = "admin"
-    user = "user"
 
 
 class Project(ModelMixin, Base):
@@ -64,6 +56,8 @@ class Container(ModelMixin, Base):
     auth = Column("auth", String(2000), nullable=True)
     digest = Column("hash", VARCHAR(255), nullable=False)
     parameters = Column("parameters", JSON, nullable=False)
+    updated_time = Column("updated_time", TIMESTAMP, server_default=func.now(), nullable=False)
+    # updated_time = Column("updated_time", TIMESTAMP, default=time(), nullable=False)
     project_id = Column("project_id", Integer, ForeignKey("projects.id"), nullable=True)
     channel_id = Column("channel_id", Integer, ForeignKey("channels.id"), nullable=True)
 
@@ -74,6 +68,7 @@ class Container(ModelMixin, Base):
             auth=self.auth,
             digest=self.digest,
             parameters=self.parameters,
+            updated_time=self.updated_time,
             project_id=self.project_id,
             channel_id=self.channel_id,
         )
@@ -85,9 +80,10 @@ class APIToken(ModelMixin, Base):
     id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
     token = Column("token", VARCHAR(64), nullable=False, unique=True)
     read_only = Column("read_only", Boolean, nullable=False)
+    project_id = Column("project_id", Integer, ForeignKey("projects.id"), nullable=True)
 
     def to_dict(self):
-        return dict(id=self.id, token=self.token, read_only=self.read_only)
+        return dict(id=self.id, token=self.token, read_only=self.read_only, project_id=self.project_id)
 
 
 class User(ModelMixin, Base):
@@ -98,8 +94,9 @@ class User(ModelMixin, Base):
     password = Column("password", VARCHAR(64), nullable=False)
     role = Column('role', Enum(UserRole), nullable=False, default=UserRole.user)
     is_active = Column("is_active", Boolean, nullable=False, default=True)
-    children = relationship("Child",
-                            secondary=user_project_table)
+
+    # children = relationship("Child",
+    #                         secondary=user_project_table)
 
     def to_dict(self):
         return dict(
