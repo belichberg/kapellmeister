@@ -94,11 +94,11 @@ class User(ModelMixin, Base):
     password = Column("password", VARCHAR(64), nullable=False)
     role = Column('role', Enum(UserRole), nullable=False, default=UserRole.user)
     is_active = Column("is_active", Boolean, nullable=False, default=True)
-
-    # children = relationship("Child",
-    #                         secondary=user_project_table)
+    projects = relationship("Project",
+                            secondary=user_project_table)
 
     def to_dict(self):
         return dict(
-            id=self.id, username=self.username, password=self.password, role=self.role, is_active=self.is_active
+            id=self.id, username=self.username, password=self.password, role=self.role, is_active=self.is_active,
+            projects=self.projects
         )
