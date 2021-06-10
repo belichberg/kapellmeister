@@ -307,7 +307,6 @@
             const project = new URLSearchParams(window.location.search).get('project');
 
             this.users = await this.getUsers()
-            this.userProjects = await this.getUsersProjects()
 
             this.projects = await this.getProjects()
             this.selectedProject = this.projects.filter(item => item.slug === project)[0]

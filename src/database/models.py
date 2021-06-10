@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table, TIMESTAMP, func
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
+from sqlalchemy.orm import relationship
 
 from src.database.helpers import ModelMixin
 from src.models.user import UserRole
