@@ -57,10 +57,6 @@ Create username with with staff permissions and add token. Then you could use th
 
 ```
 License
-===============================
+================================
 
 All code found in this repository is licensed under GPL v3
-
-
-
-
