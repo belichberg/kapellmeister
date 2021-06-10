@@ -1,5 +1,6 @@
 from typing import Optional
 
+import sentry_sdk
 from envyaml import EnvYAML
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import RedirectResponse
@@ -18,9 +19,9 @@ env = EnvYAML()
 DEBUG: bool = env.get("DEBUG", False)
 API_ROUTE_PREFIX: str = "/api/v1"
 
-# # Sentry integration
-# if not env.get("DEBUG"):
-#     sentry_sdk.init(env.get("SENTRY_DSN"), traces_sample_rate=1.0)
+# Sentry integration
+if not env.get("DEBUG"):
+    sentry_sdk.init(env.get("SENTRY_DSN"), traces_sample_rate=1.0)
 
 # Fast api start
 app = FastAPI(

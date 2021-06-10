@@ -35,7 +35,9 @@
                                     id="password"
                                     v-model="newPassword"
                                     :type="passwordInputType"
-                                    min="4"
+                                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                    title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                    minlength="8"
                                     maxlength="64"
                                     autocomplete="off"
                                     required
@@ -52,9 +54,12 @@
                                 <option>admin</option>
                                 <option>user</option>
                             </select>
-                           <select class="bg-gray-100 px-3 py-2 rounded-md relative -left-1 -bottom-2.5" v-model="selectedProjects" multiple>
+                            <select class="bg-gray-100 px-3 py-2 rounded-md relative -left-1 -bottom-2.5"
+                                    v-model="selectedProjects" multiple>
                                 <option value="" disabled>Choose project</option>
-                                <option v-for="project in projects" :key="project.id" :value="project.id">[[ project.name ]]</option>
+                                <option v-for="project in projects" :key="project.id" :value="project.id">[[
+                                    project.name ]]
+                                </option>
                             </select>
                             <button type="submit" class="p-1.5 border border-transparent text-sm font-medium rounded-md
                             shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
@@ -103,7 +108,7 @@
                                     </div>
                                     <div v-else class="inline-block"><span class="material-icons"> &#10006;</span></div>
                                 </td>
-                                 <td class="text-sm border-t border-gray-200 py-2">
+                                <td class="text-sm border-t border-gray-200 py-2">
                                     <button v-if="user.role != 'super'"
                                             @click="showIsActive(user.id)"
                                             type="button"
@@ -111,7 +116,6 @@
                                             cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
                                             focus:border-pink-500 sm:text-sm cursor-pointer"
                                     >
-<!--                                        <span class="material-icons text-gray-500">more_horiz</span>-->
                                         <span class="text-sm text-gray-500">...</span>
                                     </button>
                                     <ul v-if="user.role != 'super' && menuIsActive == user.id"

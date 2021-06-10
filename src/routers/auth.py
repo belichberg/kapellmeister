@@ -6,12 +6,11 @@ from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 
-from src.database.models import User, APIToken, user_project_table, Project
+from src.database.models import User, APIToken, Project
 from src.dependencies import time_utc_now, pwd_hash, pwd_verify, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM, \
     get_user, get_projects_by_id
 from src.models.manager import TokenAPI, ProjectAPI
 from src.models.user import UserAPI, TokenData, JWTToken, UserRole
-from src.database.helpers import ModelMixin, session
 
 router = APIRouter()
 
@@ -61,7 +60,6 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
 @router.get("/users/")
 def users():
     """Get all users"""
-
     return [UserAPI.parse_obj(user.to_dict()) for user in User.get_all()]
 
 
@@ -98,4 +96,3 @@ def add_user_project(user_id: int, project_id: int):
         new_projects_list = [Project.get(id=project_id)]
     UserAPI.parse_obj(User.update({"projects": new_projects_list}, id=user_id).to_dict())
     return {"status": "ok"}
-
