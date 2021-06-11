@@ -253,7 +253,7 @@
                     is_active: this.is_active,
                     projects: this.selectedProjects
                 }
-                const user = await fetch("/api/v1/user/", {
+                const user = await fetch("/api/v1/users/", {
                     method: "POST",
                     body: JSON.stringify(data)
                 }).then(r => r.json())
@@ -265,12 +265,12 @@
             },
 
             async deleteUser(user_id) {
-                await fetch(`/api/v1/user/${user_id}/`, {method: "DELETE"})
+                await fetch(`/api/v1/users/${user_id}/`, {method: "DELETE"})
                 this.users = await this.getUsers()
             },
 
-            async changeIsActive(user_id, status) {
-                await fetch(`/api/v1/is_active/${user_id}/${status}/`, {method: "PATCH"})
+            async changeIsActive(user_id, is_active) {
+                await fetch(`/api/v1/users/${user_id}/`, {method: "PATCH", body: JSON.stringify({is_active})})
                 this.users = await this.getUsers()
                 this.hideIsActive()
             },
@@ -302,7 +302,7 @@
             },
 
             async addProjectToUser(user_id, project_id) {
-                await fetch(`/api/v1/add/${user_id}/${project_id}/`, {method: "PATCH"})
+                await fetch(`/api/v1/users/${user_id}/${project_id}/`, {method: "PATCH"})
                 this.users = await this.getUsers()
                 this.hideProjectsList()
             }

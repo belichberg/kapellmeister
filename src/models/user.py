@@ -4,11 +4,7 @@ from typing import Optional, Any, List
 
 from pydantic import BaseModel
 
-
-class UserRole(str, Enum):
-    super = "super"
-    admin = "admin"
-    user = "user"
+from src.database.models import UserRole, Project
 
 
 class UserAPI(BaseModel):
@@ -17,6 +13,7 @@ class UserAPI(BaseModel):
     password: str
     role: UserRole
     is_active: Optional[bool]
+    # projects: List[Project] = []
     projects: List[Any] = []
 
 
@@ -29,3 +26,7 @@ class JWTToken(BaseModel):
     access_token: str
     token_type: str = "bearer"
     token_expire: datetime
+
+
+class UserRequestAPI(BaseModel):
+    is_active: Optional[bool]

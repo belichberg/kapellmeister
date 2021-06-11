@@ -11,7 +11,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from src.database.models import User, UserRole
 from src.dependencies import get_user, pwd_hash
 from src.models.user import UserAPI
-from src.routers import manager, auth
+from src.routers import manager, auth, token
+
 
 # read env.yaml config file
 env = EnvYAML()
@@ -47,7 +48,6 @@ async def startup():
 def home(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create home page"""
     if user:
-        # user: UserAPI = get_user(token, db)
         return templates.TemplateResponse("index.html", {"request": request, "username": user.username})
     return RedirectResponse(url="/login")
 
@@ -62,7 +62,6 @@ async def login(request: Request):
 async def logout(request: Request):
     """Clear session and logout user"""
     request.session.clear()
-    # return {"status": "ok"}
     return RedirectResponse(url="/")
 
 
@@ -83,6 +82,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # include routes
 app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
 app.include_router(auth.router, prefix=API_ROUTE_PREFIX)
+app.include_router(token.router, prefix=API_ROUTE_PREFIX)
 
 # we need this to save temporary code & state in session
 app.add_middleware(SessionMiddleware, secret_key=env["security.key"])
