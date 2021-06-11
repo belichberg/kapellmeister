@@ -4,10 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from src.database.models import Container, Project, Channel, APIToken
+from src.database.models import Container, Project, Channel, APIToken, UserRole
 from src.dependencies import get_api_token, generate_api_token, get_user
 from src.models.manager import ContainerAPI, ProjectAPI, ChannelAPI, TokenAPI
-from src.models.user import UserAPI, UserRole
+from src.models.user import UserAPI
 
 router = APIRouter()
 
@@ -25,7 +25,9 @@ def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenAPI]:
 
 
 @router.post("/tokens/", response_model=TokenAPI)
-def create_token(read_only: bool = True, project: Optional[int] = None, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
+def create_token(
+    read_only: bool = True, project: Optional[int] = None, user: Optional[UserAPI] = Depends(get_user)
+) -> TokenAPI:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -88,7 +90,7 @@ def get_containers(
     project_slug: str,
     channel_slug: str,
     user: Optional[UserAPI] = Depends(get_user),
-    token: Optional[TokenAPI] = Depends(get_api_token)
+    token: Optional[TokenAPI] = Depends(get_api_token),
 ) -> List[ContainerAPI]:
     if user is None and token is None:
         raise HTTPException(
@@ -113,7 +115,7 @@ def set_container(
     channel_slug: str,
     data: ContainerAPI,
     user: Optional[UserAPI] = Depends(get_user),
-    token: Optional[TokenAPI] = Depends(get_api_token)
+    token: Optional[TokenAPI] = Depends(get_api_token),
 ) -> ContainerAPI:
 
     project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
@@ -125,7 +127,9 @@ def set_container(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Token"},
         )
-    elif (token and token.read_only or (token.project_id and token.project_id != project.id)) or (user and user.role != UserRole.super):
+    elif (token and token.read_only or (token.project_id and token.project_id != project.id)) or (
+        user and user.role != UserRole.super
+    ):
         raise HTTPException(status.HTTP_403_FORBIDDEN)
 
     data.project_id = project.id

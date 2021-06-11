@@ -1,14 +1,9 @@
 from datetime import datetime
-from enum import Enum
 from typing import Optional, Any, List
 
 from pydantic import BaseModel
 
-
-class UserRole(str, Enum):
-    super = "super"
-    admin = "admin"
-    user = "user"
+from src.database.models import UserRole
 
 
 class UserAPI(BaseModel):

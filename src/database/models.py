@@ -1,16 +1,26 @@
+import enum
+
 from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table, TIMESTAMP, func
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import relationship
 
 from src.database.helpers import ModelMixin
-from src.models.user import UserRole
 
 Base: DeclarativeMeta = declarative_base()
 
-user_project_table = Table('user_project', Base.metadata,
-                           Column('user_id', Integer, ForeignKey('users.id')),
-                           Column('project_id', Integer, ForeignKey('projects.id'))
-                           )
+
+class UserRole(str, enum.Enum):
+    super = "super"
+    admin = "admin"
+    user = "user"
+
+
+user_project_table = Table(
+    "user_project",
+    Base.metadata,
+    Column("user_id", Integer, ForeignKey("users.id")),
+    Column("project_id", Integer, ForeignKey("projects.id")),
+)
 
 
 class Project(ModelMixin, Base):
@@ -93,13 +103,16 @@ class User(ModelMixin, Base):
     id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
     username = Column("username", VARCHAR(64), nullable=False, unique=True)
     password = Column("password", VARCHAR(64), nullable=False)
-    role = Column('role', Enum(UserRole), nullable=False, default=UserRole.user)
+    role = Column("role", Enum(UserRole), nullable=False, default=UserRole.user)
     is_active = Column("is_active", Boolean, nullable=False, default=True)
-    projects = relationship("Project",
-                            secondary=user_project_table)
+    projects = relationship("Project", secondary=user_project_table)
 
     def to_dict(self):
         return dict(
-            id=self.id, username=self.username, password=self.password, role=self.role, is_active=self.is_active,
-            projects=self.projects
+            id=self.id,
+            username=self.username,
+            password=self.password,
+            role=self.role,
+            is_active=self.is_active,
+            projects=self.projects,
         )

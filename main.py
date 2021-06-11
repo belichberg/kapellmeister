@@ -40,7 +40,12 @@ templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
 async def startup():
-    User.get_or_create(dict(username=env["default_user.username"], password=pwd_hash(env["default_user.password"]), role=UserRole.super), id=1)
+    User.get_or_create(
+        dict(
+            username=env["default_user.username"], password=pwd_hash(env["default_user.password"]), role=UserRole.super
+        ),
+        id=1,
+    )
 
 
 @app.get("/")
@@ -76,6 +81,7 @@ async def tokens(request: Request):
 async def users(request: Request):
     """Create users page"""
     return templates.TemplateResponse("users.html", {"request": request})
+
 
 # add static files to project
 app.mount("/static", StaticFiles(directory="static"), name="static")
