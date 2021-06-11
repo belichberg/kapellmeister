@@ -4,12 +4,11 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
 
-from src.database.models import User, APIToken, Project
+from src.database.models import User, Project
 from src.dependencies import time_utc_now, pwd_hash, pwd_verify, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM, \
     get_user
-from src.models.manager import TokenAPI, ProjectAPI
+from src.models.manager import ProjectAPI
 from src.models.user import UserAPI, TokenData, JWTToken, UserRole, UserRequestAPI
 
 router = APIRouter()
@@ -53,7 +52,7 @@ def create_user(data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> U
             headers={"WWW-Authenticate": "Token"},
         )
     data.password = pwd_hash(data.password)
-    data.projects = [ProjectAPI.parse_obj(project.to_dict()) for project in Project.get(id=data.projects)]
+    data.projects = [Project.get(id=project_id) for project_id in data.projects]
 
     return UserAPI.parse_obj(User.create(data.dict()).to_dict())
 
