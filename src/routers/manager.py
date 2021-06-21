@@ -4,39 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from src.database.models import Container, Project, Channel, APIToken, UserRole
-from src.dependencies import get_api_token, generate_api_token, get_user
+from src.database.models import Container, Project, Channel, UserRole
+from src.dependencies import get_api_token, get_user
 from src.models.manager import ContainerAPI, ProjectAPI, ChannelAPI, TokenAPI
 from src.models.user import UserAPI
 
 router = APIRouter()
-
-
-@router.get("/tokens/", response_model=List[TokenAPI])
-def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenAPI]:
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Token"},
-        )
-
-    return [TokenAPI.parse_obj(token.to_dict()) for token in APIToken.get_all()]
-
-
-@router.post("/tokens/", response_model=TokenAPI)
-def create_token(
-    read_only: bool = True, project: Optional[int] = None, user: Optional[UserAPI] = Depends(get_user)
-) -> TokenAPI:
-    if user is None or user.role != UserRole.super:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Token"},
-        )
-
-    data = dict(token=generate_api_token(), read_only=read_only, project_id=project)
-    return TokenAPI.parse_obj(APIToken.create(data).to_dict())
 
 
 @router.get("/projects/", response_model=List[ProjectAPI])
@@ -135,7 +108,6 @@ def set_container(
     data.project_id = project.id
     data.channel_id = channel.id
     data.updated_time = func.now()
-    # data.updated_time = time()
 
     return ContainerAPI.parse_obj(
         Container.update_or_create(data.dict(), slug=data.slug, project_id=project.id, channel_id=channel.id).to_dict()
