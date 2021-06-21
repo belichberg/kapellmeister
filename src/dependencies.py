@@ -57,17 +57,17 @@ def token_validate(token: str) -> Optional[TokenData]:
         pass
 
 
-def get_token(request: Request) -> Optional[JWTToken]:
+def get_token(request: Request) -> Optional[str]:
     if request.session.get("token"):
-        return JWTToken.parse_obj(json.loads(request.session.get("token")))
+        return request.session.get("token")
 
     return None
 
 
-def get_user(token: Optional[JWTToken] = Depends(get_token)) -> Optional[UserAPI]:
+def get_user(token: Optional[str] = Depends(get_token)) -> Optional[UserAPI]:
     if token:
         # get user data
-        token_data: Optional[TokenData] = token_validate(token.access_token)
+        token_data: Optional[TokenData] = token_validate(token)
 
         if token_data:
             user: UserAPI = UserAPI.parse_obj(User.get(username=token_data.sub).to_dict())
@@ -88,11 +88,3 @@ def get_api_token(token: str = Depends(OAuth2(auto_error=False))) -> Optional[To
         return TokenAPI.parse_obj(access_token.to_dict())
 
     return None
-
-
-def get_projects_by_id(project_id: list) -> list:
-    """Convert list with projects id to list with projects as objects"""
-    projects_list: list = []
-    for item in project_id:
-        projects_list.append(Project.get(id=item))
-    return projects_list
