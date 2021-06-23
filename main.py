@@ -39,14 +39,14 @@ app = FastAPI(
 templates = Jinja2Templates(directory="templates")
 
 
-@app.on_event("startup")
-async def startup():
-    User.get_or_create(
-        dict(
-            username=env["default_user.username"], password=pwd_hash(env["default_user.password"]), role=UserRole.super
-        ),
-        id=1,
-    )
+# @app.on_event("startup")
+# async def startup():
+#     User.get_or_create(
+#         dict(
+#             username=env["default_user.username"], password=pwd_hash(env["default_user.password"]), role=UserRole.super
+#         ),
+#         id=1,
+#     )
 
 
 @app.get("/")
@@ -60,7 +60,11 @@ def home(request: Request, user: Optional[UserAPI] = Depends(get_user)):
 @app.get("/login")
 async def login(request: Request):
     """Create login page"""
-    return templates.TemplateResponse("login.html", {"request": request})
+    error_message: str = ""
+    if request.session.get("fail_login_message"):
+        error_message = request.session.get("fail_login_message")
+        request.session["fail_login_message"] = ""
+    return templates.TemplateResponse("login.html", {"request": request, "error_message": error_message})
 
 
 @app.get("/logout/")

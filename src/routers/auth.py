@@ -10,9 +10,12 @@ from src.dependencies import time_utc_now, pwd_hash, pwd_verify, JWT_TOKEN_EXPIR
     get_user
 from src.models.manager import ProjectAPI
 from src.models.user import UserAPI, TokenData, JWTToken, UserRole, UserRequestAPI
+from fastapi.templating import Jinja2Templates
 
 router = APIRouter()
 
+# add templates to project
+templates = Jinja2Templates(directory="templates")
 
 @router.post("/login/")
 def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
@@ -21,11 +24,19 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
     username: str = form.username
     password: str = form.password
 
-    user: Optional[UserAPI] = UserAPI.parse_obj(User.get(username=username).to_dict())
+    if User.get(username=username):
+        user: Optional[UserAPI] = UserAPI.parse_obj(User.get(username=username).to_dict())
+
+    else:
+        request.session["fail_login_message"] = f"Username '{username}' doesn't exist!"
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # validate user
-    if not user or not pwd_verify(password, user.password if user else ""):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid user or password")
+    # if not user or not pwd_verify(password, user.password if user else ""):
+    if not pwd_verify(password, user.password if user else ""):
+        # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid user or password")
+        request.session["fail_login_message"] = f"Invalid Username or Password!"
+        return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # build data
     data: TokenData = TokenData(sub=user.username, exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE))
