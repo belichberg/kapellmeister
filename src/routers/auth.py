@@ -49,8 +49,14 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.get("/users/", response_model=List[UserAPI])
-def get_users() -> List[UserAPI]:
+def get_users(user: Optional[UserAPI] = Depends(get_user)) -> List[UserAPI]:
     """Get all users"""
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
     return [UserAPI.parse_obj(user.to_dict()) for user in User.get_all()]
 
 
@@ -69,20 +75,39 @@ def create_user(data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> U
 
 
 @router.delete("/users/{user_id}/", response_model=UserAPI)
-def delete_user(user_id: int) -> UserAPI:
+def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Delete chosen user"""
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
     return UserAPI.parse_obj(User.delete(id=user_id).to_dict())
 
 
 @router.patch("/users/{user_id}/", response_model=UserAPI)
-def update_user(user_id: str, data: UserRequestAPI) -> UserAPI:
+def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Change users status"""
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
     return UserAPI.parse_obj(User.update(data.dict(), id=user_id).to_dict())
 
 
 @router.patch("/users/{user_id}/{project_id}/", response_model=UserAPI)
-def add_user_project(user_id: int, project_id: int) -> UserAPI:
+def add_user_project(user_id: int, project_id: int, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Add project to user"""
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
     user: Optional[UserAPI] = UserAPI.parse_obj(User.get(id=user_id).to_dict())
     if user.projects:
         projects: List[Project] = user.projects.copy()
