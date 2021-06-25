@@ -406,44 +406,44 @@
         </div>
     </div>
 
-    <div v-if="selectedContainer"
-         class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
-        <div v-click-outside="closeContainerDetails" class="bg-gray-50 mb-44 shadow sm:rounded-xl sm:max-w-xl sm:mx-auto">
-            <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Create a new project [[ selectedContainer.slug ]]
-                </h3>
-                <div class="mt-2 max-w-xl text-sm text-gray-500">
-                    <p>
-                        Add a name and description to your project
-                    </p>
-                </div>
-                <form class="mt-5" @submit.prevent="createProject">
-                    <div class="w-full sm:max-w-xs">
-                        <label for="project_name" class="sr-only">Name</label>
-                        <label for="project_description" class="sr-only">Description</label>
-                        <input type="text" id="project_name" name="project_name"
-                               required
-                               v-model="newProjectName"
-                               class="bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
-                               placeholder="Project name"
-                        />
-                        <textarea name="project_description" id="project_description" rows="3"
-                                  v-model="newProjectDescription"
-                                  placeholder="Project description (optional)"
-                                  class="bg-white my-4 relative w-full text-gray-700 rounded-md shadow pl-5 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
-                        ></textarea>
-                    </div>
-                    <div class="flex items-center justify-end">
-                        <button type="submit"
-                                class="mt-3 w-full inline-flex px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Save
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+{#    <div v-if="selectedContainer"#}
+{#         class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">#}
+{#        <div v-click-outside="closeContainerDetails" class="bg-gray-50 mb-44 shadow sm:rounded-xl sm:max-w-xl sm:mx-auto">#}
+{#            <div class="px-4 py-5 sm:p-6">#}
+{#                <h3 class="text-lg leading-6 font-medium text-gray-900">#}
+{#                    Create a new project [[ selectedContainer.slug ]]#}
+{#                </h3>#}
+{#                <div class="mt-2 max-w-xl text-sm text-gray-500">#}
+{#                    <p>#}
+{#                        Add a name and description to your project#}
+{#                    </p>#}
+{#                </div>#}
+{#                <form class="mt-5" @submit.prevent="createProject">#}
+{#                    <div class="w-full sm:max-w-xs">#}
+{#                        <label for="project_name" class="sr-only">Name</label>#}
+{#                        <label for="project_description" class="sr-only">Description</label>#}
+{#                        <input type="text" id="project_name" name="project_name"#}
+{#                               required#}
+{#                               v-model="newProjectName"#}
+{#                               class="bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"#}
+{#                               placeholder="Project name"#}
+{#                        />#}
+{#                        <textarea name="project_description" id="project_description" rows="3"#}
+{#                                  v-model="newProjectDescription"#}
+{#                                  placeholder="Project description (optional)"#}
+{#                                  class="bg-white my-4 relative w-full text-gray-700 rounded-md shadow pl-5 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"#}
+{#                        ></textarea>#}
+{#                    </div>#}
+{#                    <div class="flex items-center justify-end">#}
+{#                        <button type="submit"#}
+{#                                class="mt-3 w-full inline-flex px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">#}
+{#                            Save#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </form>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
 {% endblock content %}
 
 {% block vuejs %}

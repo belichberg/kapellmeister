@@ -41,7 +41,7 @@ templates = Jinja2Templates(directory="templates")
 def home(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create home page"""
     if user:
-        return templates.TemplateResponse("index.html", {"request": request, "username": user.username})
+        return templates.TemplateResponse("index.html", {"request": request, "user": user})
 
     return RedirectResponse(url="/login")
 
@@ -67,7 +67,7 @@ def logout(request: Request):
 def tokens(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create tokens page"""
     if user:
-        return templates.TemplateResponse("tokens.html", {"request": request})
+        return templates.TemplateResponse("tokens.html", {"request": request, "user": user})
 
     return RedirectResponse(url="/login")
 
@@ -76,7 +76,7 @@ def tokens(request: Request, user: Optional[UserAPI] = Depends(get_user)):
 def users(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create users page"""
     if user:
-        return templates.TemplateResponse("users.html", {"request": request})
+        return templates.TemplateResponse("users.html", {"request": request, "user": user})
 
     return RedirectResponse(url="/login")
 

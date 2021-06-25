@@ -17,12 +17,9 @@ from src.dependencies import (
     get_user,
 )
 from src.models.user import UserAPI, TokenData, JWTToken, UserRole, UserRequestAPI
-from fastapi.templating import Jinja2Templates
 
 router = APIRouter()
 
-# add templates to project
-templates = Jinja2Templates(directory="templates")
 
 @router.post("/login/")
 def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
