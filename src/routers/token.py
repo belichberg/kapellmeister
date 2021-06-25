@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.database.models import APIToken, UserRole
 from src.dependencies import get_user, generate_api_token
-from src.models.manager import TokenAPI
+from src.models.manager import TokenAPI, TokenRequestAPI
 from src.models.user import UserAPI
 
 router = APIRouter()
@@ -37,7 +37,26 @@ def create_token(
     return TokenAPI.parse_obj(APIToken.create(data).to_dict())
 
 
-@router.delete("/token/{token_id}/", response_model=TokenAPI)
-def delete_token(token_id: int) -> TokenAPI:
+@router.patch("/tokens/{token_id}/", response_model=TokenAPI)
+def update_token(token_id: int, data: TokenRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
+    return TokenAPI.parse_obj(APIToken.update(data.dict(), id=token_id).to_dict())
+
+
+@router.delete("/tokens/{token_id}/", response_model=TokenAPI)
+def delete_token(token_id: int, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
     """Delete chosen token"""
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
     return TokenAPI.parse_obj(APIToken.delete(id=token_id).to_dict())

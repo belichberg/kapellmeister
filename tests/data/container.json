@@ -1,0 +1,23 @@
+{
+  "slug": "some-container",
+  "digest": "sha256:randomstring",
+  "parameters": {
+    "name": "some-container",
+    "image": "registry.digitalocean.com/some-registry/some-container:channel",
+    "network_mode": "host",
+    "environment": [],
+    "devices": [
+      "/dev:/app/dev"
+    ],
+    "volumes": {
+      "/etc/machine-id": {
+        "bind": "/etc/machine-id",
+        "mode": "ro"
+      },
+      "/dev": {
+        "bind": "/app/dev",
+        "mode": "rw"
+      }
+    }
+  }
+}

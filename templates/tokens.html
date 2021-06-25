@@ -122,7 +122,7 @@
                     <div v-else>
                         <div v-if="curr_token"
                              class="text-center mt-10 text-gray-600 font-bold"
-                        >Token: [[ curr_token["token"] ]]
+                        >Token: [[ curr_token ]]
                         </div>
                         <div class="mt-10 p-6 font-normal text-center text-gray-400">
                             <table class="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped relative cursor-default">
@@ -138,13 +138,25 @@
                                         Project
                                     </th>
                                     <th class="px-5 py-2.5">
+                                        <span class="sr-only">Edit</span>
+                                    </th>
+                                    <th class="px-5 py-2.5">
                                         <span class="sr-only">Delete</span>
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr v-for="token in tokens" class="text-center hover:bg-gray-50">
-                                    <td class="text-m text-gray-500 border-t border-gray-200"
+                                    <td v-if="selectedToken === token" class="text-m text-gray-500 border-t border-gray-200">
+                                        <label for="token" class="sr-only">Token</label>
+                                        <input type="text" id="token" name="token"
+                                               required
+                                               v-model="token.token"
+                                               class="bg-white relative w-96 text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text"
+                                               placeholder="New Token"
+                                        />
+                                    </td>
+                                    <td v-else class="text-m text-gray-500 border-t border-gray-200"
                                         v-text="token.token"/>
                                     <td class="border-t border-gray-200 py-2">
                                         <div v-if="token.read_only"><span class="material-icons">&#10004;</span></div>
@@ -152,7 +164,27 @@
                                     </td>
                                     <td class="text-m text-gray-500 border-t border-gray-200"
                                         v-text="token.project_id"/>
-                                    <td class="border-t p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
+                                    <td class="border-t whitespace-nowrap text-sm font-medium">
+                                        <div v-if="selectedToken === token">
+                                            <button @click="updateToken(token)" class="pr-1 text-green-500 hover:text-green-600 cursor-pointer">
+                                                <span class="material-icons">
+                                                    done_outline
+                                                </span>
+                                            </button>
+                                            <button @click="selectedToken = null" class="text-gray-400 hover:text-red-600 cursor-pointer">
+                                                <span class="material-icons">
+                                                    highlight_off
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <button v-else @click="selectedToken = token" class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                                            <span class="material-icons">
+                                                edit
+                                            </span>
+                                        </button>
+
+                                    </td>
+                                    <td class="border-t whitespace-nowrap text-sm font-medium">
                                         <button
                                                 @click="deleteToken(token.id)"
                                                 class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
@@ -186,6 +218,7 @@
                 openMobileNav: false,
 
                 selectedProject: null,
+                selectedToken: null,
 
                 projects: [],
                 tokens: [],
@@ -198,12 +231,6 @@
         },
 
         methods: {
-            // logout() {
-            //     fetch("/logout/", {method: "GET"}).then(() => {
-            //         window.location.reload();
-            //     })
-            // },
-
             checkWindowLocation(path) {
                 return window.location.pathname === path
             },
@@ -216,7 +243,7 @@
                 const token = await fetch(`/api/v1/tokens/?read_only=${this.readOnly}${this.assignProject ? `&project=${this.selectedProject.id}` : ''}`, {method: "POST"}).then(r => r.json())
                 this.tokens.push(token)
                 this.readOnly = true
-                this.curr_token = token
+                this.curr_token = token.token
             },
 
             async getProjects() {
@@ -250,7 +277,13 @@
             },
 
             async deleteToken(token) {
-                await fetch(`/api/v1/token/${token}/`, {method: "DELETE"})
+                await fetch(`/api/v1/tokens/${token}/`, {method: "DELETE"})
+                this.tokens = await this.getTokens()
+            },
+
+            async updateToken(token) {
+
+                await fetch(`/api/v1/tokens/${token.id}/`, {method: "PATCH", body: JSON.stringify(token)})
                 this.tokens = await this.getTokens()
             }
         },

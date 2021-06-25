@@ -6,9 +6,16 @@ from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from src.database.models import User, Project
-from src.dependencies import time_utc_now, pwd_hash, pwd_verify, JWT_TOKEN_EXPIRE, token_create, JWT_KEY, JWT_ALGORITHM, \
-    get_user
-from src.models.manager import ProjectAPI
+from src.dependencies import (
+    time_utc_now,
+    pwd_hash,
+    pwd_verify,
+    JWT_TOKEN_EXPIRE,
+    token_create,
+    JWT_KEY,
+    JWT_ALGORITHM,
+    get_user,
+)
 from src.models.user import UserAPI, TokenData, JWTToken, UserRole, UserRequestAPI
 
 router = APIRouter()
@@ -33,12 +40,13 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
     # generate token
     token: JWTToken = token_create(JWT_KEY, JWT_ALGORITHM, data)
 
+    # print(token.access_token)
     request.session["token"] = token.access_token
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/users/", response_model=List[UserAPI])
-def get_users() -> List[UserAPI]:
+def get_users(user: Optional[UserAPI] = Depends(get_user)) -> List[UserAPI]:
     """Get all users"""
     return [UserAPI.parse_obj(user.to_dict()) for user in User.get_all()]
 

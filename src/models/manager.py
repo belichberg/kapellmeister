@@ -35,3 +35,7 @@ class TokenAPI(BaseModel):
     token: str
     read_only: bool
     project_id: Optional[int]
+
+
+class TokenRequestAPI(BaseModel):
+    token: Optional[str]
