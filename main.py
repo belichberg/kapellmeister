@@ -69,16 +69,16 @@ def tokens(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     if user:
         return templates.TemplateResponse("tokens.html", {"request": request, "user": user})
 
-    return RedirectResponse(url="/login")
+    return RedirectResponse(url="/")
 
 
 @app.get("/users")
 def users(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create users page"""
-    if user:
+    if user and user.role == "super":
         return templates.TemplateResponse("users.html", {"request": request, "user": user})
 
-    return RedirectResponse(url="/login")
+    return RedirectResponse(url="/")
 
 
 # add static files to project
