@@ -13,7 +13,7 @@
 
 <!-- Modal Background -->
 <div v-if="showChoices"
-     class="fixed text-gray-500 flex items-center justify-center overflow-auto z-50 bg-black bg-opacity-40 left-0 right-0 top-0 bottom-0">
+     class="fixed text-gray-500 flex items-center justify-center overflow-auto z-50 bg-gray-700 bg-opacity-70 left-0 right-0 top-0 bottom-0">
     <!--Modal-->
     <div id="add_user_modal"
          v-click-outside="hideUserForm"
@@ -21,20 +21,21 @@
         <button
                 v-if="showChoices"
                 @click="hideUserForm"
-                class="px-1 absolute right-5 top-5 items-center border border-transparent text-sm font-medium rounded-md
-                            shadow-sm bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-                            focus:ring-rose-500">
+                class="px-1 absolute right-3 top-3 items-center border border-transparent text-sm font-medium rounded-md
+                            text-white shadow-sm bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-pink-500">
             <span class="material-icons text-white pb-1.5">&#10006;</span>
         </button>
         <div class="text-gray-600 my-5 font-extrabold tracking-wider uppercase">Create User</div>
-        <form @submit.prevent="createUser()">
-            <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="userName">Username: </label>
-            <input class="bg-gray-100 text-sm px-3 py-2 rounded-md" type="text" id="userName" v-model="newUser"
-                   placeholder="Username" required/>
-            </div>
-            <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password: </label>
+
+        <form @submit.prevent="createUser()" class="mt-5">
+            <div class="w-full sm:max-w-xs">
+            <input id="userName"
+                   class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                   type="text"
+                   v-model="newUser"
+                   placeholder="User name" required/>
+            <div class="relative">
             <input
                     id="password"
                     v-model="newPassword"
@@ -45,29 +46,30 @@
                     maxlength="64"
                     autocomplete="off"
                     required
-                    class="bg-gray-100 px-3 py-2 text-sm rounded-md"
-                    placeholder="Password *"/>
+                   class="mb-1 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                    placeholder="User password *"/>
                 <div
-                        class="inline-block relative right-8 w-0 top-1.5 items-center  text-sm leading-5 text-gray-700 cursor-pointer transition duration-200 hover:text-blue-700"
+                        class="inline-block absolute right-8 w-0 top-1.5 items-center  text-sm leading-5 text-gray-700 cursor-pointer transition duration-200 hover:text-blue-700"
                 >
                     <i class="material-icons text-sm h-6" @click="show_pass = !show_pass">[[ passwordInputIcon ]]</i>
                 </div>
-                <div class="w-auto pt-3 text-gray-500 text-sm w-50 break-words text-justify">* - password must contain at least one number
-                    <br>and one uppercase and lowercase letter,
-                    <br>and at least 8 or more characters
                 </div>
-            </div>
-            <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="userRole">User role: </label>
-            <select id="userRole" class="bg-gray-100 text-sm px-3 py-2 rounded-md relative -left-1" v-model="selectedRole">
+                <div class="mb-4 p-3 text-gray-500 break-words">
+                    <p class="text-justify text-xs">* - password must contain at least one number
+                    <br>and one uppercase and lowercase letter, and
+                    <br>at least 8 or more characters
+                    </p>
+                </div>
+            <select id="userRole"
+                   class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                    v-model="selectedRole">
                 <option value="" disabled>Choose a role</option>
                 <option>admin</option>
                 <option>user</option>
             </select>
-            </div>
-            <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="userRole">Add project: </label>
-            <select class="bg-gray-100 text-sm px-3 py-2 rounded-md relative -left-1 -bottom-2.5"
+            <br>
+            <select
+                   class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
                     v-model="selectedProjects" multiple>
                 <option value="" disabled>Choose project</option>
                 <option v-for="project in projects" :key="project.id" :value="project.id">[[
@@ -75,9 +77,9 @@
                 </option>
             </select>
             </div>
-            <button type="submit" class="absolute right-5 bottom-5 p-1.5 border border-transparent text-sm font-medium rounded-md
-                            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-                            focus:ring-rose-500">
+            <button type="submit"
+                    class="absolute right-3 bottom-3 p-1.5 border border-transparent text-sm font-medium rounded-md
+                            shadow-sm text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                 Create
             </button>
         </form>
@@ -125,10 +127,10 @@
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             [[ user.username ]]
                         </td>
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td class="p-3 py-4 text-sm text-gray-500">
                             [[ user.role ]]
                         </td>
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
                             <div v-if="user.is_active" class="inline-block">
                                 <span class="material-icons">&#10004;</span>
                             </div>
@@ -174,6 +176,7 @@
                             <button v-if="user.role != 'super'"
                                     @click="showProjectsList(user.id)"
                                     type="button"
+                                    title="Add(delete) project to user"
                                     class="bg-white relative w-7 h-7 rounded-md shadow text-center
                                             cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
                                             focus:border-pink-500 sm:text-sm cursor-pointer"
@@ -195,6 +198,7 @@
                         <td class="p-3 pr-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             <button v-if="user.role != 'super'"
                                     @click="deleteUser(user.id)"
+                                    title="Delete user"
                                     class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
                                         <span class="material-icons text-red-500">
                                             delete_outline
@@ -271,6 +275,10 @@
             hideUserForm: function () {
                 if (this.showChoices) {
                     this.showChoices = false
+                    this.newUser = ''
+                    this.newPassword = ''
+                    this.selectedRole = ''
+                    this.selectedProjects = ''
                 }
             },
 
