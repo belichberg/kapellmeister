@@ -78,7 +78,7 @@
                                                 class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer"
                                         >
                                             <span v-if="selectedProject"
-                                                  class="block truncate text-sm font-medium text-gray-700 capitalize"
+                                                  class="block truncate text-sm font-medium text-gray-700"
                                                   v-text="selectedProject.name"></span>
                                             <span v-else class="block truncate text-sm text-gray-400">Project</span>
 
@@ -110,7 +110,7 @@
                                     >
                                         <li v-for="project in projects"
                                             :key="project.id"
-                                            class="project-select text-gray-900 capitalize cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                                            class="project-select text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
                                             role="option"
                                             @click="selectProject(project)"
                                         >
@@ -165,7 +165,7 @@
                             type="button"
                             class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer"
                     >
-                        <span v-if="selectedProject" class="block truncate text-sm font-medium text-gray-700 capitalize"
+                        <span v-if="selectedProject" class="block truncate text-sm font-medium text-gray-700"
                               v-text="selectedProject.name"></span>
                         <span v-else class="block truncate text-sm font-medium text-gray-400">Project</span>
 
@@ -202,7 +202,7 @@
                 >
                     <li v-for="project in projects"
                         :key="project.id"
-                        class="project-select text-gray-900 capitalize cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                        class="project-select text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
                         role="option"
                     >
                         <span class="block truncate"
@@ -238,7 +238,7 @@
                             type="button"
                             class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer">
 
-                        <span v-if="selectedChannel" class="block truncate text-sm font-medium text-gray-700 capitalize"
+                        <span v-if="selectedChannel" class="block truncate text-sm font-medium text-gray-700"
                               v-text="selectedChannel.name"></span>
                         <span v-else class="block truncate text-sm font-medium text-gray-400">Channel</span>
 
@@ -277,7 +277,7 @@
                     <li
                             v-for="channel in selectedProject.channels"
                             :key="channel.id"
-                            class="project-select text-gray-900 capitalize cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                            class="project-select text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
                             role="option"
                     >
                         <span class="block truncate"
