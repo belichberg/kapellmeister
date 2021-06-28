@@ -188,3 +188,20 @@ async def delete_container(
     return ContainerAPI.parse_obj(
         Container.delete(slug=container_slug, project_id=project.id, channel_id=channel.id).to_dict()
     )
+
+
+@router.get("/containers/", response_model=List[ContainerAPI])
+async def get_all_containers(
+    user: Optional[UserAPI] = Depends(get_user),
+    token: Optional[TokenAPI] = Depends(get_api_token),
+) -> List[ContainerAPI]:
+    # Authentication check
+    if user is None and token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
+    containers: Query = Container.get_all()
+    return [ContainerAPI.parse_obj(item.to_dict()) for item in containers]

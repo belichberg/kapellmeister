@@ -6,7 +6,7 @@
         class="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
             shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
             focus:ring-rose-500">
-    + Token
+    + Key
 </button>
 
 <!-- Modal Background -->
@@ -26,7 +26,7 @@
         </button>
 
         <div v-if="showChoices" class="grid justify-items-center">
-            <div class="my-5 text-gray-600 font-extrabold tracking-wider uppercase">Create token</div>
+            <div class="my-5 text-gray-600 font-extrabold tracking-wider uppercase">Create key</div>
             <form @submit.prevent="createToken" class="flex items-center pb-5">
                 <div class="bg-gray-100 px-3 py-2 rounded-md">
                     <label for="readOnly">Read Only</label>
@@ -119,7 +119,7 @@
                     <tr>
                         <th scope="col"
                             class="px-5 py-2.5">
-                            Token
+                            Key
                         </th>
                         <th scope="col"
                             class="px-5 py-2.5">
@@ -142,17 +142,17 @@
                     <tbody>
                     <tr v-if="!tokens.length" class="text-center hover:bg-gray-50">
                         <td colspan="5" class="py-14 whitespace-nowrap text-md font-medium text-gray-500 bg-white">
-                            No tokens...
+                            No keys...
                         </td>
                     </tr>
                     <tr v-for="token in tokens" class="container-row text-center hover:bg-gray-50">
                         <td v-if="selectedToken === token" class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                            <label for="token" class="sr-only">Token</label>
+                            <label for="token" class="sr-only">Key</label>
                             <input type="text" id="token" name="token"
                                    required
                                    v-model="token.token"
                                    class="bg-white relative w-96 text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text"
-                                   placeholder="New Token"
+                                   placeholder="New Key"
                             />
                         </td>
                         <td v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
