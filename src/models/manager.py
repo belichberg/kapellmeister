@@ -1,12 +1,12 @@
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
 
 from pydantic import constr, BaseModel
 
 
 class ContainerAPI(BaseModel):
     slug: constr(max_length=64)
-    auth: Optional[constr(max_length=2000)]
+    auth: Union[Dict[str, Any], str]
     digest: constr(max_length=255)
     parameters: Dict[str, Any]
     updated_time: Optional[datetime]

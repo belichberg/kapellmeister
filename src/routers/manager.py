@@ -1,11 +1,12 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import func
+import orjson
+import yaml
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Query
 
 from src.database.models import Container, Project, Channel, UserRole
-from src.dependencies import get_api_token, get_user
+from src.dependencies import get_api_token, get_user, time_utc_now
 from src.models.manager import ContainerAPI, ProjectAPI, ChannelAPI, TokenAPI
 from src.models.user import UserAPI
 
@@ -13,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("/projects/", response_model=List[ProjectAPI])
-def get_projects(user: Optional[UserAPI] = Depends(get_user)) -> List[ProjectAPI]:
+async def get_projects(user: Optional[UserAPI] = Depends(get_user)) -> List[ProjectAPI]:
     # Authentication check
     if user is None:
         raise HTTPException(
@@ -38,7 +39,7 @@ def get_projects(user: Optional[UserAPI] = Depends(get_user)) -> List[ProjectAPI
 
 
 @router.post("/projects/", response_model=ProjectAPI)
-def create_project(data: ProjectAPI, user: Optional[UserAPI] = Depends(get_user)) -> ProjectAPI:
+async def create_project(data: ProjectAPI, user: Optional[UserAPI] = Depends(get_user)) -> ProjectAPI:
     # Authentication check
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -51,7 +52,7 @@ def create_project(data: ProjectAPI, user: Optional[UserAPI] = Depends(get_user)
 
 
 @router.delete("/projects/{project_id}/", response_model=ProjectAPI)
-def delete_project(project_id: int, user: Optional[UserAPI] = Depends(get_user)) -> ProjectAPI:
+async def delete_project(project_id: int, user: Optional[UserAPI] = Depends(get_user)) -> ProjectAPI:
     # Authentication check
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -70,7 +71,7 @@ def delete_project(project_id: int, user: Optional[UserAPI] = Depends(get_user))
 
 
 @router.post("/channels/", response_model=ChannelAPI)
-def create_channel(data: ChannelAPI, user: Optional[UserAPI] = Depends(get_user)) -> ChannelAPI:
+async def create_channel(data: ChannelAPI, user: Optional[UserAPI] = Depends(get_user)) -> ChannelAPI:
     # Authentication check
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -83,7 +84,7 @@ def create_channel(data: ChannelAPI, user: Optional[UserAPI] = Depends(get_user)
 
 
 @router.delete("/channels/{channel_id}/", response_model=ChannelAPI)
-def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_user)) -> ChannelAPI:
+async def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_user)) -> ChannelAPI:
     # Authentication check
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -97,7 +98,7 @@ def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_user))
 
 
 @router.get("/{project_slug}/{channel_slug}/", response_model=List[ContainerAPI])
-def get_containers(
+async def get_containers(
     project_slug: str,
     channel_slug: str,
     user: Optional[UserAPI] = Depends(get_user),
@@ -122,13 +123,14 @@ def get_containers(
 
 
 @router.post("/{project_slug}/{channel_slug}/", response_model=ContainerAPI)
-def set_container(
+async def set_container(
     project_slug: str,
     channel_slug: str,
-    data: ContainerAPI,
+    request: Request,
     user: Optional[UserAPI] = Depends(get_user),
     token: Optional[TokenAPI] = Depends(get_api_token),
 ) -> ContainerAPI:
+    container: ContainerAPI = ContainerAPI.parse_obj(yaml.safe_load(await request.body()))
 
     project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
     channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(slug=channel_slug, project_id=project.id).to_dict())
@@ -149,17 +151,27 @@ def set_container(
     ):
         raise HTTPException(status.HTTP_403_FORBIDDEN)
 
-    data.project_id = project.id
-    data.channel_id = channel.id
-    data.updated_time = func.now()
+    container.project_id = project.id
+    container.channel_id = channel.id
+    container.updated_time = time_utc_now()
 
-    return ContainerAPI.parse_obj(
-        Container.update_or_create(data.dict(), slug=data.slug, project_id=project.id, channel_id=channel.id).to_dict()
-    )
+    # prepare data
+    data: Dict = {
+        **container.dict(exclude={"auth", "slug", "project_id", "channel_id"}),
+        **dict(
+            auth=orjson.dumps(container.auth).decode(),
+            slug=container.slug,
+            project_id=project.id,
+            channel_id=channel.id,
+        ),
+    }
+
+    # update or create container and then return container api
+    return ContainerAPI.parse_obj(Container.update_or_create(data).to_dict())
 
 
 @router.delete("/{project_slug}/{channel_slug}/{container_slug}/", response_model=ContainerAPI)
-def delete_container(
+async def delete_container(
     project_slug: str, channel_slug: str, container_slug: str, user: Optional[UserAPI] = Depends(get_user)
 ) -> ContainerAPI:
     # Authentication check
