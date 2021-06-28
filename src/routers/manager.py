@@ -1,6 +1,6 @@
 from typing import List, Optional, Dict
 
-import orjson
+import json
 import yaml
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Query
@@ -159,7 +159,7 @@ async def set_container(
     data: Dict = {
         **container.dict(exclude={"auth", "slug", "project_id", "channel_id"}),
         **dict(
-            auth=orjson.dumps(container.auth).decode(),
+            auth=json.dumps(container.auth),
             slug=container.slug,
             project_id=project.id,
             channel_id=channel.id,
