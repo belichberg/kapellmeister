@@ -14,23 +14,29 @@ When you run your gitlab CI pipeline endpoint for pipelines receiving new image 
 Quick start
 ===============================
 
-Generate your secret key and type at  env.list
+**Generate your secret key and paste into the  env.yaml**
 ```angular2html
-SECRET_KEY="YOUR_SECRET_KEY"  #  50 chars recommended
+security:
+  key: "YOUR_SECRET_KEY"   # 40 chars recommended
+  algorithm: "HS256"
+  token_expire: 604800 # token expire in seconds (7 days)
 ```
-Define username and password for your super user at docker-entrypoint.sh
+**Define username and password for your superuser**
+```angular2html
+default_user:
+  username: "YOUR_USERNAME"
+  password: "YOUR_PASSWORD"
+```
 
-```angular2html
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('YOUR_USERNAME', 'username@yourdomain.com', 'PASSWORD')" | python manage.py shell
-```
 Starting server
 ===============================
 
-We're ready to go, lets start Kapellmeister management server with docker
+**We're ready to go, lets start Kapellmeister management server with docker**
 ```angular2html
-docker run -it  -p 0.0.0.0:8000:8000  --env-file env.list kapellmeister_server
+docker run -it  -p 0.0.0.0:8000:8000  kapellmeister_server
 ```
-Create read only  username  with default permissions, then move to tokens and add  token for created user.
+Log into kapellmeister server with https://localhost:8000    
+Click to tab USERS and then click create, type username and password for new user and choose the role
 This token you could already use for your kapellmeister agent.
 
 Here is an example how to run kapellmeister agent with it read only users token
@@ -51,10 +57,6 @@ Create username with with staff permissions and add token. Then you could use th
 
 ```
 License
-===============================
+================================
 
 All code found in this repository is licensed under GPL v3
-
-
-
-

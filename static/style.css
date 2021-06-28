@@ -1,0 +1,11 @@
+.project-select:hover span {
+    color: #fff
+}
+
+.container-row:nth-child(odd) {
+    background: #fff
+}
+
+.container-row:nth-child(even) {
+    background: #f9fafb
+}

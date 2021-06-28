@@ -1,0 +1,304 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<button
+        @click="showTokenForm" type="button"
+        class="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
+            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+            focus:ring-rose-500">
+    + Token
+</button>
+
+<!-- Modal Background -->
+<div v-if="showChoices"
+     class="fixed text-gray-500 flex items-center justify-center overflow-auto z-50 bg-gray-700 bg-opacity-70 left-0 right-0 top-0 bottom-0">
+    <!--Modal-->
+    <div id="add_user_modal"
+         v-click-outside="hideTokenForm"
+         class="mb-4 grid justify-items-center bg-white pt-5 px-8 pb-12 shadow sm:rounded-lg relative">
+        <button
+                v-if="showChoices"
+                @click="hideTokenForm"
+                class="px-1 absolute right-3 top-3 items-center border border-transparent text-sm font-medium rounded-md
+                            shadow-sm bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-rose-500">
+            <span class="material-icons text-white pb-1.5">&#10006;</span>
+        </button>
+
+        <div v-if="showChoices" class="grid justify-items-center">
+            <div class="my-5 text-gray-600 font-extrabold tracking-wider uppercase">Create token</div>
+            <form @submit.prevent="createToken" class="flex items-center pb-5">
+                <div class="bg-gray-100 px-3 py-2 rounded-md">
+                    <label for="readOnly">Read Only</label>
+                    <input id="readOnly" type="checkbox" v-model="readOnly"
+                           placeholder="Create API token"/>
+                </div>
+                <div class="bg-gray-100 mx-3 px-3 py-2 rounded-md">
+                    <label for="assignProject">Assign to project</label>
+                    <input id="assignProject" type="checkbox" v-model="assignProject"
+                           placeholder="Create API token"/>
+                </div>
+                <div class="w-32 mr-3 py-2" v-click-outside="hideProjects">
+                    <div class="relative">
+                        <div class="flex">
+                            <button
+                                    @click="showProjects = !showProjects"
+                                    type="button"
+                                    class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2
+                                                text-left cursor-default focus:outline-none focus:ring-1
+                                                focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer"
+                            >
+                                            <span v-if="selectedProject"
+                                                  class="block truncate text-sm font-medium text-gray-700 capitalize"
+                                                  v-text="selectedProject.name"></span>
+                                <span v-else class="block truncate text-sm text-gray-400">Project</span>
+
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                                                     viewBox="0 0 20 20"
+                                                     fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                          d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                                          clip-rule="evenodd"/>
+                                                </svg>
+                                            </span>
+                            </button>
+                        </div>
+                        <ul v-if="showProjects"
+                            class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                            tabindex="-1" role="listbox"
+                        >
+                            <li v-for="project in projects"
+                                :key="project.id"
+                                class="project-select text-gray-900 capitalize cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                                role="option"
+                                @click="selectProject(project)"
+                            >
+                        <span class="block truncate"
+                              :class="project === selectedProject ? 'font-semibold' : 'font-normal'"
+                              v-text="project.name"></span>
+                                <span v-if="project === selectedProject"
+                                      class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 aria-hidden="true"
+                            >
+                                <path fill-rule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                            </li>
+
+                            <!-- More items... -->
+                        </ul>
+                    </div>
+                </div>
+                <button type="submit" class="absolute right-3 bottom-3 inline-block p-1.5 border border-transparent text-sm font-medium rounded-md
+                            shadow-sm text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-rose-500">
+                    Create
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div v-if="curr_token"
+     class="text-center mb-5 text-gray-600 font-bold">
+    Token: <span class="bg-white py-1 px-2">[[ curr_token["token"] ]]</span>
+</div>
+
+<div class="flex flex-col cursor-default">
+    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="overflow-x-auto border-b border-gray-200 sm:rounded-lg rounded-lg shadow overflow-y-auto relative">
+                <table class="divide-y divide-gray-200 border-collapse min-w-full table-striped relative cursor-default">
+                    <thead class="bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <tr>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            Token
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            Read Only
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            Project
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            <span class="sr-only">Edit</span>
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            <span class="sr-only">Delete</span>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-if="!tokens.length" class="text-center hover:bg-gray-50">
+                        <td colspan="5" class="py-14 whitespace-nowrap text-md font-medium text-gray-500 bg-white">
+                            No tokens...
+                        </td>
+                    </tr>
+                    <tr v-for="token in tokens" class="container-row text-center hover:bg-gray-50">
+                        <td v-if="selectedToken === token" class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <label for="token" class="sr-only">Token</label>
+                            <input type="text" id="token" name="token"
+                                   required
+                                   v-model="token.token"
+                                   class="bg-white relative w-96 text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text"
+                                   placeholder="New Token"
+                            />
+                        </td>
+                        <td v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            [[ token.token ]]
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
+                            <div v-if="token.read_only"><span class="material-icons">&#10004;</span></div>
+                            <div v-else><span class="material-icons"> &#10006;</span></div>
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            [[ token.project_id ]]
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <div v-if="selectedToken === token">
+                                <button @click="updateToken(token)" class="pr-1 text-green-500 hover:text-green-600 cursor-pointer">
+                                    <span class="material-icons">
+                                        done_outline
+                                    </span>
+                                </button>
+                                <button @click="selectedToken = null" class="text-gray-400 hover:text-red-600 cursor-pointer">
+                                    <span class="material-icons">
+                                        highlight_off
+                                    </span>
+                                </button>
+                            </div>
+                            <button v-else @click="selectedToken = token" class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                                <span class="material-icons">
+                                    edit
+                                </span>
+                            </button>
+
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <button @click="deleteToken(token.id)"
+                                    title="Delete token"
+                                    class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
+                                        <span class="material-icons text-red-500">
+                                            delete_outline
+                                        </span>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block vuejs %}
+<script>
+    new Vue({
+        el: "#app",
+
+        delimiters: ['[[', ']]'],
+
+        data() {
+            return {
+                showProjects: false,
+                openMobileNav: false,
+
+                selectedProject: null,
+                selectedToken: null,
+
+                projects: [],
+                tokens: [],
+
+                readOnly: true,
+                assignProject: false,
+                showChoices: false,
+                curr_token: ''
+            }
+        },
+
+        methods: {
+            checkWindowLocation(path) {
+                return window.location.pathname === path
+            },
+
+            getProjectName() {
+                return this.selectedProject.name || 'Project'
+            },
+
+            createToken: async function () {
+                const token = await fetch(`/api/v1/tokens/?read_only=${this.readOnly}${this.assignProject ? `&project=${this.selectedProject.id}` : ''}`, {method: "POST"}).then(r => r.json())
+                this.tokens.push(token)
+                this.readOnly = true
+                this.curr_token = token.token
+                this.hideTokenForm()
+
+            },
+
+            async getProjects() {
+                return await fetch("/api/v1/projects/").then(r => r.json())
+            },
+
+            async getTokens() {
+                return await fetch("/api/v1/tokens/").then(r => r.json())
+            },
+
+            hideProjects: function () {
+                this.showProjects = false
+            },
+
+            selectProject(project) {
+                this.selectedProject = project
+                if (history.pushState) {
+                    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?project=' + project.slug;
+                    window.history.pushState({path: newUrl}, '', newUrl);
+                }
+            },
+
+            // show input token form
+            showTokenForm: function () {
+                setTimeout(() => {
+                    this.showChoices = true
+                }, 1)
+            },
+
+            // hide input token form
+            hideTokenForm: function () {
+                if (this.showChoices) {
+                    this.showChoices = false
+                }
+            },
+
+            async deleteToken(token) {
+                await fetch(`/api/v1/tokens/${token}/`, {method: "DELETE"})
+                this.tokens = await this.getTokens()
+            },
+
+            async updateToken(token) {
+
+                await fetch(`/api/v1/tokens/${token.id}/`, {method: "PATCH", body: JSON.stringify(token)})
+                this.tokens = await this.getTokens()
+            }
+        },
+
+        mounted: async function () {
+            const project = new URLSearchParams(window.location.search).get('project');
+
+            this.projects = await this.getProjects()
+            this.tokens = await this.getTokens()
+            this.selectedProject = this.projects.filter(item => item.slug === project)[0]
+        }
+    })
+</script>
+{% endblock %}

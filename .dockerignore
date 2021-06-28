@@ -1,3 +1,7 @@
+# When docker build image
+# files that on this list
+# will be ignored and do not be copied
+# in to container
 # Git
 .git
 .gitignore
@@ -25,4 +29,5 @@ __pycache__
 .env
 # IDES
 .idea/
-data/
+
+sqlite.db
