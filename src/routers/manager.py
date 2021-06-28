@@ -1,6 +1,6 @@
+import json
 from typing import List, Optional, Dict
 
-import json
 import yaml
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Query
@@ -99,10 +99,10 @@ async def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_
 
 @router.get("/{project_slug}/{channel_slug}/", response_model=List[ContainerAPI])
 async def get_containers(
-    project_slug: str,
-    channel_slug: str,
-    user: Optional[UserAPI] = Depends(get_user),
-    token: Optional[TokenAPI] = Depends(get_api_token),
+        project_slug: str,
+        channel_slug: str,
+        user: Optional[UserAPI] = Depends(get_user),
+        token: Optional[TokenAPI] = Depends(get_api_token),
 ) -> List[ContainerAPI]:
     # Authentication check
     if user is None and token is None:
@@ -124,11 +124,11 @@ async def get_containers(
 
 @router.post("/{project_slug}/{channel_slug}/", response_model=ContainerAPI)
 async def set_container(
-    project_slug: str,
-    channel_slug: str,
-    request: Request,
-    user: Optional[UserAPI] = Depends(get_user),
-    token: Optional[TokenAPI] = Depends(get_api_token),
+        project_slug: str,
+        channel_slug: str,
+        request: Request,
+        user: Optional[UserAPI] = Depends(get_user),
+        token: Optional[TokenAPI] = Depends(get_api_token),
 ) -> ContainerAPI:
     container: ContainerAPI = ContainerAPI.parse_obj(yaml.safe_load(await request.body()))
 
@@ -145,9 +145,9 @@ async def set_container(
 
     # Checking access rights
     elif (
-        token
-        and (token.read_only or (token.project_id and token.project_id != project.id))
-        or (user and user.role != UserRole.super)
+            token
+            and (token.read_only or (token.project_id and token.project_id != project.id))
+            or (user and user.role != UserRole.super)
     ):
         raise HTTPException(status.HTTP_403_FORBIDDEN)
 
@@ -166,13 +166,20 @@ async def set_container(
         ),
     }
 
+    # create of get container record
+    record = (
+        Container.get(project_id=project.id, channel_id=channel.id, slug=container.slug)
+        if Container.update(data)
+        else Container.create(data)
+    )
+
     # update or create container and then return container api
-    return ContainerAPI.parse_obj(Container.update_or_create(data).to_dict())
+    return ContainerAPI.parse_obj(record.to_dict())
 
 
 @router.delete("/{project_slug}/{channel_slug}/{container_slug}/", response_model=ContainerAPI)
 async def delete_container(
-    project_slug: str, channel_slug: str, container_slug: str, user: Optional[UserAPI] = Depends(get_user)
+        project_slug: str, channel_slug: str, container_slug: str, user: Optional[UserAPI] = Depends(get_user)
 ) -> ContainerAPI:
     # Authentication check
     if user is None or user.role != UserRole.super:
@@ -192,8 +199,8 @@ async def delete_container(
 
 @router.get("/containers/", response_model=List[ContainerAPI])
 async def get_all_containers(
-    user: Optional[UserAPI] = Depends(get_user),
-    token: Optional[TokenAPI] = Depends(get_api_token),
+        user: Optional[UserAPI] = Depends(get_user),
+        token: Optional[TokenAPI] = Depends(get_api_token),
 ) -> List[ContainerAPI]:
     # Authentication check
     if user is None and token is None:
