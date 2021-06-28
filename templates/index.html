@@ -6,7 +6,8 @@
 {% block content %}
     <div v-if="showProjectForm"
          class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
-        <div v-click-outside="closeProjectForm" class="bg-gray-50 mb-44 shadow sm:rounded-xl sm:max-w-xl sm:mx-auto">
+        <div v-click-outside="closeProjectForm"
+             class="bg-gray-50 mb-44 shadow sm:rounded-xl sm:max-w-xl sm:mx-auto">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Create a new project
@@ -77,12 +78,13 @@
                                                 type="button"
                                                 class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer"
                                         >
-                                            <span v-if="selectedProject" class="block truncate text-sm font-medium text-gray-700 capitalize"
+                                            <span v-if="selectedProject" class="block truncate text-sm font-medium text-gray-700"
                                                   v-text="selectedProject.name"></span>
                                             <span v-else class="block truncate text-sm text-gray-400">Project</span>
 
                                             <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                                                     viewBox="0 0 20 20"
                                                      fill="currentColor">
                                                     <path fill-rule="evenodd"
                                                           d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
@@ -108,7 +110,7 @@
                                     >
                                         <li v-for="project in projects"
                                             :key="project.id"
-                                            class="project-select text-gray-900 capitalize cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                                            class="project-select text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
                                             role="option"
                                             @click="selectProject(project)"
                                         >
@@ -163,7 +165,7 @@
                             type="button"
                             class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer"
                     >
-                        <span v-if="selectedProject" class="block truncate text-sm font-medium text-gray-700 capitalize"
+                        <span v-if="selectedProject" class="block truncate text-sm font-medium text-gray-700"
                               v-text="selectedProject.name"></span>
                         <span v-else class="block truncate text-sm font-medium text-gray-400">Project</span>
 
@@ -200,15 +202,16 @@
                 >
                     <li v-for="project in projects"
                         :key="project.id"
-                        class="project-select text-gray-900 capitalize cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                        class="project-select text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
                         role="option"
                         @click="selectProject(project)"
                     >
                         <span class="block truncate"
                               :class="project === selectedProject ? 'font-semibold' : 'font-normal'"
+                              @click="selectProject(project)"
                               v-text="project.name"></span>
                         <span v-if="project === selectedProject"
-                              class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                              class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-3">
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                  fill="currentColor"
                                  aria-hidden="true"
@@ -219,6 +222,7 @@
                                 />
                             </svg>
                         </span>
+                        <span v-else @click="deleteProject(project)" class="material-icons text-red-600 absolute inset-y-0 right-0 flex items-center pr-3 text-xl hover:text-red-700">close</span>
                     </li>
 
                     <!-- More items... -->
@@ -237,7 +241,7 @@
                             type="button"
                             class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer">
 
-                        <span v-if="selectedChannel" class="block truncate text-sm font-medium text-gray-700 capitalize"
+                        <span v-if="selectedChannel" class="block truncate text-sm font-medium text-gray-700"
                               v-text="selectedChannel.name"></span>
                         <span v-else class="block truncate text-sm font-medium text-gray-400">Channel</span>
 
@@ -276,15 +280,16 @@
                     <li
                             v-for="channel in selectedProject.channels"
                             :key="channel.id"
-                            class="project-select text-gray-900 capitalize cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                            class="project-select text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
                             role="option"
                             @click="selectChannel(channel)"
                     >
                         <span class="block truncate"
                               :class="channel === selectedChannel ? 'font-semibold' : 'font-normal'"
+                              @click="selectChannel(channel)"
                               v-text="channel.name"></span>
                         <span v-if="channel === selectedChannel"
-                              class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                              class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-3">
                             <svg
                                     class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                     fill="currentColor"
@@ -297,6 +302,7 @@
                                 />
                             </svg>
                         </span>
+                        <span v-else @click="deleteChannel(channel)" class="material-icons text-red-600 absolute inset-y-0 right-0 flex items-center pr-3 text-xl hover:text-red-700">close</span>
                     </li>
                 </ul>
             </div>
@@ -344,11 +350,11 @@
                             </th>
                             <th scope="col"
                                 class="px-5 py-2.5">
-                                Digest
+                                Updated
                             </th>
                             <th scope="col"
                                 class="py-2.5">
-                                Parameters
+                                Details
                             </th>
                             <th scope="col" class="relative px-6 py-3">
                                 <span class="sr-only">Delete</span>
@@ -372,7 +378,7 @@
                                 [[ container.slug ]]
                             </td>
                             <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
-                                <div class="flex items-center">
+                                <div class="flex justify-center items-center">
                                     <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[ key
                                         ]]</p>
                                     <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
@@ -381,15 +387,11 @@
                             <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                 <p class="sr-only">Empty</p>
                             </td>
-                            <td class="p-3 text-sm text-gray-500">
-                                <div class="flex items-center">
-                                    <p class="w-44 pl-1.5 truncate">[[ container.digest ]]</p>
-                                    <span class="text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
-                                </div>
+                            <td class="p-3 text-sm text-gray-500" v-text="container.updated_time">
                             </td>
                             <td class="p-3 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex justify-center items-center text-center">
-                                    <span class="px-2 py-0.5 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer">open</span>
+                                    <span class="px-2 py-0.5 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer" @click="openContainerDetails(container)">open</span>
                                 </div>
                             </td>
                             <td class="p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
@@ -407,8 +409,6 @@
             </div>
         </div>
     </div>
-
-
 {% endblock content %}
 
 {% block vuejs %}
@@ -428,6 +428,7 @@
                     openMobileNav: false,
                     showProjectForm: false,
                     showChannelForm: false,
+                    selectedContainer: null,
 
                     selectedProject: null,
                     selectedChannel: null,
@@ -456,17 +457,11 @@
                         })
                     }
 
-                    return containers_
+                    return containers_.sort((a, b) => a.updated_time > b.updated_time ? -1 : 1)
                 }
             },
 
             methods: {
-                // logout() {
-                //     fetch("/logout", {method: "POST"}).then(() => {
-                //         window.location.reload();
-                //     })
-                // },
-
                 slugify(str) {
                     return str.toLowerCase()
                         .trim()
@@ -502,16 +497,16 @@
                         slug: this.slugify(this.newProjectName),
                         description: this.newProjectDescription
                     }
-                    const proj = await fetch("/api/v1/projects/", {
+                    const project = await fetch("/api/v1/projects/", {
                         method: "POST",
                         body: JSON.stringify(data)
                     }).then(r => r.json())
 
-                    this.projects.push(proj)
+                    this.projects.push(project)
                     this.closeProjectForm()
                     this.newProjectName = null
                     this.newProjectDescription = null
-                    this.selectedProject = proj
+                    this.selectProject(project)
                 },
 
                 async createChannel() {
@@ -521,14 +516,16 @@
                         description: this.newChannelDescription,
                         project_id: this.selectedProject.id
                     }
-                    const channel = await fetch("/api/v1/channels/", { method: "POST", body: JSON.stringify(data) }).then(r => r.json())
+                    const channel = await fetch("/api/v1/channels/", {
+                        method: "POST",
+                        body: JSON.stringify(data)
+                    }).then(r => r.json())
 
                     this.closeChannelForm()
                     this.newChannelName = ''
                     this.newChannelDescription = ''
-                    this.projects = await this.getProjects()
-                    this.selectedChannel = channel
                     this.selectedProject.channels.push(channel)
+                    await this.selectChannel(channel)
                 },
 
                 async getProjects() {
@@ -536,7 +533,11 @@
                 },
 
                 async getContainers() {
-                    return await fetch(`/api/v1/${this.selectedProject.slug}/${this.selectedChannel.slug}/`).then(r => r.json())
+                    const containers = await fetch(`/api/v1/${this.selectedProject.slug}/${this.selectedChannel.slug}/`).then(r => r.json())
+                    return containers.map((item) => {
+                            item.updated_time = new Date(item.updated_time).toLocaleString('sv', { timeZoneName: 'short' })
+                            return item
+                        })
                 },
 
                 hideProjects: function () {
@@ -553,6 +554,7 @@
 
                 selectProject(project) {
                     this.selectedProject = project
+                    this.selectedChannel= null
                     this.changeUrl()
                 },
 
@@ -565,6 +567,24 @@
                 async deleteContainer(container) {
                     await fetch(`/api/v1/${this.selectedProject.slug}/${this.selectedChannel.slug}/${container}/`, {method: "DELETE"})
                     this.containers = await this.getContainers()
+                },
+
+                async deleteChannel(channel) {
+                    const result = confirm(`Are you sure you want to delete the ${channel.name} channel`)
+
+                    if (result) {
+                        await fetch(`/api/v1/channels/${channel.id}/`, {method: "DELETE"})
+                        this.selectedProject.channels = this.selectedProject.channels.filter(item => item !== channel)
+                    }
+                },
+
+                async deleteProject(project) {
+                    const result = confirm(`Are you sure you want to delete the ${project.name} project`)
+
+                    if (result) {
+                        await fetch(`/api/v1/projects/${project.id}/`, {method: "DELETE"})
+                        this.projects = this.projects.filter(item => item !== project)
+                    }
                 },
 
                 openProjectForm() {
@@ -588,6 +608,18 @@
                 closeChannelForm() {
                     if (this.showChannelForm) {
                         this.showChannelForm = false
+                    }
+                },
+
+                openContainerDetails(container) {
+                    setTimeout(() => {
+                        this.selectedContainer = container
+                    }, 0)
+                },
+
+                closeContainerDetails() {
+                    if (this.selectedContainer) {
+                        this.selectedContainer = null
                     }
                 }
             },
