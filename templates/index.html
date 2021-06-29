@@ -382,102 +382,60 @@
                             <!--                            </td>-->
                             <!--                        </tr>-->
                             <!-------------------------------------------------------------------->
-                            <tr v-if="!selectedProject && !selectedChannel" v-for="container in allContainers"
-                                :key="container.slug"
-                                class="container-row text-center">
-                                <td v-for="project in projects" v-if="project.id == container.project_id"
-                                    class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    [[ project.name ]]
-                                </td>
-                                <td v-for="project in projects" v-if="project.id == container.project_id"
-                                    class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-
-                                    <span v-for="channel in project.channels" v-if="channel.id == container.channel_id">
-                                        [[ channel.name ]]
-                                    </span>
-                                </td>
-                                <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    [[ container.slug ]]
-                                </td>
-                                <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
-                                    <div class="flex justify-center items-center">
-                                        <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[
-                                            key
-                                            ]]</p>
-                                        <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
-                                    </div>
-                                </td>
-                                <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <p class="sr-only">Empty</p>
-                                </td>
-                                <td class="p-3 text-sm text-gray-500" v-text="container.updated_time">
-                                </td>
-                                <td class="p-3 whitespace-nowrap text-sm text-gray-500">
-                                    <div class="flex justify-center items-center text-center">
-                                        <span class="px-2 py-0.5 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer"
-                                              @click="openContainerDetails(container)">open</span>
-                                    </div>
-                                </td>
-                                <td class="p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
-                                    <button @click="deleteContainer(container.slug)"
-                                            class="text-indigo-600 hover:text-indigo-900">
-                                        <span class="material-icons text-red-500">
-                                            delete_outline
-                                        </span>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!------------------------------------------------------------------>
-                            <tr v-if="selectedProject || selectedChannel " v-for="container in filteredContainers"
-                                :key="container.slug"
-                                class="container-row text-center">
-                                <td v-for="project in projects" v-if="project.id == container.project_id"
-                                    class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    [[ project.name ]]
-                                </td>
-                                <td v-for="project in projects" v-if="project.id == container.project_id"
-                                    class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <span v-for="channel in project.channels" v-if="channel.id == container.channel_id">
-                                        [[ channel.name ]]
-                                    </span>
-                                </td>
-
-                                <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    [[ container.slug ]]
-                                </td>
-                                <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
-                                    <div class="flex justify-center items-center">
-                                        <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[
-                                            key
-                                            ]]</p>
-                                        <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
-                                    </div>
-                                </td>
-                                <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <p class="sr-only">Empty</p>
-                                </td>
-                                <td class="p-3 text-sm text-gray-500" v-text="container.updated_time">
-                                </td>
-                                <td class="p-3 whitespace-nowrap text-sm text-gray-500">
-                                    <div class="flex justify-center items-center text-center">
-                                        <span class="px-2 py-0.5 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer"
-                                              @click="openContainerDetails(container)">open</span>
-                                    </div>
-                                </td>
-                                <td class="p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
-                                    <button @click="deleteContainer(container.slug)"
-                                            class="text-indigo-600 hover:text-indigo-900">
-                                        <span class="material-icons text-red-500">
-                                            delete_outline
-                                        </span>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr v-if="selectedProject && selectedChannel && !filteredContainers.length"
+                            <tr v-if="!filteredContainers.length"
                                 class="text-center">
                                 <td colspan="7"
                                     class="py-14 whitespace-nowrap text-md font-medium text-gray-500 bg-white">
                                     No containers...
+                                </td>
+                            </tr>
+<!--                            <tr v-if="!selectedProject || !selectedChannel" v-for="container in allContainers"-->
+<!--                                :key="container.slug"-->
+<!--                                class="container-row text-center">-->
+                            <tr v-else v-for="container in filteredContainers"
+                                :key="container.slug"
+                                class="container-row text-center">
+
+                                <td v-for="project in projects" v-if="project.id == container.project_id"
+                                    class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    [[ project.name ]]
+                                </td>
+                                <td v-for="project in projects" v-if="project.id == container.project_id"
+                                    class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+
+                                    <span v-for="channel in project.channels" v-if="channel.id == container.channel_id">
+                                        [[ channel.name ]]
+                                    </span>
+                                </td>
+                                <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    [[ container.slug ]]
+                                </td>
+                                <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
+                                    <div class="flex justify-center items-center">
+                                        <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[
+                                            key
+                                            ]]</p>
+                                        <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
+                                    </div>
+                                </td>
+                                <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <p class="sr-only">Empty</p>
+                                </td>
+                                <td class="p-3 text-sm text-gray-500" v-text="container.updated_time">
+                                </td>
+                                <td class="p-3 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex justify-center items-center text-center">
+                                        <span class="px-2 py-0.5 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer"
+                                              @click="openContainerDetails(container)">open</span>
+                                    </div>
+                                </td>
+                                <td class="p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
+                                    <button @click="deleteContainer(container.slug)"
+                                            class="text-indigo-600 hover:text-indigo-900">
+                                        <span class="material-icons text-red-500">
+                                            delete_outline
+                                        </span>
+                                    </button>
                                 </td>
                             </tr>
                             </tbody>
@@ -598,6 +556,16 @@
                 filteredContainers() {
                     let containers_ = this.containers
 
+                    // this.selectedChannel = this.selectedProject.channels.filter(item => item.slug === channel)[0]
+                    // const channel = new URLSearchParams(window.location.search).get('channel');
+                    // let containers_ = []
+                    //  if (channel) {
+                    //      containers_ = this.containers
+                    //  }
+                    //  else{
+                    //      containers_ = this.allContainers
+                    //  }
+
                     // apply filtering
                     if (this.search) {
                         const search = this.search.toLowerCase().split(' ')
@@ -609,6 +577,7 @@
 
                     return containers_.sort((a, b) => a.updated_time > b.updated_time ? -1 : 1)
                 }
+
             },
 
             methods: {
@@ -793,9 +762,11 @@
                 if (channel) {
                     this.selectedChannel = this.selectedProject.channels.filter(item => item.slug === channel)[0]
                     this.containers = await this.getContainers()
+                } else {
+                    this.containers = await this.getAllContainers()
                 }
 
-                this.allContainers = await this.getAllContainers()
+                // this.allContainers = await this.getAllContainers()
             }
         })
     </script>
