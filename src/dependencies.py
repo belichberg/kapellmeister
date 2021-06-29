@@ -1,4 +1,3 @@
-import json
 import secrets
 import string
 from datetime import datetime, timezone
@@ -10,7 +9,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-from src.database.models import APIToken, User, Project
+from src.database.models import APIToken, User
 from src.models.manager import TokenAPI
 from src.models.user import TokenData, JWTToken, UserAPI
 
@@ -27,7 +26,8 @@ JWT_TOKEN_EXPIRE: int = env_dep["security.token_expire"]
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # create oauth2_schema
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login/")
+oauth2_bearer_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login/", auto_error=False)
+oauth2_scheme = OAuth2(auto_error=False)
 
 
 def time_utc_now(timestamp: int = None) -> datetime:
@@ -57,11 +57,8 @@ def token_validate(token: str) -> Optional[TokenData]:
         pass
 
 
-def get_token(request: Request) -> Optional[str]:
-    if request.session.get("token"):
-        return request.session.get("token")
-
-    return None
+def get_token(request: Request, token: Optional[str] = Depends(oauth2_bearer_scheme)) -> Optional[str]:
+    return token if token else request.session.get("token")
 
 
 def get_user(token: Optional[str] = Depends(get_token)) -> Optional[UserAPI]:
@@ -81,10 +78,12 @@ def generate_api_token():
     return str("".join(secrets.choice(string.ascii_letters + string.digits) for x in range(40)))
 
 
-def get_api_token(token: str = Depends(OAuth2(auto_error=False))) -> Optional[TokenAPI]:
-    # get and compare tokens
-    access_token: APIToken = APIToken.get(token=token)
-    if access_token is not None and token == access_token.token:
-        return TokenAPI.parse_obj(access_token.to_dict())
+def get_api_token(token: str = Depends(oauth2_scheme)) -> Optional[TokenAPI]:
+    if token:
+        token = token.replace("Token ", "")
+        # get and compare tokens
+        access_token: APIToken = APIToken.get(token=token)
+        if access_token is not None and token == access_token.token:
+            return TokenAPI.parse_obj(access_token.to_dict())
 
     return None

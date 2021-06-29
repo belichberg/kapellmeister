@@ -6,7 +6,7 @@
         class="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
             shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
             focus:ring-rose-500">
-    + Token
+    + Key
 </button>
 
 <!-- Modal Background -->
@@ -26,7 +26,7 @@
         </button>
 
         <div v-if="showChoices" class="grid justify-items-center">
-            <div class="my-5 text-gray-600 font-extrabold tracking-wider uppercase">Create token</div>
+            <div class="my-5 text-gray-600 font-extrabold tracking-wider uppercase">Create key</div>
             <form @submit.prevent="createToken" class="flex items-center pb-5">
                 <div class="bg-gray-100 px-3 py-2 rounded-md">
                     <label for="readOnly">Read Only</label>
@@ -119,7 +119,7 @@
                     <tr>
                         <th scope="col"
                             class="px-5 py-2.5">
-                            Token
+                            Key
                         </th>
                         <th scope="col"
                             class="px-5 py-2.5">
@@ -131,6 +131,10 @@
                         </th>
                         <th scope="col"
                             class="px-5 py-2.5">
+                            <span class="sr-only">Edit</span>
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
                             <span class="sr-only">Delete</span>
                         </th>
                     </tr>
@@ -138,11 +142,20 @@
                     <tbody>
                     <tr v-if="!tokens.length" class="text-center hover:bg-gray-50">
                         <td colspan="5" class="py-14 whitespace-nowrap text-md font-medium text-gray-500 bg-white">
-                            No tokens...
+                            No keys...
                         </td>
                     </tr>
-                    <tr v-for="token in tokens" class="text-center hover:bg-gray-50">
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr v-for="token in tokens" class="container-row text-center hover:bg-gray-50">
+                        <td v-if="selectedToken === token" class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <label for="token" class="sr-only">Key</label>
+                            <input type="text" id="token" name="token"
+                                   required
+                                   v-model="token.token"
+                                   class="bg-white relative w-96 text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text"
+                                   placeholder="New Key"
+                            />
+                        </td>
+                        <td v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             [[ token.token ]]
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
@@ -151,6 +164,26 @@
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             [[ token.project_id ]]
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <div v-if="selectedToken === token">
+                                <button @click="updateToken(token)" class="pr-1 text-green-500 hover:text-green-600 cursor-pointer">
+                                    <span class="material-icons">
+                                        done_outline
+                                    </span>
+                                </button>
+                                <button @click="selectedToken = null" class="text-gray-400 hover:text-red-600 cursor-pointer">
+                                    <span class="material-icons">
+                                        highlight_off
+                                    </span>
+                                </button>
+                            </div>
+                            <button v-else @click="selectedToken = token" class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                                <span class="material-icons">
+                                    edit
+                                </span>
+                            </button>
+
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             <button @click="deleteToken(token.id)"
@@ -168,8 +201,6 @@
         </div>
     </div>
 </div>
-
-
 {% endblock %}
 
 {% block vuejs %}
@@ -185,6 +216,7 @@
                 openMobileNav: false,
 
                 selectedProject: null,
+                selectedToken: null,
 
                 projects: [],
                 tokens: [],
@@ -197,7 +229,6 @@
         },
 
         methods: {
-
             checkWindowLocation(path) {
                 return window.location.pathname === path
             },
@@ -210,7 +241,7 @@
                 const token = await fetch(`/api/v1/tokens/?read_only=${this.readOnly}${this.assignProject ? `&project=${this.selectedProject.id}` : ''}`, {method: "POST"}).then(r => r.json())
                 this.tokens.push(token)
                 this.readOnly = true
-                this.curr_token = token
+                this.curr_token = token.token
                 this.hideTokenForm()
 
             },
@@ -250,7 +281,13 @@
             },
 
             async deleteToken(token) {
-                await fetch(`/api/v1/token/${token}/`, {method: "DELETE"})
+                await fetch(`/api/v1/tokens/${token}/`, {method: "DELETE"})
+                this.tokens = await this.getTokens()
+            },
+
+            async updateToken(token) {
+
+                await fetch(`/api/v1/tokens/${token.id}/`, {method: "PATCH", body: JSON.stringify(token)})
                 this.tokens = await this.getTokens()
             }
         },

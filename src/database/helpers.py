@@ -87,3 +87,14 @@ class ModelMixin(object):
         session.commit()
 
         return obj
+
+    @classmethod
+    def delete_all(cls, **kwargs):
+        objs: Query = cls.get_all(**kwargs)
+        remote = []
+        for obj in objs:
+            session.delete(obj)
+            session.commit()
+            remote.append(obj)
+
+        return remote

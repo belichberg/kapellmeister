@@ -39,7 +39,7 @@
             <input
                     id="password"
                     v-model="newPassword"
-                    :type="passwordInputType"
+                    :type="this.show_pass ? 'text' : 'password'"
                     pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                     title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
                     minlength="8"
@@ -51,7 +51,7 @@
                 <div
                         class="inline-block absolute right-8 w-0 top-1.5 items-center  text-sm leading-5 text-gray-700 cursor-pointer transition duration-200 hover:text-blue-700"
                 >
-                    <i class="material-icons text-sm h-6" @click="show_pass = !show_pass">[[ passwordInputIcon ]]</i>
+                    <i class="material-icons text-sm h-6" @click="show_pass = !show_pass" :text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
                 </div>
                 </div>
                 <div class="mb-4 p-3 text-gray-500 break-words">
@@ -123,7 +123,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="user in users" :key="user.id" class="text-center hover:bg-gray-50">
+                    <tr v-for="user in users" :key="user.id" class="container-row text-center hover:bg-gray-50">
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             [[ user.username ]]
                         </td>
@@ -240,16 +240,6 @@
             }
         },
 
-        computed: {
-            passwordInputType() {
-                return this.show_pass ? 'text' : 'password'
-            },
-
-            passwordInputIcon() {
-                return this.show_pass ? 'visibility' : 'visibility_off'
-            }
-        },
-
         methods: {
             checkWindowLocation(path) {
                 return window.location.pathname === path
@@ -262,7 +252,6 @@
             async getProjects() {
                 return await fetch("/api/v1/projects/").then(r => r.json())
             },
-
 
             // show input user form
             showUserForm: function () {
@@ -298,8 +287,10 @@
                 this.newPassword = ''
                 this.selectedRole = ''
                 this.selectedProjects = ''
-                this.users.push(user)
                 this.hideUserForm()
+                if (user) {
+                    this.users.push(user)
+                }
             },
 
             async deleteUser(user_id) {
@@ -319,8 +310,9 @@
                     this.menuIsActive = user_id
                 }, 2)
             },
+
             // hide user is active menu
-            hideIsActive: function () {
+            hideIsActive() {
                 if (this.menuIsActive) {
                     this.menuIsActive = 0
                 }
@@ -332,8 +324,9 @@
                     this.projectMenuIsActive = user_id
                 }, 2)
             },
+
             // hide projects menu list
-            hideProjectsList: function () {
+            hideProjectsList() {
                 if (this.projectMenuIsActive) {
                     this.projectMenuIsActive = 0
                 }
@@ -346,7 +339,7 @@
             }
         },
 
-        mounted: async function () {
+        async mounted() {
             const project = new URLSearchParams(window.location.search).get('project');
 
             this.users = await this.getUsers()

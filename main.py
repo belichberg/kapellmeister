@@ -8,11 +8,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.database.models import User, UserRole
-from src.dependencies import get_user, pwd_hash
+from src.dependencies import get_user
 from src.models.user import UserAPI
 from src.routers import manager, auth, token
-
 
 # read env.yaml config file
 env = EnvYAML()
@@ -39,26 +37,17 @@ app = FastAPI(
 templates = Jinja2Templates(directory="templates")
 
 
-# @app.on_event("startup")
-# async def startup():
-#     User.get_or_create(
-#         dict(
-#             username=env["default_user.username"], password=pwd_hash(env["default_user.password"]), role=UserRole.super
-#         ),
-#         id=1,
-#     )
-
-
 @app.get("/")
 def home(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create home page"""
     if user:
-        return templates.TemplateResponse("index.html", {"request": request, "username": user.username})
+        return templates.TemplateResponse("index.html", {"request": request, "user": user})
+
     return RedirectResponse(url="/login")
 
 
 @app.get("/login")
-async def login(request: Request):
+def login(request: Request):
     """Create login page"""
     error_message: str = ""
     if request.session.get("fail_login_message"):
@@ -68,22 +57,28 @@ async def login(request: Request):
 
 
 @app.get("/logout/")
-async def logout(request: Request):
+def logout(request: Request):
     """Clear session and logout user"""
     request.session.clear()
     return RedirectResponse(url="/")
 
 
 @app.get("/tokens")
-async def tokens(request: Request):
+def tokens(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create tokens page"""
-    return templates.TemplateResponse("tokens.html", {"request": request})
+    if user:
+        return templates.TemplateResponse("tokens.html", {"request": request, "user": user})
+
+    return RedirectResponse(url="/")
 
 
 @app.get("/users")
-async def users(request: Request):
+def users(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create users page"""
-    return templates.TemplateResponse("users.html", {"request": request})
+    if user and user.role == "super":
+        return templates.TemplateResponse("users.html", {"request": request, "user": user})
+
+    return RedirectResponse(url="/")
 
 
 # add static files to project
