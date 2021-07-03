@@ -28,4 +28,5 @@ class JWTToken(BaseModel):
 
 
 class UserRequestAPI(BaseModel):
+    username: str
     is_active: Optional[bool]
