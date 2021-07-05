@@ -80,7 +80,7 @@ def generate_api_token():
 
 def get_api_token(token: str = Depends(oauth2_scheme)) -> Optional[TokenAPI]:
     if token:
-        token = token.replace('Token ', '')
+        token = token.replace("Token ", "")
         # get and compare tokens
         access_token: APIToken = APIToken.get(token=token)
         if access_token is not None and token == access_token.token:

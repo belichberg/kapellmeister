@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/tokens/", response_model=List[TokenAPI])
-def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenAPI]:
+async def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenAPI]:
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -23,8 +23,8 @@ def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenAPI]:
 
 
 @router.post("/tokens/", response_model=TokenAPI)
-def create_token(
-    read_only: bool = True, project: Optional[int] = None, user: Optional[UserAPI] = Depends(get_user)
+async def create_token(
+    write: bool = True, read_only: bool = True, project: Optional[int] = None, user: Optional[UserAPI] = Depends(get_user)
 ) -> TokenAPI:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -33,12 +33,12 @@ def create_token(
             headers={"WWW-Authenticate": "Token"},
         )
 
-    data = dict(token=generate_api_token(), read_only=read_only, project_id=project)
+    data = dict(token=generate_api_token(), read_only=read_only, project_id=project, write=write)
     return TokenAPI.parse_obj(APIToken.create(data).to_dict())
 
 
 @router.patch("/tokens/{token_id}/", response_model=TokenAPI)
-def update_token(token_id: int, data: TokenRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
+async def update_token(token_id: int, data: TokenRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -50,7 +50,7 @@ def update_token(token_id: int, data: TokenRequestAPI, user: Optional[UserAPI] =
 
 
 @router.delete("/tokens/{token_id}/", response_model=TokenAPI)
-def delete_token(token_id: int, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
+async def delete_token(token_id: int, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
     """Delete chosen token"""
     if user is None or user.role != UserRole.super:
         raise HTTPException(

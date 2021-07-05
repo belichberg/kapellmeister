@@ -22,7 +22,7 @@ router = APIRouter()
 
 
 @router.post("/login/")
-def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
+async def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
     """Create login page"""
 
     username: str = form.username
@@ -54,7 +54,7 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.get("/users/", response_model=List[UserAPI])
-def get_users(user: Optional[UserAPI] = Depends(get_user)) -> List[UserAPI]:
+async def get_users(user: Optional[UserAPI] = Depends(get_user)) -> List[UserAPI]:
     """Get all users"""
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -66,7 +66,7 @@ def get_users(user: Optional[UserAPI] = Depends(get_user)) -> List[UserAPI]:
 
 
 @router.post("/users/", response_model=UserAPI)
-def create_user(data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+async def create_user(data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -80,7 +80,7 @@ def create_user(data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> U
 
 
 @router.delete("/users/{user_id}/", response_model=UserAPI)
-def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+async def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Delete chosen user"""
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -91,9 +91,26 @@ def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user)) -> Us
     return UserAPI.parse_obj(User.delete(id=user_id).to_dict())
 
 
-@router.patch("/users/{user_id}/", response_model=UserAPI)
-def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
-    """Change users status"""
+# @router.patch("/users/{user_id}/", response_model=UserAPI)
+# async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+#     """Change users status"""
+#
+#     print(f"is active  {data}")
+#     if user is None or user.role != UserRole.super:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Could not validate credentials",
+#             headers={"WWW-Authenticate": "Token"},
+#         )
+#     return UserAPI.parse_obj(User.update(data.dict(), id=user_id).to_dict())
+
+
+@router.post("/users/update/{user_id}/", response_model=UserAPI)
+async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+    """Change username"""
+
+    print(f"username changed {data.dict()}")
+
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -104,7 +121,7 @@ def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = De
 
 
 @router.patch("/users/{user_id}/{project_id}/", response_model=UserAPI)
-def add_user_project(user_id: int, project_id: int, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+async def add_user_project(user_id: int, project_id: int, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Add project to user"""
     if user is None or user.role != UserRole.super:
         raise HTTPException(
