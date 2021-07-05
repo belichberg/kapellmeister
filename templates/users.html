@@ -106,18 +106,18 @@
                             class="px-5 py-2.5">
                             Is active
                         </th>
-                        <th scope="col"
-                            class="px-5 py-2.5">
-                            Change status
-                        </th>
+                        <!--                        <th scope="col"-->
+                        <!--                            class="px-5 py-2.5">-->
+                        <!--                            Change status-->
+                        <!--                        </th>-->
                         <th scope="col"
                             class="px-5 py-2.5">
                             Project(s)
                         </th>
-                        <th scope="col"
-                            class="px-5 py-2.5">
-                            +/- project
-                        </th>
+                        <!--                        <th scope="col"-->
+                        <!--                            class="px-5 py-2.5">-->
+                        <!--                            +/- project-->
+                        <!--                        </th>-->
                         <th scope="col"
                             class="px-5 py-2.5">
                             <span class="sr-only">Edit</span>
@@ -129,9 +129,9 @@
                     </thead>
                     <tbody>
                     <tr v-for="user in users" :key="user.id" class="container-row text-center hover:bg-gray-50">
-<!--                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">-->
-<!--                            [[ user.username ]]-->
-<!--                        </td>-->
+                        <!--                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">-->
+                        <!--                            [[ user.username ]]-->
+                        <!--                        </td>-->
                         <td v-if="selectedUser === user" class="whitespace-nowrap text-sm font-medium text-gray-900">
                             <label for="user" class="sr-only">User</label>
                             <input type="text" id="user" name="user"
@@ -147,25 +147,23 @@
                         <td class="p-3 py-4 text-sm text-gray-500">
                             [[ user.role ]]
                         </td>
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500 relative">
                             <div v-if="user.is_active" class="inline-block">
                                 <span class="material-icons">&#10004;</span>
                             </div>
                             <div v-else class="inline-block">
                                 <span class="material-icons">&#10006;</span>
                             </div>
-                        </td>
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                            <button v-if="user.role != 'super'"
+                            <button v-if="user.role != 'super' && selectedUser === user"
                                     @click="showIsActive(user.id)"
                                     type="button"
-                                    class="bg-white relative w-7 h-7 rounded-md shadow text-center
+                                    class="absolute right-0 bg-white relative w-7 h-7 rounded-md shadow text-center
                                             cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
                                             focus:border-pink-500 sm:text-sm cursor-pointer"
                             >
                                 <span class="text-sm text-gray-500">...</span>
                             </button>
-                            <ul v-if="user.role != 'super' && menuIsActive == user.id"
+                            <ul v-if="user.role != 'super' && menuIsActive == user.id && selectedUser === user"
                                 v-click-outside="hideIsActive"
                                 class="absolute z-10 bg-white shadow-lg rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                                 <li>
@@ -181,17 +179,42 @@
                                                     class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"
                                             >no active</span>
                                 </li>
-
                             </ul>
                         </td>
+                        <!--                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">-->
+                        <!--                            <button v-if="user.role != 'super'"-->
+                        <!--                                    @click="showIsActive(user.id)"-->
+                        <!--                                    type="button"-->
+                        <!--                                    class="bg-white relative w-7 h-7 rounded-md shadow text-center-->
+                        <!--                                            cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500-->
+                        <!--                                            focus:border-pink-500 sm:text-sm cursor-pointer"-->
+                        <!--                            >-->
+                        <!--                                <span class="text-sm text-gray-500">...</span>-->
+                        <!--                            </button>-->
+                        <!--                            <ul v-if="user.role != 'super' && menuIsActive == user.id && selectedUser === user"-->
+                        <!--                                v-click-outside="hideIsActive"-->
+                        <!--                                class="absolute z-10 bg-white shadow-lg rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">-->
+                        <!--                                <li>-->
+                        <!--                                            <span-->
+                        <!--                                                    @click="changeIsActive(user, true)"-->
+                        <!--                                                    role="option"-->
+                        <!--                                                    class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"-->
+                        <!--                                            >active</span>-->
+                        <!--                                </li>-->
+                        <!--                                <li>-->
+                        <!--                                            <span-->
+                        <!--                                                    @click="changeIsActive(user, false)"-->
+                        <!--                                                    class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"-->
+                        <!--                                            >no active</span>-->
+                        <!--                                </li>-->
+                        <!--                            </ul>-->
+                        <!--                        </td>-->
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                                     <span v-for="project in user.projects">
                                         [[ project.name ]]
                                         <span v-if="user.projects.length > 1"> ,</span>
                                     </span>
-                        </td>
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                            <button v-if="user.role != 'super'"
+                            <button v-if="user.role != 'super' && selectedUser === user"
                                     @click="showProjectsList(user.id)"
                                     type="button"
                                     title="Add(delete) project to user"
@@ -213,20 +236,46 @@
                                 </li>
                             </ul>
                         </td>
+                        <!--                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">-->
+                        <!--                            <button v-if="user.role != 'super'"-->
+                        <!--                                    @click="showProjectsList(user.id)"-->
+                        <!--                                    type="button"-->
+                        <!--                                    title="Add(delete) project to user"-->
+                        <!--                                    class="bg-white relative w-7 h-7 rounded-md shadow text-center-->
+                        <!--                                            cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500-->
+                        <!--                                            focus:border-pink-500 sm:text-sm cursor-pointer"-->
+                        <!--                            >-->
+                        <!--                                <span class="text-sm text-gray-500">+/-</span>-->
+                        <!--                            </button>-->
+                        <!--                            <ul v-if="projectMenuIsActive == user.id"-->
+                        <!--                                v-click-outside="hideProjectsList"-->
+                        <!--                                class="absolute z-10 bg-white shadow-lg rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">-->
+                        <!--                                <li v-for="project in projects">-->
+                        <!--                                            <span-->
+                        <!--                                                    @click="addProjectToUser(user.id, project.id)"-->
+                        <!--                                                    role="option"-->
+                        <!--                                                    class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"-->
+                        <!--                                            >[[ project.name ]]</span>-->
+                        <!--                                </li>-->
+                        <!--                            </ul>-->
+                        <!--                        </td>-->
                         <td>
                             <div v-if="selectedUser === user">
-                                <button @click="updateUser(user)" class="pr-1 text-green-500 hover:text-green-600 cursor-pointer">
+                                <button @click="updateUser(user)"
+                                        class="pr-1 text-green-500 hover:text-green-600 cursor-pointer">
                                     <span class="material-icons">
                                         done_outline
                                     </span>
                                 </button>
-                                <button @click="selectedUser = null" class="text-gray-400 hover:text-red-600 cursor-pointer">
+                                <button @click="selectedUser = null"
+                                        class="text-gray-400 hover:text-red-600 cursor-pointer">
                                     <span class="material-icons">
                                         highlight_off
                                     </span>
                                 </button>
                             </div>
-                            <button v-else @click="selectedUser = user" class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                            <button v-else @click="selectedUser = user"
+                                    class="text-gray-400 hover:text-gray-700 cursor-pointer">
                                 <span class="material-icons">
                                     edit
                                 </span>

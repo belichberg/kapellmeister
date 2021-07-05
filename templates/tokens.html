@@ -113,13 +113,10 @@
 <div v-if="curr_token"
      class="text-center mb-5 text-gray-600 font-bold">
     KEY: <span class="bg-white py-1 px-2">[[ curr_token ]]</span>
-    <button @click="copyText"
-            class="text-gray-500  text-l font-bold hover:text-red-600 cursor-pointer"
+    <button @click="copyText(curr_token)"
+            class="text-gray-400 hover:text-gray-700 cursor-pointer"
             title="Copy">
-    &#10697;
-<!--    &#x1f4cb;-->
-<!--        &#128203;-->
-
+        <span class="material-icons">content_copy</span>
     </button>
 </div>
 
@@ -173,8 +170,13 @@
                                    placeholder="New Key"
                             />
                         </td>
-                        <td v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td v-else class="relative p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             [[ token.token ]]
+                                <button @click="copyText(token.token)"
+                                        class=" absolute right-8 text-gray-400 hover:text-gray-700 cursor-pointer"
+                                        title="Copy">
+                                    <span class="material-icons">content_copy</span>
+                                </button>
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
                             <div v-if="token.write"><span class="material-icons">&#10004;</span></div>
@@ -203,8 +205,6 @@
                                 </button>
                             </div>
                             <button v-else @click="selectedToken = token" class="text-gray-400 hover:text-gray-700 cursor-pointer">
-<!--                            <button v-else-if="token.write && !token.read_only" @click="selectedToken = token"-->
-<!--                                    class="text-gray-400 hover:text-gray-700 cursor-pointer">-->
                                 <span class="material-icons">
                                     edit
                                 </span>
@@ -320,8 +320,8 @@
                 this.tokens = await this.getTokens()
             },
 
-            copyText() {
-                navigator.clipboard.writeText(this.curr_token);
+            copyText(token) {
+                navigator.clipboard.writeText(token);
             }
         },
 
