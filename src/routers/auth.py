@@ -107,7 +107,7 @@ async def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user))
 #     return UserAPI.parse_obj(User.update(data.dict(), id=user_id).to_dict())
 
 
-@router.post("/users/username/{user_id}/", response_model=UserAPI)
+@router.post("/users/update/{user_id}/", response_model=UserAPI)
 async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Change username"""
 
