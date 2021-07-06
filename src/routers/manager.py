@@ -146,7 +146,7 @@ async def set_container(
     # Checking access rights
     elif (
             token
-            and (token.read_only or (token.project_id and token.project_id != project.id))
+            and (not token.write or (token.project_id and token.project_id != project.id))
             or (user and user.role != UserRole.super)
     ):
         raise HTTPException(status.HTTP_403_FORBIDDEN)
