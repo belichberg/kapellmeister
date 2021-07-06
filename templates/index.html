@@ -441,7 +441,7 @@
                                         <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[
                                             key
                                             ]]</p>
-                                        <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>
+{#                                        <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>#}
                                     </div>
                                 </td>
                                 <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -470,6 +470,66 @@
             </div>
         </div>
     </div>
+
+    <div v-if="selectedContainer" class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
+        <div v-click-outside="closeContainerDetails" class="bg-white shadow overflow-hidden overflow-y-scroll sm:rounded-lg sm:max-w-2xl sm:mx-auto">
+          <div class="px-4 py-5 sm:px-6 relative">
+            <h3 class="text-xl leading-6 font-medium text-gray-900">
+              Container Information
+            </h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Details of the "<span class="font-medium text-gray-600">[[ selectedContainer.slug ]]</span>" container
+            </p>
+            <button v-show="!containerEditing"
+                    @click="startEditingContainer"
+                    class="absolute right-6 top-6 w-full px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                Edit
+            </button>
+          </div>
+          <div class="border-t border-gray-200">
+            <dl>
+              <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-7 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-600">
+                  Slug
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-6">
+                  [[ selectedContainer.slug ]]
+                </dd>
+              </div>
+              <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-7 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-600">
+                  Digest
+                </dt>
+                <dd v-if="containerEditing" class="mt-1 p-3 text-center text-sm text-gray-900 sm:mt-0 sm:col-span-7 overflow-x-scroll bg-gray-50 rounded-md shadow-inner">
+                  [[ selectedContainer.digest ]]
+                </dd>
+                <dd v-else class="mt-1 p-3 text-center text-sm text-gray-900 sm:mt-0 sm:col-span-7 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
+                  [[ selectedContainer.digest ]]
+                </dd>
+              </div>
+              <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-600">
+                  Auth
+                </dt>
+                <dd v-if="containerEditing" class="mt-1 p-3 text-xs text-gray-900 sm:mt-0 sm:col-span-5 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
+                    <textarea v-model="editedContainer.auth" rows="8" cols="80" class=""></textarea>
+                </dd>
+                <dd v-else class="mt-1 p-3 text-xs text-gray-900 sm:mt-0 sm:col-span-5 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
+                    <pre>[[ JSON.stringify(JSON.parse(selectedContainer.auth), undefined, 4) ]]</pre>
+                </dd>
+              </div>
+              <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-600">
+                  Parameters
+                </dt>
+                <dd class="mt-1 p-3 text-xs text-gray-900 sm:mt-0 sm:col-span-5 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
+                    <pre class="mr-10">[[ JSON.stringify(selectedContainer.parameters, null, '\t') ]]</pre>
+                </dd>
+              </div>
+            </dl>
+          </div>
+</div>
+    </div>
     {% endblock content %}
 
     {% block vuejs %}
@@ -489,10 +549,12 @@
                     openMobileNav: false,
                     showProjectForm: false,
                     showChannelForm: false,
-                    selectedContainer: null,
+                    containerEditing: false,
 
+                    selectedContainer: null,
                     selectedProject: null,
                     selectedChannel: null,
+                    editedContainer: null,
 
                     projects: [],
                     containers: [],
@@ -537,8 +599,14 @@
                     return window.location.pathname === path
                 },
 
-                getProjectName() {
-                    return this.selectedProject.name || 'Project'
+                getProjectName(project_id) {
+                    const project = this.projects.filter(item => item.id === project_id)[0]
+                    return project.name
+                },
+
+                getChannelName(channel_id) {
+                    const project = this.projects.filter(item => item.id === channel_id)[0]
+                    return project.name
                 },
 
                 changeUrl() {
@@ -693,6 +761,13 @@
                         return item
                     })
                 },
+
+                startEditingContainer () {
+                    this.containerEditing = true
+                    this.editedContainer = JSON.parse(JSON.stringify(this.selectedContainer))
+                    this.editedContainer.auth = JSON.stringify(JSON.parse(this.editedContainer.auth), undefined, 4)
+                    this.editedContainer.parameters = JSON.stringify(this.editedContainer.parameters, undefined, 4)
+                }
             },
 
             mounted: async function () {
