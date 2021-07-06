@@ -93,33 +93,17 @@ async def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user))
     return UserAPI.parse_obj(User.delete(id=user_id).to_dict())
 
 
-# @router.patch("/users/{user_id}/", response_model=UserAPI)
-# async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
-#     """Change users status"""
-#
-#     print(f"is active  {data}")
-#     if user is None or user.role != UserRole.super:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Could not validate credentials",
-#             headers={"WWW-Authenticate": "Token"},
-#         )
-#     return UserAPI.parse_obj(User.update(data.dict(), id=user_id).to_dict())
-
-
-@router.post("/users/update/{user_id}/", response_model=UserAPI)
+@router.patch("/users/{user_id}/", response_model=UserAPI)
 async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
-    """Change username"""
-
-    print(f"username changed {data.dict()}")
-
+    """Update user data"""
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Token"},
         )
-    return UserAPI.parse_obj(User.update(data.dict(), id=user_id).to_dict())
+    projects: List[Project] = [Project.get(id=project['id']) for project in data.projects]
+    return UserAPI.parse_obj(User.update({"username": data.username, "is_active": data.is_active, "projects": projects}, id=user_id).to_dict())
 
 
 @router.patch("/users/{user_id}/{project_id}/", response_model=UserAPI)
