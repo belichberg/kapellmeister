@@ -90,13 +90,11 @@ class APIToken(ModelMixin, Base):
 
     id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
     token = Column("token", VARCHAR(64), nullable=False, unique=True)
-    read_only = Column("read_only", Boolean, nullable=False)
+    write = Column("write", Boolean, nullable=False)
     project_id = Column("project_id", Integer, ForeignKey("projects.id"), nullable=True)
-    # write = Column("write", Boolean, nullable=False)
 
     def to_dict(self):
-        return dict(id=self.id, token=self.token, read_only=self.read_only, project_id=self.project_id)
-        # return dict(id=self.id, token=self.token, read_only=self.read_only, project_id=self.project_id, write=self.write)
+        return dict(id=self.id, token=self.token, write=self.write, project_id=self.project_id)
 
 
 class User(ModelMixin, Base):

@@ -24,7 +24,7 @@ async def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenA
 
 @router.post("/tokens/", response_model=TokenAPI)
 async def create_token(
-    write: bool = True, read_only: bool = True, project: Optional[int] = None, user: Optional[UserAPI] = Depends(get_user)
+    write: bool = True, project: Optional[int] = None, user: Optional[UserAPI] = Depends(get_user)
 ) -> TokenAPI:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -33,7 +33,7 @@ async def create_token(
             headers={"WWW-Authenticate": "Token"},
         )
 
-    data = dict(token=generate_api_token(), read_only=read_only, project_id=project, write=write)
+    data = dict(token=generate_api_token(), project_id=project, write=write)
     return TokenAPI.parse_obj(APIToken.create(data).to_dict())
 
 

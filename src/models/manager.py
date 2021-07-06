@@ -33,9 +33,9 @@ class ProjectAPI(BaseModel):
 class TokenAPI(BaseModel):
     id: Optional[int]
     token: str
-    read_only: bool
+    # read_only: bool
     project_id: Optional[int]
-    # write: bool
+    write: bool
 
 
 class TokenRequestAPI(BaseModel):
