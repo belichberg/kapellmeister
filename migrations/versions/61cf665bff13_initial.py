@@ -1,15 +1,15 @@
 """initial
 
-Revision ID: f1a2f8bc73cd
+Revision ID: 61cf665bff13
 Revises: 
-Create Date: 2021-07-06 14:57:46.949756
+Create Date: 2021-07-07 18:11:05.205431
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = 'f1a2f8bc73cd'
+revision = '61cf665bff13'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -76,7 +76,8 @@ def upgrade():
     sa.Column('channel_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['channel_id'], ['channels.id'], ),
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('slug', 'project_id', 'channel_id', name='_slug_project_channel_uc')
     )
     op.create_index(op.f('ix_containers_id'), 'containers', ['id'], unique=True)
     # ### end Alembic commands ###
