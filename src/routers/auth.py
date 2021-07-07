@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
@@ -103,26 +103,9 @@ async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI
             headers={"WWW-Authenticate": "Token"},
         )
     projects: List[Project] = [Project.get(id=project['id']) for project in data.projects]
-    return UserAPI.parse_obj(User.update({"username": data.username, "is_active": data.is_active, "projects": projects}, id=user_id).to_dict())
+    context: Dict[Any] = {"username": data.username, "is_active": data.is_active, "projects": projects}
+    if data.new_password:
+        context["password"] = pwd_hash(data.new_password)
 
+    return UserAPI.parse_obj(User.update(context, id=user_id).to_dict())
 
-@router.patch("/users/{user_id}/{project_id}/", response_model=UserAPI)
-async def add_user_project(user_id: int, project_id: int, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
-    """Add project to user"""
-    if user is None or user.role != UserRole.super:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Token"},
-        )
-
-    user: Optional[UserAPI] = UserAPI.parse_obj(User.get(id=user_id).to_dict())
-    if user.projects:
-        projects: List[Project] = user.projects.copy()
-        if Project.get(id=project_id) in projects:
-            projects.remove(Project.get(id=project_id))
-        else:
-            projects.append(Project.get(id=project_id))
-    else:
-        projects: List[Project] = [Project.get(id=project_id)]
-    return UserAPI.parse_obj(User.update({"projects": projects}, id=user_id).to_dict())

@@ -49,10 +49,10 @@
                             class="mb-1 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
                             placeholder="User password *"/>
                     <div
-                            class="inline-block absolute right-8 w-0 top-1.5 items-center  text-sm leading-5 text-gray-700 cursor-pointer transition duration-200 hover:text-blue-700"
+                            class="inline-block absolute right-8 w-0 top-1.5 items-center leading-5 text-gray-700 cursor-pointer transition duration-200 hover:text-blue-700"
                     >
                         <i class="material-icons text-sm h-6" @click="show_pass = !show_pass"
-                           :text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
+                           v-text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
                     </div>
                 </div>
                 <div class="mb-4 p-3 text-gray-500 break-words">
@@ -95,43 +95,79 @@
                     <thead class="bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <tr>
                         <th scope="col"
-                            class="px-5 py-2.5">
+                            class="py-2.5"
+                            width="35%">
                             Username
                         </th>
                         <th scope="col"
-                            class="px-5 py-2.5">
+                            class="px-5 py-2.5"
+                            width="15%">
                             Role
                         </th>
                         <th scope="col"
-                            class="px-5 py-2.5">
+                            class="px-5 py-2.5"
+                            width="10%">
                             Is active
                         </th>
                         <th scope="col"
-                            class="px-5 py-2.5">
+                            class="px-5 py-2.5"
+                            width="20%">
                             Project(s)
                         </th>
                         <th scope="col"
-                            class="px-5 py-2.5">
+                            class="px-5 py-2.5"
+                            width="10%">
                             <span class="sr-only">Edit</span>
                         </th>
-                        <th scope="col" class="relative px-6 py-3">
+                        <th scope="col" class="relative px-6 py-3" width="10%">
                             <span class="sr-only">Delete</span>
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="user in users" :key="user.id" class="container-row text-center hover:bg-gray-50">
-                        <td v-if="selectedUser === user" class="whitespace-nowrap text-sm font-medium text-gray-900">
-                            <label for="user" class="sr-only">User</label>
-                            <input type="text" id="user" name="user"
-                                   required
-                                   v-model="user.username"
-                                   class="bg-white relative text-center text-gray-700 rounded-md shadow p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text"
-                                   placeholder="New Username"
-                            />
-                        </td>
-                        <td v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                            [[ user.username ]]
+                        <td class="whitespace-nowrap text-sm font-medium text-gray-900 relative">
+                            <div v-if="selectedUser === user" class="ml-5">
+                                <label for="user" class="sr-only">User</label>
+                                <input type="text" id="user" name="user"
+                                       v-model="user.username"
+                                       class="bg-white relative text-center text-gray-700 rounded-md shadow p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text"
+                                       placeholder="New Username"
+                                />
+                                <button v-if="selectedUser === user && newPasswordBtn"
+                                        @click="newPasswordBtn=false"
+                                        type="button"
+                                        title="Add project"
+                                        class="inline-block bg-white ml-2 px-2 h-7 rounded-md shadow text-center shadow-sm hover:bg-gray-200
+                                                                    focus:ring-1 focus:ring-pink-500
+                                                                    focus:border-pink-500 sm:text-sm cursor-pointer"
+                                >
+                                    <span class="text-xs text-gray-500">New password</span>
+                                </button>
+                                <div v-if="!newPasswordBtn" class="inline-block">
+                                    <label for="newPassword" class="sr-only">Password</label>
+                                    <input
+                                            id="newPassword"
+                                            v-model="newPassword"
+                                            :type="passwordInputType"
+                                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                            title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                            minlength="8"
+                                            maxlength="64"
+                                            autocomplete="off"
+                                            required
+                                            class="mb-1 bg-white relative w-50 text-gray-700 rounded-md shadow p-2 text-left
+                                   cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
+                                   focus:border-pink-500 sm:text-sm cursor-text"
+                                            placeholder="New password *"/>
+                                    <i class="absolute pt-1.5 px-2 right-0 material-icons text-sm text-gray-700 cursor-pointer hover:text-blue-700"
+                                       @click="show_pass = !show_pass"
+                                       v-text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
+                                </div>
+                            </div>
+                            <div v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                                [[ user.username ]]
+                            </div>
                         </td>
                         <td class="p-3 py-4 text-sm text-gray-500">
                             [[ user.role ]]
@@ -167,7 +203,7 @@
                                         type="button"
                                         title="Add project"
                                         class="inline-block bg-white w-7 h-7 rounded-md shadow text-center
-                                                                    cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
+                                                                    hover:bg-gray-200 focus:ring-1 focus:ring-pink-500
                                                                     focus:border-pink-500 sm:text-sm cursor-pointer absolute top-0 -right-2"
                                 >
                                     <span class="text-lg text-gray-500">+</span>
@@ -199,7 +235,7 @@
                                         done_outline
                                     </span>
                                 </button>
-                                <button @click="selectedUser = null"
+                                <button @click="closeUpdateUser"
                                         class="text-gray-400 hover:text-red-600 cursor-pointer">
                                     <span class="material-icons">
                                         highlight_off
@@ -256,8 +292,17 @@
                 menuIsActive: 0,
                 projectMenuIsActive: 0,
                 selectedUser: null,
-                userProjectsList: []
+                userProjectsList: [],
+                newPasswordBtn: true
+            }
+        },
 
+        computed: {
+            passwordInputType() {
+                return this.show_pass ? 'text' : 'password'
+            },
+            passwordInputIcon() {
+                return this.show_pass ? 'visibility' : 'visibility_off'
             }
         },
 
@@ -348,32 +393,17 @@
             },
 
             addProjectToUser(project) {
-                console.log(this.userProjectsList.filter(data=> data !== project))
-                let id_projects = []
-                this.userProjectsList.filter(data => id_projects.push(data.id))
-                if(!id_projects.includes(project.id)){
-                     this.userProjectsList.push(project)
-                }else{
-                   console.log("exists")
+                if (!this.userProjectsList.filter(data => data.id === project.id).length) {
+                    this.userProjectsList.push(project)
                 }
-
-                // if (!this.userProjectsList.includes(project)) {
-                //     this.userProjectsList.push(project)
-                // }else{
-                //     console.log("exists")
-                // }
-
-                // if(this.userProjectsList.indexOf(project)){
-                // // if(this.userProjectsList.filter(data=> data === project)){
-                //     console.log("exists")
-                // } else{
-                //     console.log("No exists")
-                // }
             },
 
             async updateUser(user) {
                 user.is_active = this.is_active
                 user.projects = this.userProjectsList
+                if (this.newPassword) {
+                    user["new_password"] = this.newPassword
+                }
                 await fetch(`/api/v1/users/${user.id}/`, {method: "PATCH", body: JSON.stringify(user)})
                 this.users = await this.getUsers()
             },
@@ -381,6 +411,11 @@
             editUser(user) {
                 this.selectedUser = user
                 this.userProjectsList = JSON.parse(JSON.stringify(user.projects))
+            },
+
+            closeUpdateUser() {
+                this.selectedUser = null
+                this.newPasswordBtn = true
             }
         },
 
@@ -389,6 +424,7 @@
             this.users = await this.getUsers()
             this.projects = await this.getProjects()
             this.selectedProject = this.projects.filter(item => item.slug === project)[0]
+
         }
     });
 </script>
