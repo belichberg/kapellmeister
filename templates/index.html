@@ -423,17 +423,17 @@
                                 class="container-row text-center">
 
                                 <td v-for="project in projects" v-if="project.id == container.project_id"
-                                    class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    class="p-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                     [[ project.name ]]
                                 </td>
                                 <td v-for="project in projects" v-if="project.id == container.project_id"
-                                    class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    class="p-3 whitespace-nowrap text-sm font-medium text-gray-900">
 
                                     <span v-for="channel in project.channels" v-if="channel.id == container.channel_id">
                                         [[ channel.name ]]
                                     </span>
                                 </td>
-                                <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                     [[ container.slug ]]
                                 </td>
                                 <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
@@ -500,10 +500,13 @@
                 <dt class="text-sm font-medium text-gray-600">
                   Digest
                 </dt>
-                <dd v-if="containerEditing" class="mt-1 p-3 text-center text-sm text-gray-900 sm:mt-0 sm:col-span-7 overflow-x-scroll bg-gray-50 rounded-md shadow-inner">
-                  [[ selectedContainer.digest ]]
-                </dd>
-                <dd v-else class="mt-1 p-3 text-center text-sm text-gray-900 sm:mt-0 sm:col-span-7 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
+                <label for="token" class="sr-only">Key</label>
+                <input v-if="containerEditing" type="text" id="token" name="token"
+                       required
+                       v-model="editedContainer.digest"
+                       class="bg-gray-50 text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text sm:col-span-7 border border-gray-200"
+                />
+                <dd v-else class="mt-1 p-2 text-center text-sm text-gray-900 sm:mt-0 sm:col-span-7 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
                   [[ selectedContainer.digest ]]
                 </dd>
               </div>
@@ -511,9 +514,7 @@
                 <dt class="text-sm font-medium text-gray-600">
                   Auth
                 </dt>
-                <dd v-if="containerEditing" class="mt-1 p-3 text-xs text-gray-900 sm:mt-0 sm:col-span-5 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
-                    <textarea v-model="editedContainer.auth" rows="8" cols="80" class=""></textarea>
-                </dd>
+                <textarea v-if="containerEditing" v-model="editedContainer.auth" rows="10" spellcheck="false" cols="84" class="bg-white text-gray-700 rounded-md shadow mt-1 pl-5 p-2 text-left cursor-default focus:outline-none text-xs cursor-text sm:col-span-7 border border-gray-200"></textarea>
                 <dd v-else class="mt-1 p-3 text-xs text-gray-900 sm:mt-0 sm:col-span-5 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
                     <pre>[[ JSON.stringify(JSON.parse(selectedContainer.auth), undefined, 4) ]]</pre>
                 </dd>
@@ -522,13 +523,14 @@
                 <dt class="text-sm font-medium text-gray-600">
                   Parameters
                 </dt>
-                <dd class="mt-1 p-3 text-xs text-gray-900 sm:mt-0 sm:col-span-5 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
+                <textarea v-if="containerEditing" v-model="editedContainer.parameters" rows="24" spellcheck="false" cols="84" class="bg-gray-50 text-gray-700 rounded-md shadow mt-1 pl-5 p-2 text-left cursor-default focus:outline-none text-xs cursor-text sm:col-span-7 border border-gray-200"></textarea>
+                <dd v-else class="mt-1 p-3 text-xs text-gray-900 sm:mt-0 sm:col-span-5 overflow-x-scroll bg-gray-200 rounded-md shadow-inner">
                     <pre class="mr-10">[[ JSON.stringify(selectedContainer.parameters, null, '\t') ]]</pre>
                 </dd>
               </div>
             </dl>
           </div>
-</div>
+        </div>
     </div>
     {% endblock content %}
 
@@ -765,8 +767,9 @@
                 startEditingContainer () {
                     this.containerEditing = true
                     this.editedContainer = JSON.parse(JSON.stringify(this.selectedContainer))
-                    this.editedContainer.auth = JSON.stringify(JSON.parse(this.editedContainer.auth), undefined, 4)
-                    this.editedContainer.parameters = JSON.stringify(this.editedContainer.parameters, undefined, 4)
+                    this.editedContainer.auth = JSON.stringify(JSON.parse(this.editedContainer.auth), null, '\t')
+                    this.editedContainer.parameters =JSON.stringify(this.editedContainer.parameters, null, '\t')
+                    {#this.editedContainer.parameters = JSON.stringify(this.editedContainer.parameters, undefined, 4)#}
                 }
             },
 
