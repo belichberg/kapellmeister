@@ -137,7 +137,7 @@
                                 <button v-if="selectedUser === user && newPasswordBtn"
                                         @click="newPasswordBtn=false"
                                         type="button"
-                                        title="Add project"
+                                        title="Change password"
                                         class="inline-block bg-white ml-2 px-2 h-7 rounded-md shadow text-center shadow-sm hover:bg-gray-200
                                                                     focus:ring-1 focus:ring-pink-500
                                                                     focus:border-pink-500 sm:text-sm cursor-pointer"
@@ -149,20 +149,19 @@
                                     <input
                                             id="newPassword"
                                             v-model="newPassword"
-                                            :type="passwordInputType"
+                                            :type="this.show_pass ? 'text' : 'password'"
                                             pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                                             title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
                                             minlength="8"
                                             maxlength="64"
                                             autocomplete="off"
-                                            required
                                             class="mb-1 bg-white relative w-50 text-gray-700 rounded-md shadow p-2 text-left
                                    cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
                                    focus:border-pink-500 sm:text-sm cursor-text"
                                             placeholder="New password *"/>
-                                    <i class="absolute pt-1.5 px-2 right-0 material-icons text-sm text-gray-700 cursor-pointer hover:text-blue-700"
-                                       @click="show_pass = !show_pass"
-                                       v-text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
+<!--                                    <i class="absolute pt-1.5 px-2 right-0 material-icons text-sm text-gray-700 cursor-pointer hover:text-blue-700"-->
+<!--                                        @click="show_pass = !show_pass"-->
+<!--                                        v-text="this.show_pass ? 'visibility' : 'visibility_off'"></i>-->
                                 </div>
                             </div>
                             <div v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -293,16 +292,7 @@
                 projectMenuIsActive: 0,
                 selectedUser: null,
                 userProjectsList: [],
-                newPasswordBtn: true
-            }
-        },
-
-        computed: {
-            passwordInputType() {
-                return this.show_pass ? 'text' : 'password'
-            },
-            passwordInputIcon() {
-                return this.show_pass ? 'visibility' : 'visibility_off'
+                newPasswordBtn: true,
             }
         },
 
@@ -334,6 +324,7 @@
                     this.newPassword = ''
                     this.selectedRole = ''
                     this.selectedProjects = ''
+                    this.show_pass = false
                 }
             },
 
@@ -406,6 +397,7 @@
                 }
                 await fetch(`/api/v1/users/${user.id}/`, {method: "PATCH", body: JSON.stringify(user)})
                 this.users = await this.getUsers()
+                // location.reload()
             },
 
             editUser(user) {
@@ -415,8 +407,9 @@
 
             closeUpdateUser() {
                 this.selectedUser = null
+                this.newPassword = ''
                 this.newPasswordBtn = true
-            }
+            },
         },
 
         async mounted() {
@@ -424,7 +417,6 @@
             this.users = await this.getUsers()
             this.projects = await this.getProjects()
             this.selectedProject = this.projects.filter(item => item.slug === project)[0]
-
         }
     });
 </script>

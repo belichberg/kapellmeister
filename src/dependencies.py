@@ -67,7 +67,8 @@ def get_user(token: Optional[str] = Depends(get_token)) -> Optional[UserAPI]:
         token_data: Optional[TokenData] = token_validate(token)
 
         if token_data:
-            user: UserAPI = UserAPI.parse_obj(User.get(username=token_data.sub).to_dict())
+            # user: UserAPI = UserAPI.parse_obj(User.get(username=token_data.sub).to_dict())
+            user: UserAPI = UserAPI.parse_obj(User.get(id=token_data.sub).to_dict())
             if user.is_active:
                 return user
 

@@ -48,6 +48,9 @@
                         </button>
                     </div>
                     <div class="hidden lg:flex lg:items-center lg:justify-end xl:col-span-6">
+                        <a href="{{ url_for('user_profile') }}" class="font-medium hover:text-pink-600">
+                             {{user.username}}
+                        </a>
                         <a href="{{ url_for('logout') }}"
                                 class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">
                             Logout
