@@ -77,6 +77,10 @@ class ModelMixin(object):
 
         except SQLAlchemyError as err:
             print("Database error:", err)
+            session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return obj
 

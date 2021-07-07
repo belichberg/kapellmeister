@@ -5,6 +5,7 @@ from pydantic import constr, BaseModel
 
 
 class ContainerAPI(BaseModel):
+    id: Optional[int]
     slug: constr(max_length=64)
     auth: Union[Dict[str, Any], str]
     digest: constr(max_length=255)

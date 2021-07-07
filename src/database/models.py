@@ -1,6 +1,7 @@
 import enum
 
-from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table, TIMESTAMP, func
+from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table, TIMESTAMP, func, \
+    UniqueConstraint
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import relationship
 
@@ -68,9 +69,9 @@ class Container(ModelMixin, Base):
     digest = Column("hash", VARCHAR(255), nullable=False)
     parameters = Column("parameters", JSON, nullable=False)
     updated_time = Column("updated_time", TIMESTAMP, server_default=func.now(), nullable=False)
-    # updated_time = Column("updated_time", TIMESTAMP, default=time(), nullable=False)
     project_id = Column("project_id", Integer, ForeignKey("projects.id"), nullable=True)
     channel_id = Column("channel_id", Integer, ForeignKey("channels.id"), nullable=True)
+    __table_args__ = (UniqueConstraint('slug', 'project_id', 'channel_id', name='_slug_project_channel_uc'),)
 
     def to_dict(self):
         return dict(

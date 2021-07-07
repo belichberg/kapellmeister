@@ -70,6 +70,26 @@ def delete_project(project_id: int, user: Optional[UserAPI] = Depends(get_user))
     return project
 
 
+@router.get("/channels/", response_model=List[ChannelAPI])
+def get_channels(user: Optional[UserAPI] = Depends(get_user)) -> List[ChannelAPI]:
+    # Authentication check
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
+    # Getting all existing projects
+    channels: List[ChannelAPI] = [ChannelAPI.parse_obj(channel.to_dict()) for channel in Channel.get_all()]
+
+    if user.role != UserRole.super:
+        # Filter projects available to the user
+        channels: List[ChannelAPI] = [c for c in channels if Project.get(id=c.project_id) in user.projects]
+
+    return channels
+
+
 @router.post("/channels/", response_model=ChannelAPI)
 def create_channel(data: ChannelAPI, user: Optional[UserAPI] = Depends(get_user)) -> ChannelAPI:
     # Authentication check
@@ -95,6 +115,46 @@ def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_user))
 
     # deleting a channel
     return ChannelAPI.parse_obj(Channel.delete(id=channel_id).to_dict())
+
+
+@router.patch("/container/", response_model=ContainerAPI)
+async def edit_container(container: ContainerAPI, user: Optional[UserAPI] = Depends(get_user)) -> ContainerAPI:
+    # container: ContainerAPI = ContainerAPI.parse_obj(yaml.safe_load(await request.body()))
+
+    project: ProjectAPI = ProjectAPI.parse_obj(Project.get(id=container.project_id).to_dict())
+    channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(id=container.channel_id, project_id=project.id).to_dict())
+
+    # Authentication check
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+    # Checking access rights
+    elif user.role != UserRole.super:
+        raise HTTPException(status.HTTP_403_FORBIDDEN)
+
+    container.project_id = project.id
+    container.channel_id = channel.id
+    container.updated_time = time_utc_now()
+
+    # prepare data
+    data: Dict = {
+        **container.dict(exclude={"auth", "slug", "project_id", "channel_id"}),
+        **dict(
+            auth=json.dumps(container.auth),
+            slug=container.slug,
+            project_id=project.id,
+            channel_id=channel.id,
+        ),
+    }
+
+    # create of get container record
+    record = Container.update(data, id=container.id)
+
+    # update or create container and then return container api
+    return ContainerAPI.parse_obj(record.to_dict())
 
 
 @router.get("/{project_slug}/{channel_slug}/", response_model=List[ContainerAPI])
@@ -157,7 +217,7 @@ async def set_container(
 
     # prepare data
     data: Dict = {
-        **container.dict(exclude={"auth", "slug", "project_id", "channel_id"}),
+        **container.dict(exclude={"id", "auth", "slug", "project_id", "channel_id"}),
         **dict(
             auth=json.dumps(container.auth),
             slug=container.slug,
@@ -206,5 +266,10 @@ async def get_all_containers(
             headers={"WWW-Authenticate": "Token"},
         )
 
-    containers: Query = Container.get_all()
-    return [ContainerAPI.parse_obj(item.to_dict()) for item in containers]
+    # Getting all existing projects
+    containers: List[ContainerAPI] = [ContainerAPI.parse_obj(item.to_dict()) for item in Container.get_all()]
+
+    if user.role != UserRole.super:
+        # Filter projects available to the user
+        containers: List[ContainerAPI] = [c for c in containers if Project.get(id=c.project_id) in user.projects]
+    return containers
