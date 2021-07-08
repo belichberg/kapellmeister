@@ -84,10 +84,14 @@ def users(request: Request, user: Optional[UserAPI] = Depends(get_user)):
 @app.get("/user/profile")
 def user_profile(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Users profile page"""
-    if user:
-        return templates.TemplateResponse("user_profile.html", {"request": request, "user": user})
-
-    return RedirectResponse(url="/")
+    if user is None:
+        return RedirectResponse(url="/")
+    if request.session.get("fail_password_message"):
+        error_message: str = request.session.get("fail_password_message")
+        request.session["fail_password_message"] = ""
+        return templates.TemplateResponse("user_profile.html", {"request": request, "user": user,
+                                                                "error_message": error_message})
+    return templates.TemplateResponse("user_profile.html", {"request": request, "user": user})
 
 
 # add static files to project

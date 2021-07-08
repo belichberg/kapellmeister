@@ -35,14 +35,14 @@ async def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
         user: Optional[UserAPI] = UserAPI.parse_obj(User.get(username=username).to_dict())
 
     else:
-        request.session["fail_login_message"] = f"Username '{username}' doesn't exist!"
+        request.session["fail_login_message"]: str = f"Username '{username}' doesn't exist!"
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # validate user
     # if not user or not pwd_verify(password, user.password if user else ""):
     if not pwd_verify(password, user.password if user else ""):
         # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid user or password")
-        request.session["fail_login_message"] = f"Invalid Username or Password!"
+        request.session["fail_login_message"]: str = f"Invalid Username or Password!"
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # build data
@@ -95,7 +95,7 @@ async def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user))
 
 
 @router.patch("/users/{user_id}/", response_model=UserAPI)
-async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+async def update_user(request: Request, user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Update user data"""
     # if user is None or user.role != UserRole.super:
     if user is None:
@@ -106,6 +106,14 @@ async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI
         )
     projects: List[Project] = [Project.get(id=project['id']) for project in data.projects]
     context: Dict[Any] = {"username": data.username, "is_active": data.is_active, "projects": projects}
+    if data.check_password:
+        if not pwd_verify(data.check_password, user.password if user else ""):
+            request.session["fail_password_message"]: str = f"Invalid password!"
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Token"},
+            )
     if data.new_password:
         context["password"] = pwd_hash(data.new_password)
 
