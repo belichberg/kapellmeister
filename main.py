@@ -81,13 +81,22 @@ def users(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     return RedirectResponse(url="/")
 
 
+@app.get("/user/profile")
+def user_profile(request: Request, user: Optional[UserAPI] = Depends(get_user)):
+    """Users profile page"""
+    if user:
+        return templates.TemplateResponse("user_profile.html", {"request": request, "user": user})
+
+    return RedirectResponse(url="/")
+
+
 # add static files to project
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # include routes
-app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
 app.include_router(auth.router, prefix=API_ROUTE_PREFIX)
 app.include_router(token.router, prefix=API_ROUTE_PREFIX)
+app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
 
 # we need this to save temporary code & state in session
 app.add_middleware(SessionMiddleware, secret_key=env["security.key"])

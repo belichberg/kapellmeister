@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
@@ -43,7 +43,8 @@ async def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # build data
-    data: TokenData = TokenData(sub=user.username, exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE))
+    # data: TokenData = TokenData(sub=user.username, exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE))
+    data: TokenData = TokenData(sub=user.id, exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE))
 
     # generate token
     token: JWTToken = token_create(JWT_KEY, JWT_ALGORITHM, data)
@@ -91,52 +92,31 @@ async def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user))
     return UserAPI.parse_obj(User.delete(id=user_id).to_dict())
 
 
-# @router.patch("/users/{user_id}/", response_model=UserAPI)
-# async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
-#     """Change users status"""
-#
-#     print(f"is active  {data}")
-#     if user is None or user.role != UserRole.super:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Could not validate credentials",
-#             headers={"WWW-Authenticate": "Token"},
-#         )
-#     return UserAPI.parse_obj(User.update(data.dict(), id=user_id).to_dict())
-
-
-@router.post("/users/update/{user_id}/", response_model=UserAPI)
+@router.patch("/users/{user_id}/", response_model=UserAPI)
 async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
-    """Change username"""
-
-    print(f"username changed {data.dict()}")
-
-    if user is None or user.role != UserRole.super:
+    """Update user data"""
+    # if user is None or user.role != UserRole.super:
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Token"},
         )
-    return UserAPI.parse_obj(User.update(data.dict(), id=user_id).to_dict())
+    projects: List[Project] = [Project.get(id=project['id']) for project in data.projects]
+    context: Dict[Any] = {"username": data.username, "is_active": data.is_active, "projects": projects}
+    if data.new_password:
+        context["password"] = pwd_hash(data.new_password)
+
+    return UserAPI.parse_obj(User.update(context, id=user_id).to_dict())
 
 
-@router.patch("/users/{user_id}/{project_id}/", response_model=UserAPI)
-async def add_user_project(user_id: int, project_id: int, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
-    """Add project to user"""
-    if user is None or user.role != UserRole.super:
+@router.get("/users/current/", response_model=UserAPI)
+async def get_current_user(user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+    """Get current user data"""
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Token"},
         )
-
-    user: Optional[UserAPI] = UserAPI.parse_obj(User.get(id=user_id).to_dict())
-    if user.projects:
-        projects: List[Project] = user.projects.copy()
-        if Project.get(id=project_id) in projects:
-            projects.remove(Project.get(id=project_id))
-        else:
-            projects.append(Project.get(id=project_id))
-    else:
-        projects: List[Project] = [Project.get(id=project_id)]
-    return UserAPI.parse_obj(User.update({"projects": projects}, id=user_id).to_dict())
+    return user

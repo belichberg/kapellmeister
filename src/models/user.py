@@ -29,4 +29,6 @@ class JWTToken(BaseModel):
 
 class UserRequestAPI(BaseModel):
     username: str
+    new_password: str = ""
     is_active: Optional[bool]
+    projects: List[Any] = []
