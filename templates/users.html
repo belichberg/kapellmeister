@@ -241,12 +241,16 @@
                                     </span>
                                 </button>
                             </div>
-                            <button v-else @click="editUser(user)"
+                            {% if user.username == "user1" %}
+<!--                            <button v-else @click="editUser(user)"-->
+<!--                                    class="text-gray-400 hover:text-gray-700 cursor-pointer">-->
+                            <button v-else-if="user.role != 'super'" @click="editUser(user)"
                                     class="text-gray-400 hover:text-gray-700 cursor-pointer">
                                 <span class="material-icons">
                                     edit
                                 </span>
                             </button>
+                            {% endif %}
                         </td>
                         <td class="p-3 pr-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             <button v-if="user.role != 'super'"

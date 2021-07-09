@@ -39,14 +39,12 @@ async def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # validate user
-    # if not user or not pwd_verify(password, user.password if user else ""):
     if not pwd_verify(password, user.password if user else ""):
         # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid user or password")
         request.session["fail_login_message"]: str = f"Invalid Username or Password!"
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # build data
-    # data: TokenData = TokenData(sub=user.username, exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE))
     data: TokenData = TokenData(sub=user.id, exp=time_utc_now() + timedelta(seconds=JWT_TOKEN_EXPIRE))
 
     # generate token
@@ -97,7 +95,6 @@ async def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user))
 @router.patch("/users/{user_id}/", response_model=UserAPI)
 async def update_user(request: Request, user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Update user data"""
-    # if user is None or user.role != UserRole.super:
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
