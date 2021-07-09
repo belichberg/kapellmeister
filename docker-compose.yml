@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
 
     ports:
-      - "172.19.1.5:80:8000"
-      - "172.18.0.16:80:8000"
+      - "127.0.0.1:80:8000"
+
 
     volumes:
       - /opt/kapellmeister-fast_api/src/data:/app/src/data
@@ -15,4 +15,3 @@ services:
 
     environment:
       - SECRET_KEY
-      - DEBUG
