@@ -27,24 +27,15 @@ class ModelMixin(object):
 
     @classmethod
     def get(cls, **kwargs):
-        try:
-            obj: cls = session.query(cls).filter_by(**kwargs).first()
-            return obj
+        obj: cls = session.query(cls).filter_by(**kwargs).first()
 
-        except SQLAlchemyError as err:
-            print("Database error:", err)
-            session.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        return obj
 
     @classmethod
     def get_all(cls, **kwargs) -> Query:
         obj: Query = session.query(cls).filter_by(**kwargs)
-        # if obj.first():
-        return obj
 
-        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return obj
 
     @classmethod
     def get_or_create(cls, body: Dict, **kwargs):
