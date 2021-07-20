@@ -6,8 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Query
 
 from src.database.models import Container, Project, Channel, UserRole
-from src.dependencies import get_api_token, get_user, time_utc_now
-from src.models.manager import ContainerAPI, ProjectAPI, ChannelAPI, TokenAPI
+from src.dependencies import get_api_key, get_user, time_utc_now
+from src.models.manager import ContainerAPI, ProjectAPI, ChannelAPI, APIKeyModel
 from src.models.user import UserAPI
 
 router = APIRouter()
@@ -119,11 +119,6 @@ def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_user))
 
 @router.patch("/container/", response_model=ContainerAPI)
 async def edit_container(container: ContainerAPI, user: Optional[UserAPI] = Depends(get_user)) -> ContainerAPI:
-    # container: ContainerAPI = ContainerAPI.parse_obj(yaml.safe_load(await request.body()))
-
-    project: ProjectAPI = ProjectAPI.parse_obj(Project.get(id=container.project_id).to_dict())
-    channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(id=container.channel_id, project_id=project.id).to_dict())
-
     # Authentication check
     if user is None:
         raise HTTPException(
@@ -135,8 +130,6 @@ async def edit_container(container: ContainerAPI, user: Optional[UserAPI] = Depe
     elif user.role != UserRole.super:
         raise HTTPException(status.HTTP_403_FORBIDDEN)
 
-    container.project_id = project.id
-    container.channel_id = channel.id
     container.updated_time = time_utc_now()
 
     # prepare data
@@ -145,16 +138,30 @@ async def edit_container(container: ContainerAPI, user: Optional[UserAPI] = Depe
         **dict(
             auth=json.dumps(container.auth),
             slug=container.slug,
-            project_id=project.id,
-            channel_id=channel.id,
+            project_id=container.project_id,
+            channel_id=container.channel_id,
         ),
     }
 
     # create of get container record
     record = Container.update(data, id=container.id)
 
-    # update or create container and then return container api
+    # update container and then return container api
     return ContainerAPI.parse_obj(record.to_dict())
+
+
+@router.delete("/container/{container_id}/", response_model=ContainerAPI)
+def delete_container(container_id: int, user: Optional[UserAPI] = Depends(get_user)) -> ContainerAPI:
+    # Authentication check
+    if user is None or user.role != UserRole.super:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Token"},
+        )
+
+    # delete container and then return container api
+    return ContainerAPI.parse_obj(Container.delete(id=container_id).to_dict())
 
 
 @router.get("/{project_slug}/{channel_slug}/", response_model=List[ContainerAPI])
@@ -162,7 +169,7 @@ async def get_containers(
         project_slug: str,
         channel_slug: str,
         user: Optional[UserAPI] = Depends(get_user),
-        token: Optional[TokenAPI] = Depends(get_api_token),
+        token: Optional[APIKeyModel] = Depends(get_api_key),
 ) -> List[ContainerAPI]:
     # Authentication check
     if user is None and token is None:
@@ -188,7 +195,7 @@ async def set_container(
         channel_slug: str,
         request: Request,
         user: Optional[UserAPI] = Depends(get_user),
-        token: Optional[TokenAPI] = Depends(get_api_token),
+        token: Optional[APIKeyModel] = Depends(get_api_key),
 ) -> ContainerAPI:
     container: ContainerAPI = ContainerAPI.parse_obj(yaml.safe_load(await request.body()))
 
@@ -233,30 +240,10 @@ async def set_container(
     return ContainerAPI.parse_obj(record.to_dict())
 
 
-@router.delete("/{project_slug}/{channel_slug}/{container_slug}/", response_model=ContainerAPI)
-def delete_container(
-        project_slug: str, channel_slug: str, container_slug: str, user: Optional[UserAPI] = Depends(get_user)
-) -> ContainerAPI:
-    # Authentication check
-    if user is None or user.role != UserRole.super:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Token"},
-        )
-
-    project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
-    channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(slug=channel_slug, project_id=project.id).to_dict())
-
-    return ContainerAPI.parse_obj(
-        Container.delete(slug=container_slug, project_id=project.id, channel_id=channel.id).to_dict()
-    )
-
-
 @router.get("/containers/", response_model=List[ContainerAPI])
 async def get_all_containers(
         user: Optional[UserAPI] = Depends(get_user),
-        token: Optional[TokenAPI] = Depends(get_api_token),
+        token: Optional[APIKeyModel] = Depends(get_api_key),
 ) -> List[ContainerAPI]:
     # Authentication check
     if user is None and token is None:

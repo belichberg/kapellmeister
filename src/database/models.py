@@ -21,7 +21,16 @@ user_project_table = Table(
     Base.metadata,
     Column("user_id", Integer, ForeignKey("users.id")),
     Column("project_id", Integer, ForeignKey("projects.id")),
+
+    UniqueConstraint('user_id', 'project_id', name='uix_1')
 )
+
+
+# class UserProject(Base):
+#     __tablename__ = "user_project"
+#
+#     user_id = Column("user_id", Integer, ForeignKey("users.id"))
+#     project_id = Column("project_id", Integer, ForeignKey("projects.id"))
 
 
 class Project(ModelMixin, Base):
@@ -86,16 +95,17 @@ class Container(ModelMixin, Base):
         )
 
 
-class APIToken(ModelMixin, Base):
-    __tablename__ = "tokens"
+class APIKey(ModelMixin, Base):
+    __tablename__ = "keys"
 
     id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
     token = Column("token", VARCHAR(64), nullable=False, unique=True)
+    description = Column("description", Text(512), nullable=True)
     write = Column("write", Boolean, nullable=False)
     project_id = Column("project_id", Integer, ForeignKey("projects.id"), nullable=True)
 
     def to_dict(self):
-        return dict(id=self.id, token=self.token, write=self.write, project_id=self.project_id)
+        return dict(id=self.id, token=self.token, description=self.description, write=self.write, project_id=self.project_id)
 
 
 class User(ModelMixin, Base):

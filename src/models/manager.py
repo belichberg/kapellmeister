@@ -31,13 +31,16 @@ class ProjectAPI(BaseModel):
     channels: Optional[List[ChannelAPI]] = []
 
 
-class TokenAPI(BaseModel):
+class APIKeyModel(BaseModel):
     id: Optional[int]
     token: str
-    # read_only: bool
+    description: Optional[str]
     project_id: Optional[int]
     write: bool
 
 
-class TokenRequestAPI(BaseModel):
+class APIKeyRequestModel(BaseModel):
     token: Optional[str]
+    description: Optional[str]
+    project_id: Optional[int]
+    write: bool = False
