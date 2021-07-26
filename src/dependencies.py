@@ -9,8 +9,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-from src.database.models import APIToken, User
-from src.models.manager import TokenAPI
+from src.database.models import APIKey, User
+from src.models.manager import APIKeyModel
 from src.models.user import TokenData, JWTToken, UserAPI
 
 env_dep: EnvYAML = EnvYAML()
@@ -26,7 +26,7 @@ JWT_TOKEN_EXPIRE: int = env_dep["security.token_expire"]
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # create oauth2_schema
-oauth2_bearer_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login/", auto_error=False)
+oauth2_bearer_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/users/login/", auto_error=False)
 oauth2_scheme = OAuth2(auto_error=False)
 
 
@@ -78,12 +78,13 @@ def generate_api_token():
     return str("".join(secrets.choice(string.ascii_letters + string.digits) for x in range(40)))
 
 
-def get_api_token(token: str = Depends(oauth2_scheme)) -> Optional[TokenAPI]:
+def get_api_key(token: str = Depends(oauth2_scheme)) -> Optional[APIKeyModel]:
     if token:
         token = token.replace("Token ", "")
+
         # get and compare tokens
-        access_token: APIToken = APIToken.get(token=token)
-        if access_token is not None and token == access_token.token:
-            return TokenAPI.parse_obj(access_token.to_dict())
+        access_key: APIKey = APIKey.get(token=token)
+        if access_key is not None and token == access_key.token:
+            return APIKeyModel.parse_obj(access_key.to_dict())
 
     return None

@@ -95,6 +95,10 @@
                     <thead class="bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <tr>
                         <th scope="col"
+                                class="px-5 py-2.5">
+                                №
+                            </th>
+                        <th scope="col"
                             class="py-2.5"
                             width="35%">
                             Username
@@ -125,7 +129,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="user in users" :key="user.id" class="container-row text-center hover:bg-gray-50">
+                    <tr v-for="(user, index) in users" :key="user.id" class="container-row text-center hover:bg-gray-50">
+                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1" />
                         <td class="whitespace-nowrap text-sm font-medium text-gray-900 relative">
                             <div v-if="selectedUser === user" class="ml-5">
                                 <label for="user" class="sr-only">User</label>

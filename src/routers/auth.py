@@ -35,13 +35,13 @@ async def login(request: Request, form: OAuth2PasswordRequestForm = Depends()):
         user: Optional[UserAPI] = UserAPI.parse_obj(User.get(username=username).to_dict())
 
     else:
-        request.session["fail_login_message"] = f"Username '{username}' doesn't exist!"
+        request.session["fail_login_message"]: str = f"Username '{username}' doesn't exist!"
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # validate user
     if not pwd_verify(password, user.password if user else ""):
         # raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid user or password")
-        request.session["fail_login_message"] = f"Invalid Username or Password!"
+        request.session["fail_login_message"]: str = f"Invalid Username or Password!"
         return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
 
     # build data
@@ -70,7 +70,7 @@ async def get_users(user: Optional[UserAPI] = Depends(get_user)) -> List[UserAPI
 
 
 @router.post("/", response_model=UserAPI)
-async def create_user(request: Request, data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+async def create_user(data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -101,9 +101,8 @@ async def delete_user(user_id: int, user: Optional[UserAPI] = Depends(get_user))
 
 
 @router.patch("/{user_id}/", response_model=UserAPI)
-async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+async def update_user(request: Request, user_id: str, data: UserRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     """Update user data"""
-    # if user is None or user.role != UserRole.super:
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

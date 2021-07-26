@@ -10,7 +10,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from src.dependencies import get_user
 from src.models.user import UserAPI
-from src.routers import manager, auth, token
+from src.routers import manager, auth, keys
 
 # read env.yaml config file
 env = EnvYAML()
@@ -63,11 +63,11 @@ def logout(request: Request):
     return RedirectResponse(url="/")
 
 
-@app.get("/tokens")
+@app.get("/keys")
 def tokens(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create tokens page"""
     if user:
-        return templates.TemplateResponse("tokens.html", {"request": request, "user": user})
+        return templates.TemplateResponse("keys.html", {"request": request, "user": user})
 
     return RedirectResponse(url="/")
 
@@ -77,11 +77,6 @@ def users(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create users page"""
     if user and user.role == "super":
         return templates.TemplateResponse("users.html", {"request": request, "user": user})
-    #
-    # error_message: str = ""
-    # if request.session.get("username_exists"):
-    #     error_message = request.session.get("username_exists")
-    #     request.session["username_exists"] = ""
 
     return RedirectResponse(url="/")
 
@@ -105,7 +100,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # include routes
 app.include_router(auth.router, prefix=API_ROUTE_PREFIX)
-app.include_router(token.router, prefix=API_ROUTE_PREFIX)
+app.include_router(keys.router, prefix=API_ROUTE_PREFIX)
 app.include_router(manager.router, prefix=API_ROUTE_PREFIX)
 
 # we need this to save temporary code & state in session
