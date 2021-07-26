@@ -1,7 +1,6 @@
 import enum
 
-from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table, TIMESTAMP, func, \
-    UniqueConstraint
+from sqlalchemy import Column, Integer, VARCHAR, Text, ForeignKey, String, JSON, Boolean, Enum, Table, TIMESTAMP, func
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import relationship
 
@@ -21,16 +20,7 @@ user_project_table = Table(
     Base.metadata,
     Column("user_id", Integer, ForeignKey("users.id")),
     Column("project_id", Integer, ForeignKey("projects.id")),
-
-    UniqueConstraint('user_id', 'project_id', name='uix_1')
 )
-
-
-# class UserProject(Base):
-#     __tablename__ = "user_project"
-#
-#     user_id = Column("user_id", Integer, ForeignKey("users.id"))
-#     project_id = Column("project_id", Integer, ForeignKey("projects.id"))
 
 
 class Project(ModelMixin, Base):
@@ -78,9 +68,9 @@ class Container(ModelMixin, Base):
     digest = Column("hash", VARCHAR(255), nullable=False)
     parameters = Column("parameters", JSON, nullable=False)
     updated_time = Column("updated_time", TIMESTAMP, server_default=func.now(), nullable=False)
+    # updated_time = Column("updated_time", TIMESTAMP, default=time(), nullable=False)
     project_id = Column("project_id", Integer, ForeignKey("projects.id"), nullable=True)
     channel_id = Column("channel_id", Integer, ForeignKey("channels.id"), nullable=True)
-    __table_args__ = (UniqueConstraint('slug', 'project_id', 'channel_id', name='_slug_project_channel_uc'),)
 
     def to_dict(self):
         return dict(
@@ -95,17 +85,17 @@ class Container(ModelMixin, Base):
         )
 
 
-class APIKey(ModelMixin, Base):
-    __tablename__ = "keys"
+class APIToken(ModelMixin, Base):
+    __tablename__ = "tokens"
 
     id = Column("id", Integer, nullable=False, primary_key=True, index=True, unique=True)
     token = Column("token", VARCHAR(64), nullable=False, unique=True)
-    description = Column("description", Text(512), nullable=True)
-    write = Column("write", Boolean, nullable=False)
+    read_only = Column("read_only", Boolean, nullable=False)
     project_id = Column("project_id", Integer, ForeignKey("projects.id"), nullable=True)
+    write = Column("write", Boolean, nullable=False)
 
     def to_dict(self):
-        return dict(id=self.id, token=self.token, description=self.description, write=self.write, project_id=self.project_id)
+        return dict(id=self.id, token=self.token, read_only=self.read_only, project_id=self.project_id, write=self.write)
 
 
 class User(ModelMixin, Base):

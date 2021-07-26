@@ -112,6 +112,14 @@ async def update_user(user_id: str, data: UserRequestAPI, user: Optional[UserAPI
         )
     projects: List[Project] = [Project.get(id=project['id']) for project in data.projects]
     context: Dict[Any] = {"username": data.username, "is_active": data.is_active, "projects": projects}
+    if data.check_password:
+        if not pwd_verify(data.check_password, user.password if user else ""):
+            request.session["fail_password_message"]: str = f"Invalid password!"
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Token"},
+            )
     if data.new_password:
         context["password"] = pwd_hash(data.new_password)
 

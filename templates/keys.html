@@ -20,12 +20,11 @@
                         <div class="flex justify-between w-full text-gray-700 font-medium p-2 text-left sm:text-sm">
                             <div class="cursor-pointer">
                                 <label for="writeAccess" class="cursor-pointer">Write</label>
-                                <input id="writeAccess" type="checkbox" v-model="writeAccess" class="cursor-pointer"/>
+                                <input id="writeAccess" type="checkbox" v-model="writeAccess" class="cursor-pointer" />
                             </div>
                             <div class="cursor-pointer">
                                 <label for="assignProject" class="cursor-pointer">Assign</label>
-                                <input id="assignProject" type="checkbox" v-model="assignProject"
-                                       class="cursor-pointer"/>
+                                <input id="assignProject" type="checkbox" v-model="assignProject" class="cursor-pointer" />
                             </div>
                         </div>
                         <div class="w-48 ml-3 flex-initial" v-click-outside="hideProjects">
@@ -66,8 +65,8 @@
                                         <span class="block truncate"
                                               :class="project === selectedProject ? 'font-semibold' : 'font-normal'"
                                               v-text="project.name"></span>
-                                        <span v-if="project === selectedProject"
-                                              class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                                                            <span v-if="project === selectedProject"
+                                                                  class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
                                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                                  fill="currentColor"
                                                  aria-hidden="true"
@@ -106,90 +105,89 @@
 </div>
 
 
-<div v-if="editedKey"
-     class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
-    <form v-click-outside="cancelKeyEditing"
-          @submit.prevent="updateKey"
-          class="bg-white shadow overflow-hidden overflow-y-scroll sm:rounded-lg sm:max-w-2xl sm:mx-auto relative">
-        <div class="sticky top-0 bg-white px-4 py-5 sm:px-6 relative border-b border-gray-200">
-            <h3 class="text-xl leading-6 font-medium text-gray-900">
-                Key editing
-            </h3>
-            <p class="mt-1 text-sm text-gray-500">
-                Making changes to the key
-            </p>
-            <div class="absolute right-6 top-6">
-                <div class="flex items-center justify-end">
-                    <button type="submit"
-                            class="mt-3 ml-3 w-full inline-flex px-3 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
-                        Save
-                    </button>
-                    <button type="reset"
-                            @click="cancelKeyEditing"
-                            class="mt-3 ml-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
-                        Cancel
-                    </button>
+    <div v-if="editedKey"
+         class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
+        <form v-click-outside="cancelKeyEditing"
+              @submit.prevent="updateKey"
+              class="bg-white shadow overflow-hidden overflow-y-scroll sm:rounded-lg sm:max-w-2xl sm:mx-auto relative">
+            <div class="sticky top-0 bg-white px-4 py-5 sm:px-6 relative border-b border-gray-200">
+                <h3 class="text-xl leading-6 font-medium text-gray-900">
+                    Key editing
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    Making changes to the key
+                </p>
+                <div class="absolute right-6 top-6">
+                    <div class="flex items-center justify-end">
+                        <button type="submit"
+                                class="mt-3 ml-3 w-full inline-flex px-3 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                            Save
+                        </button>
+                        <button type="reset"
+                                @click="cancelKeyEditing"
+                                class="mt-3 ml-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div>
-            <dl>
-                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-2 sm:px-6">
-                    <dt class="p-1.5 text-sm font-medium text-gray-600">
-                        Access
-                    </dt>
-                    <select
-                            v-model="editedKey.write"
-                            name="write"
-                            required
-                            class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
-                    >
-                        <option value="true">write / read</option>
-                        <option value="false">read</option>
-                    </select>
-                    <div></div>
-                    <dt class="p-1.5 text-sm text-center font-medium text-gray-600">
-                        Assign project
-                    </dt>
-                    <select
-                            v-model="editedKey.project_id"
-                            name="project"
-                            class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
-                    >
-                        <option :value="null" class="text-gray-500">No project</option>
-                        <option v-for="project in projects" :key="project.id" :value="project.id">[[ project.name ]]
-                        </option>
-                    </select>
-                </div>
-                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-600">
-                        Token
-                    </dt>
-                    <label for="token" class="sr-only"></label>
-                    <input type="text" name="token" id="token"
-                           required
-                           v-model="editedKey.token"
-                           class="bg-gray-50 text-gray-700 rounded-md shadow pl-4 p-2 text-left cursor-default focus:outline-none sm:text-sm font-medium cursor-text sm:col-span-4 border border-gray-200"
-                    />
-                </div>
-                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-600">
-                        Description
-                    </dt>
-                    <textarea v-model="editedKey.description" rows="2"
-                              spellcheck="false" cols="64"
-                              placeholder="Description for key (optional)"
-                              class="bg-white text-gray-700 rounded-md shadow pl-4 p-2 text-left cursor-default focus:outline-none text-sm font-medium cursor-text sm:col-span-4 border border-gray-200"></textarea>
-                </div>
-            </dl>
-        </div>
-    </form>
-</div>
+            <div>
+                <dl>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-2 sm:px-6">
+                        <dt class="p-1.5 text-sm font-medium text-gray-600">
+                            Access
+                        </dt>
+                        <select
+                          v-model="editedKey.write"
+                          name="write"
+                          required
+                          class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
+                        >
+                          <option value="true">write / read</option>
+                          <option value="false">read</option>
+                        </select>
+                        <div></div>
+                        <dt class="p-1.5 text-sm text-center font-medium text-gray-600">
+                            Assign project
+                        </dt>
+                        <select
+                          v-model="editedKey.project_id"
+                          name="project"
+                          class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
+                        >
+                            <option :value="null" class="text-gray-500">No project</option>
+                            <option v-for="project in projects" :key="project.id" :value="project.id">[[ project.name ]]</option>
+                        </select>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-600">
+                            Token
+                        </dt>
+                        <label for="token" class="sr-only"></label>
+                        <input type="text" name="token" id="token"
+                               required
+                               v-model="editedKey.token"
+                               class="bg-gray-50 text-gray-700 rounded-md shadow pl-4 p-2 text-left cursor-default focus:outline-none sm:text-sm font-medium cursor-text sm:col-span-4 border border-gray-200"
+                        />
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-600">
+                            Description
+                        </dt>
+                        <textarea v-model="editedKey.description" rows="2"
+                                  spellcheck="false" cols="64"
+                                  placeholder="Description for key (optional)"
+                                  class="bg-white text-gray-700 rounded-md shadow pl-4 p-2 text-left cursor-default focus:outline-none text-sm font-medium cursor-text sm:col-span-4 border border-gray-200"></textarea>
+                    </div>
+                </dl>
+            </div>
+        </form>
+    </div>
 
 <div class="flex">
     <button
-            @click="showKeyForm" type="button"
-            class="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
+        @click="showKeyForm" type="button"
+        class="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
             shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
             focus:ring-rose-500">
         Create
@@ -244,21 +242,13 @@
                         </td>
                     </tr>
                     <tr v-for="key in keys" class="container-row text-center hover:bg-gray-50">
-                        <td class="relative p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900"
-                            :title="key.description || 'No description'">
+                        <td class="relative p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900" :title="key.description || 'No description'">
                             [[ key.token ]]
-                            <button @click="copyText(key.token)"
-                                    class=" absolute right-8 text-gray-400 hover:text-gray-700 cursor-pointer"
-                                    title="Copy">
-                                <span class="material-icons">content_copy</span>
-                            </button>
-                            <!--                               <button-->
-                            <!--                                       v-clipboard="key.token"-->
-                            <!--                                        class=" absolute right-8 text-gray-400 hover:text-gray-700 cursor-pointer"-->
-                            <!--                                        title="Copy">-->
-                            <!--                                    <span class="material-icons">content_copy</span>-->
-                            <!--                                </button>-->
-
+                                <button @click="copyText(key.token)"
+                                        class=" absolute right-8 text-gray-400 hover:text-gray-700 cursor-pointer"
+                                        title="Copy">
+                                    <span class="material-icons">content_copy</span>
+                                </button>
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
                             <div v-if="key.write"><span>read / write</span></div>
@@ -270,7 +260,7 @@
                         {% if user.role == "super" %}
                         <td>
                             <button @click="startKeyEditing(key)" class="text-center">
-                                <span class="px-2 py-1 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer">edit</span>
+                                    <span class="px-2 py-1 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer">edit</span>
                             </button>
                         </td>
                         {% endif %}
@@ -293,18 +283,7 @@
 {% endblock %}
 
 {% block vuejs %}
-
 <script>
-    // import Vue from 'vue'
-    // import Clipboard from 'v-clipboard'
-    // Vue.use(Clipboard)
-
-    // import Vue from 'vue'
-    // import VueClipboard from 'vue-clipboard2'
-    // import App from 'App.vue'
-    //
-    // Vue.use(VueClipboard)
-
     new Vue({
         el: "#app",
 
@@ -345,10 +324,7 @@
                     project_id: this.assignProject ? this.selectedProject?.id : null,
                     write: this.writeAccess,
                 }
-                const key = await fetch('/api/v1/keys/', {
-                    method: "POST",
-                    body: JSON.stringify(data)
-                }).then(r => r.json())
+                const key = await fetch('/api/v1/keys/', {method: "POST", body: JSON.stringify(data)}).then(r => r.json())
                 this.keys.push(key)
                 this.curr_key = key.token
                 this.writeAccess = true
@@ -389,25 +365,22 @@
             async deleteKey(key) {
                 const result = confirm(`Are you sure you want to delete the ${key.token} key?`)
 
-                if (result) {
-                    await fetch(`/api/v1/keys/${key.id}/`, {method: "DELETE"})
-                    this.keys = await this.getKeys()
-                }
+                    if (result) {
+                        await fetch(`/api/v1/keys/${key.id}/`, {method: "DELETE"})
+                        this.keys = await this.getKeys()
+                    }
             },
 
             async updateKey() {
-                await fetch(`/api/v1/keys/${this.editedKey.id}/`, {
-                    method: "PATCH",
-                    body: JSON.stringify(this.editedKey)
-                })
+                await fetch(`/api/v1/keys/${this.editedKey.id}/`, {method: "PATCH", body: JSON.stringify(this.editedKey)})
                 this.editedKey = null
                 this.keys = await this.getKeys()
             },
 
             startKeyEditing(key) {
                 setTimeout(() => {
-                    this.editedKey = JSON.parse(JSON.stringify(key))
-                }, 0)
+                        this.editedKey = JSON.parse(JSON.stringify(key))
+                    }, 0)
             },
 
             cancelKeyEditing() {
@@ -415,32 +388,8 @@
             },
 
             copyText(key) {
-                // doesn't work in some browsers
-                // navigator.clipboard.writeText(key);
-
-                // Supported by older browsers
-                //Creating textarea element
-                let textarea = document.createElement("textarea")
-                //Settings its value to the thing you want to copy
-                textarea.value = key
-                //Appending the textarea to body
-                document.body.appendChild(textarea)
-                //Selecting its content
-                textarea.focus()
-                textarea.select()
-                //Copying the selected content to clipboard
-                document.execCommand("copy")
-                //Removing the textarea
-                document.body.removeChild(textarea)
-            },
-
-            onCopy: function (e) {
-                alert('You just copied the following text to the clipboard: ' + e.text)
-            },
-            onError: function (e) {
-                alert('Failed to copy the text to the clipboard')
-                console.log(e);
-            },
+                navigator.clipboard.writeText(key);
+            }
         },
 
         async mounted() {

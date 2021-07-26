@@ -14,22 +14,30 @@ When you run your gitlab CI pipeline endpoint for pipelines receiving new image 
 Quick start
 ===============================
 
-**Generate your secret key and paste into the  .env**
+**Generate your secret key and paste into the  env.yaml**
 ```angular2html
-SECRET_KEY: "YOUR_SECRET_KEY"   # 40 chars recommended
-  ```
+security:
+  key: "YOUR_SECRET_KEY"   # 40 chars recommended
+  algorithm: "HS256"
+  token_expire: 604800 # token expire in seconds (7 days)
+```
+**Define username and password for your superuser**
+```angular2html
+default_user:
+  username: "YOUR_USERNAME"
+  password: "YOUR_PASSWORD"
+```
 
 Starting server
 ===============================
 
-**We're ready to go, lets start Kapellmeister management server with docker-compose**
+**We're ready to go, lets start Kapellmeister management server with docker**
 ```angular2html
-docker-compose up -d 
+docker run -it  -p 0.0.0.0:8000:8000  kapellmeister_server
 ```
-
-
-
-Sign in to kapellmeister server with https://localhost:80 with username : defaultuser and password: defaultpassword
+Log into kapellmeister server with https://localhost:8000    
+Click to tab USERS and then click create, type username and password for new user and choose the role
+This token you could already use for your kapellmeister agent.
 
 Here is an example how to run kapellmeister agent with it read only users token
 ```angular2html

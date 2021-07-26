@@ -175,14 +175,14 @@
                             <div v-if="user.role != 'super' && selectedUser === user">
                                 <input v-if="selectedUser === user" type="radio" id="isActive" name="isActive"
                                        value="true" :checked="user.is_active" @click="is_active=true">
-                                <label for="isActive"><span class="material-icons">&#10004;</span></label>
+                                <label for="isActive"><span class="material-icons">check</span></label>
                                 <input v-if="selectedUser === user" type="radio" id="noActive" name="isActive"
                                        value="false" :checked="!user.is_active" @click="is_active=false">
-                                <label for="noActive"><span class="material-icons">&#10006;</span></label>
+                                <label for="noActive"><span class="material-icons">close</span></label>
                             </div>
                             <div v-else-if="user.role != 'super' ">
-                                <span v-if="user.is_active" class="material-icons">&#10004;</span>
-                                <span v-else class="material-icons">&#10006;</span>
+                                <span v-if="user.is_active" class="material-icons">check</span>
+                                <span v-else class="material-icons">close</span>
                             </div>
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -241,12 +241,16 @@
                                     </span>
                                 </button>
                             </div>
-                            <button v-else @click="editUser(user)"
+                            {% if user.username == "user1" %}
+<!--                            <button v-else @click="editUser(user)"-->
+<!--                                    class="text-gray-400 hover:text-gray-700 cursor-pointer">-->
+                            <button v-else-if="user.role != 'super'" @click="editUser(user)"
                                     class="text-gray-400 hover:text-gray-700 cursor-pointer">
                                 <span class="material-icons">
                                     edit
                                 </span>
                             </button>
+                            {% endif %}
                         </td>
                         <td class="p-3 pr-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             <button v-if="user.role != 'super'"
