@@ -76,8 +76,14 @@ def tokens(request: Request, user: Optional[UserAPI] = Depends(get_user)):
 def users(request: Request, user: Optional[UserAPI] = Depends(get_user)):
     """Create users page"""
     if user and user.role == "super":
-        return templates.TemplateResponse("users.html", {"request": request, "user": user})
-
+        error_message: str = ""
+        if request.session.get("username_exists"):
+            error_message = request.session.get("username_exists")
+            request.session["username_exists"] = ""
+        return templates.TemplateResponse("users.html", {"request": request,
+                                                         "user": user,
+                                                         "error_message": error_message
+                                                         })
     return RedirectResponse(url="/")
 
 
