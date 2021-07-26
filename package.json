@@ -1,0 +1,8 @@
+{
+  "name": "kapellmeister",
+  "version": "1.0.0",
+  "dependencies": {
+    "v-clipboard": "^2.2.3",
+    "vue-clipboard2": "^0.3.1"
+  }
+}

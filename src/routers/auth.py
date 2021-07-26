@@ -70,13 +70,16 @@ async def get_users(user: Optional[UserAPI] = Depends(get_user)) -> List[UserAPI
 
 
 @router.post("/", response_model=UserAPI)
-async def create_user(data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
+async def create_user(request: Request, data: UserAPI, user: Optional[UserAPI] = Depends(get_user)) -> UserAPI:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Token"},
         )
+
+    if User.get(username=data.username):
+        request.session["username_exists"] = f"Such name already exists!"
 
     data.password = pwd_hash(data.password)
     data.projects = [Project.get(id=project_id) for project_id in data.projects]
