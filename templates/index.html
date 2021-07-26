@@ -171,11 +171,13 @@
                       </span>
                     </button>
 
+                    {% if user.role == "super" %}
                     <button @click="openProjectForm"
                             class="ml-4 my-0.5 px-1.5 py-1 border border-transparent text-md font-medium rounded-md opacity-90
                             shadow text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-0">
                         +
                     </button>
+                    {% endif %}
                 </div>
 
                 <ul v-if="showProjects"
@@ -234,11 +236,13 @@
                       </span>
                     </button>
 
+                    {% if user.role == "super" %}
                     <button @click="openChannelForm"
                             class="ml-4 my-0.5 px-1.5 py-1 border border-transparent text-md font-medium rounded-md opacity-90
                             shadow text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-0">
                         +
                     </button>
+                    {% endif %}
                 </div>
 
                 <!--
@@ -320,10 +324,14 @@
                         <tr>
                             <th scope="col"
                                 class="px-5 py-2.5">
+                                №
+                            </th>
+                            <th scope="col"
+                                class="px-4 py-2.5">
                                 Project
                             </th>
                             <th scope="col"
-                                class="px-5 py-2.5">
+                                class="px-4 py-2.5">
                                 Channel
                             </th>
                             <th scope="col"
@@ -339,12 +347,14 @@
                                 Updated
                             </th>
                             <th scope="col"
-                                class="py-2.5">
+                                class="p-3">
                                 Details
                             </th>
-                            <th scope="col" class="relative px-6 py-3">
+                            {% if user.role == "super" %}
+                            <th scope="col" class="relative p-3">
                                 <span class="sr-only">Delete</span>
                             </th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tbody>
@@ -355,19 +365,16 @@
                                 No containers...
                             </td>
                         </tr>
-                        <tr v-else v-for="container in filteredContainers"
+                        <tr v-else v-for="(container, index) in filteredContainers"
                             :key="container.slug + container.project_id + container.channel_id"
                             class="container-row text-center">
-
+                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1" />
                             <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="getProjectName(container.project_id)" />
                             <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="getChannelName(container.channel_id)" />
                             <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="container.slug" />
                             <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
                                 <div class="flex justify-center items-center">
-                                    <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[
-                                        key
-                                        ]]</p>
-                                    {#                                        <span class="pl-2 text-pink-500 hover:text-pink-600 cursor-pointer text-xs">show</span>#}
+                                    <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[ key ]]</p>
                                 </div>
                             </td>
                             <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -381,6 +388,7 @@
                                               @click="openContainerDetails(container)">open</span>
                                 </div>
                             </td>
+                            {% if user.role == "super" %}
                             <td class="p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
                                 <button @click="deleteContainer(container)"
                                         class="text-indigo-600 hover:text-indigo-900">
@@ -389,6 +397,7 @@
                                         </span>
                                 </button>
                             </td>
+                            {% endif %}
                         </tr>
                         </tbody>
                     </table>
@@ -431,16 +440,16 @@
                             Cancel
                         </button>
                         {% endif %}
-                        <button
+                        <button v-if="!containerEditing"
                                 @click="closeContainerDetails"
-                                class="mt-3 ml-3 w-full inline-flex p-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                                class="mt-3 ml-3 w-full inline-flex p-2 px-3 border border-gray-200 shadow-sm font-medium rounded-md text-gray-600 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                            Close
+                        </button>
+                        <button v-else
+                                @click="closeContainerDetails"
+                                class="mt-3 ml-3 w-full inline-flex p-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-600 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
                             X
                         </button>
-{#                        <button#}
-{#                                @click="closeContainerDetails"#}
-{#                                class="mt-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-100 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">#}
-{#                            Close#}
-{#                        </button>#}
                     </div>
                 </div>
             </div>

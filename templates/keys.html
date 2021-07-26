@@ -109,7 +109,7 @@
          class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
         <form v-click-outside="cancelKeyEditing"
               @submit.prevent="updateKey"
-              class="bg-white shadow overflow-hidden overflow-y-scroll sm:rounded-lg sm:max-w-2xl sm:mx-auto relative">
+              class="bg-white shadow overflow-hidden overflow-y-scroll sm:rounded-lg sm:max-w-xl sm:mx-auto relative">
             <div class="sticky top-0 bg-white px-4 py-5 sm:px-6 relative border-b border-gray-200">
                 <h3 class="text-xl leading-6 font-medium text-gray-900">
                     Key editing
@@ -125,7 +125,7 @@
                         </button>
                         <button type="reset"
                                 @click="cancelKeyEditing"
-                                class="mt-3 ml-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                                class="mt-3 ml-3 w-full inline-flex py-2 px-2.5 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
                             Cancel
                         </button>
                     </div>
@@ -148,7 +148,7 @@
                         </select>
                         <div></div>
                         <dt class="p-1.5 text-sm text-center font-medium text-gray-600">
-                            Assign project
+                            Project
                         </dt>
                         <select
                           v-model="editedKey.project_id"
@@ -177,13 +177,14 @@
                         <textarea v-model="editedKey.description" rows="2"
                                   spellcheck="false" cols="64"
                                   placeholder="Description for key (optional)"
-                                  class="bg-white text-gray-700 rounded-md shadow pl-4 p-2 text-left cursor-default focus:outline-none text-sm font-medium cursor-text sm:col-span-4 border border-gray-200"></textarea>
+                                  class="bg-white text-gray-700 rounded-md shadow pl-4 p-1 text-left cursor-default focus:outline-none text-sm cursor-text sm:col-span-4 border border-gray-200"></textarea>
                     </div>
                 </dl>
             </div>
         </form>
     </div>
 
+{% if user.role == "super" %}
 <div class="flex">
     <button
         @click="showKeyForm" type="button"
@@ -203,6 +204,7 @@
         </button>
     </div>
 </div>
+{% endif %}
 
 <div class="flex flex-col cursor-default">
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -211,6 +213,10 @@
                 <table class="divide-y divide-gray-200 border-collapse min-w-full table-striped relative cursor-default">
                     <thead class="bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <tr>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            №
+                        </th>
                         <th scope="col"
                             class="px-5 py-2.5">
                             Key
@@ -228,11 +234,11 @@
                             class="px-5 py-2.5">
                             <span class="sr-only">Edit</span>
                         </th>
-                        {% endif %}
                         <th scope="col"
                             class="px-5 py-2.5">
                             <span class="sr-only">Delete</span>
                         </th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
@@ -241,7 +247,8 @@
                             No keys...
                         </td>
                     </tr>
-                    <tr v-for="key in keys" class="container-row text-center hover:bg-gray-50">
+                    <tr v-for="(key, index) in keys" :key="key.token" class="container-row text-center hover:bg-gray-50">
+                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1" />
                         <td class="relative p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900" :title="key.description || 'No description'">
                             [[ key.token ]]
                                 <button @click="copyText(key.token)"
@@ -263,7 +270,6 @@
                                     <span class="px-2 py-1 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer">edit</span>
                             </button>
                         </td>
-                        {% endif %}
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             <button @click="deleteKey(key)"
                                     title="Delete key"
@@ -273,6 +279,7 @@
                                         </span>
                             </button>
                         </td>
+                        {% endif %}
                     </tr>
                     </tbody>
                 </table>
