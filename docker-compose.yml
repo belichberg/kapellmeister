@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:80:8000"
+
+
+    volumes:
+      - /opt/kapellmeister-fast_api/src/data:/app/src/data
+      - /opt/kapellmeister-fast_api/migrations/versions:/app/migrations/versions
+
+    environment:
+      - SECRET_KEY

@@ -61,18 +61,18 @@
 
             <nav v-if="openMobileNav" class="lg:hidden z-40 overflow-y-auto">
                 <div class="max-w-3xl mx-auto px-2 pt-2 pb-3 space-y-1 sm:px-4">
-                    <a :href="selectedProject ? `/?project=${selectedProject.slug}` : '/'"
+                    <a href="/"
                        class="block rounded-md py-2 px-3 text-base font-medium"
                        :class="checkWindowLocation('/') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50'"
                     >Home</a>
 
-                    <a :href="selectedProject ? `/tokens?project=${selectedProject.slug}` : '/tokens'"
+                    <a href="/keys"
                        class="block rounded-md py-2 px-3 text-base font-medium"
-                       :class="checkWindowLocation('/tokens') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50'"
+                       :class="checkWindowLocation('/keys') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50'"
                     >Tokens</a>
 
                     {% if user.role == "super" %}
-                    <a :href="selectedProject ? `/users?project=${selectedProject.slug}` : '/users'"
+                    <a href="/users"
                        class="block rounded-md py-2 px-3 text-base font-medium"
                        :class="checkWindowLocation('/users') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50'"
                     >Users</a>
@@ -86,7 +86,7 @@
                 <div class="hidden lg:block lg:col-span-3 xl:col-span-2">
                     <nav aria-label="Sidebar" class="sticky top-4 divide-y divide-gray-300">
                         <div class="pb-8 space-y-1">
-                            <a :href="selectedProject ? `/?project=${selectedProject.slug}` : '/'"
+                            <a href="/"
                                class="group flex items-center px-3 py-2 text-sm font-medium rounded-md"
                                :class="checkWindowLocation('/') ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-50'"
                             >
@@ -102,12 +102,12 @@
                                 </span>
                             </a>
 
-                            <a :href="selectedProject ? `/tokens?project=${selectedProject.slug}` : '/tokens'"
+                            <a href="/keys"
                                class="group flex items-center px-3 py-2 text-sm font-medium rounded-md"
-                               :class="checkWindowLocation('/tokens') ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-50'"
+                               :class="checkWindowLocation('/keys') ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-50'"
                             >
                                 <svg class="flex-shrink-0 -ml-1 mr-3 h-6 w-6"
-                                     :class="checkWindowLocation('/tokens') ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500'"
+                                     :class="checkWindowLocation('/keys') ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500'"
                                      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -128,7 +128,7 @@
                             </a>
 
                             {% if user.role == "super" %}
-                            <a :href="selectedProject ? `/users?project=${selectedProject.slug}` : '/users'"
+                            <a href="/users"
                                class="text-gray-600 hover:bg-gray-50 group flex items-center px-3 py-2 text-sm font-medium rounded-md"
                                :class="checkWindowLocation('/users') ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-50'"
                             >
