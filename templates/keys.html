@@ -256,13 +256,6 @@
                                     title="Copy">
                                 <span class="material-icons">content_copy</span>
                             </button>
-                            <!--                               <button-->
-                            <!--                                       v-clipboard="key.token"-->
-                            <!--                                        class=" absolute right-8 text-gray-400 hover:text-gray-700 cursor-pointer"-->
-                            <!--                                        title="Copy">-->
-                            <!--                                    <span class="material-icons">content_copy</span>-->
-                            <!--                                </button>-->
-
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
                             <div v-if="key.write"><span>read / write</span></div>
@@ -299,16 +292,6 @@
 {% block vuejs %}
 
 <script>
-    // import Vue from 'vue'
-    // import Clipboard from 'v-clipboard'
-    // Vue.use(Clipboard)
-
-    // import Vue from 'vue'
-    // import VueClipboard from 'vue-clipboard2'
-    // import App from 'App.vue'
-    //
-    // Vue.use(VueClipboard)
-
     new Vue({
         el: "#app",
 
@@ -430,15 +413,7 @@
                 document.execCommand("copy")
                 //Removing the textarea
                 document.body.removeChild(textarea)
-            },
-
-            onCopy: function (e) {
-                alert('You just copied the following text to the clipboard: ' + e.text)
-            },
-            onError: function (e) {
-                alert('Failed to copy the text to the clipboard')
-                console.log(e);
-            },
+            }
         },
 
         async mounted() {

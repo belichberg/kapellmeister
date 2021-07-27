@@ -27,9 +27,6 @@
             <span class="material-icons text-white pb-1.5">&#10006;</span>
         </button>
         <div class="text-gray-600 my-5 font-extrabold tracking-wider uppercase">Create User</div>
-        <div>
-            {{ error_message }}
-        </div>
         <form @submit.prevent="createUser()" class="mt-5">
             <div class="w-full sm:max-w-xs">
                 <input id="userName"
@@ -89,6 +86,13 @@
     </div>
 </div>
 
+{% if error_message %}
+    <div class="place-self-center bg-white text-center text-lg text-blue-700 font-medium
+                shadow-md rounded py-3 px-6 absolute z-10 mt-3 top-20 left-2/4">
+        {{ error_message }}
+    </div>
+{% endif %}
+
 <div class="flex flex-col cursor-default">
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -97,9 +101,9 @@
                     <thead class="bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <tr>
                         <th scope="col"
-                                class="px-5 py-2.5">
-                                №
-                            </th>
+                            class="px-5 py-2.5">
+                            №
+                        </th>
                         <th scope="col"
                             class="py-2.5"
                             width="35%">
@@ -131,8 +135,9 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="(user, index) in users" :key="user.id" class="container-row text-center hover:bg-gray-50">
-                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1" />
+                    <tr v-for="(user, index) in users" :key="user.id"
+                        class="container-row text-center hover:bg-gray-50">
+                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1"/>
                         <td class="whitespace-nowrap text-sm font-medium text-gray-900 relative">
                             <div v-if="selectedUser === user" class="ml-5">
                                 <label for="user" class="sr-only">User</label>
@@ -166,9 +171,6 @@
                                    cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
                                    focus:border-pink-500 sm:text-sm cursor-text"
                                             placeholder="New password *"/>
-<!--                                    <i class="absolute pt-1.5 px-2 right-0 material-icons text-sm text-gray-700 cursor-pointer hover:text-blue-700"-->
-<!--                                        @click="show_pass = !show_pass"-->
-<!--                                        v-text="this.show_pass ? 'visibility' : 'visibility_off'"></i>-->
                                 </div>
                             </div>
                             <div v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -248,20 +250,16 @@
                                     </span>
                                 </button>
                             </div>
-                            {% if user.username == "user1" %}
-<!--                            <button v-else @click="editUser(user)"-->
-<!--                                    class="text-gray-400 hover:text-gray-700 cursor-pointer">-->
                             <button v-else-if="user.role != 'super'" @click="editUser(user)"
                                     class="text-gray-400 hover:text-gray-700 cursor-pointer">
                                 <span class="material-icons">
                                     edit
                                 </span>
                             </button>
-                            {% endif %}
                         </td>
                         <td class="p-3 pr-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             <button v-if="user.role != 'super'"
-                                    @click="deleteUser(user.id)"
+                                    @click="deleteUser(user)"
                                     title="Delete user"
                                     class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
                                         <span class="material-icons text-red-500">
@@ -351,19 +349,23 @@
                     method: "POST",
                     body: JSON.stringify(data)
                 }).then(r => r.json())
-                this.newUser = ''
-                this.newPassword = ''
-                this.selectedRole = ''
-                this.selectedProjects = ''
-                this.hideUserForm()
+                // this.newUser = ''
+                // this.newPassword = ''
+                // this.selectedRole = ''
+                // this.selectedProjects = ''
+                // this.hideUserForm()
                 if (user) {
                     this.users.push(user)
                 }
+                location.reload()
             },
 
-            async deleteUser(user_id) {
-                await fetch(`/api/v1/users/${user_id}/`, {method: "DELETE"})
-                this.users = await this.getUsers()
+            async deleteUser(user) {
+                const result = confirm(`Are you sure you want to delete the ${user.username}?`)
+                    if (result) {
+                        await fetch(`/api/v1/users/${user.id}/`, {method: "DELETE"})
+                        this.users = await this.getUsers()
+                    }
             },
 
             // show user is active menu

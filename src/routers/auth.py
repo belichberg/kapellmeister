@@ -80,7 +80,7 @@ async def create_user(request: Request, data: UserAPI, user: Optional[UserAPI] =
     #  check if such username exists
     if User.get(username=data.username):
         request.session["username_exists"] = f"Such Username already exists!"
-        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
     data.password = pwd_hash(data.password)
     data.projects = [Project.get(id=project_id) for project_id in data.projects]

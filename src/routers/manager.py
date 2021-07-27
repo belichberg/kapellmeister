@@ -104,7 +104,7 @@ def create_channel(data: ChannelAPI, user: Optional[UserAPI] = Depends(get_user)
 
 
 @router.delete("/channels/{channel_id}/", response_model=ChannelAPI)
-async def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_user)) -> ChannelAPI:
+def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_user)) -> ChannelAPI:
     # Authentication check
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -238,26 +238,6 @@ async def set_container(
 
     # update or create container and then return container api
     return ContainerAPI.parse_obj(record.to_dict())
-
-
-@router.delete("/{project_slug}/{channel_slug}/{container_slug}/", response_model=ContainerAPI)
-async def delete_container(
-        project_slug: str, channel_slug: str, container_slug: str, user: Optional[UserAPI] = Depends(get_user)
-) -> ContainerAPI:
-    # Authentication check
-    if user is None or user.role != UserRole.super:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Token"},
-        )
-
-    project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
-    channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(slug=channel_slug, project_id=project.id).to_dict())
-
-    return ContainerAPI.parse_obj(
-        Container.delete(slug=container_slug, project_id=project.id, channel_id=channel.id).to_dict()
-    )
 
 
 @router.get("/containers/", response_model=List[ContainerAPI])
