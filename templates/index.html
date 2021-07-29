@@ -247,16 +247,6 @@
                     {% endif %}
                 </div>
 
-            <!--
-              Select popover, show/hide based on select state.
-
-                  Entering: ""
-                    From: ""
-                    To: ""
-                  Leaving: "transition ease-in duration-100"
-                    From: "opacity-100"
-                    To: "opacity-0"
-                -->
                 <ul
                         v-if="showChannels"
                         class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md text-base transition ease-in duration-100 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
@@ -303,8 +293,8 @@
             <div class="mt-1 hidden sm:flex-1 sm:flex sm:items-center sm:justify-end">
                 <div>
                     <nav class="relative z-0 inline-flex rounded-md shadow -space-x-px">
-                        <button v-if="pageNumber !== 0" @click="pageNumber--"
-                           class="relative inline-flex items-center px-2 py-2 rounded-l-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <button v-if="pageNumber !== 0" @click="changePage(--pageNumber)"
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md bg-white text-sm font-medium text-gray-400 hover:bg-gray-50">
                             <span class="sr-only">Previous</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                  aria-hidden="true">
@@ -324,8 +314,8 @@
                         </div>
                         <div class="w-10 z-10 bg-white text-pink-600 relative inline-flex items-center text-center px-4 py-2 text-sm font-semibold cursor-default" v-text="pageNumber + 1" >
                         </div>
-                        <button v-if="pageNumber !== pageCount - 1" @click="pageNumber++"
-                           class="relative inline-flex items-center px-2 py-2 rounded-r-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <button v-if="pageNumber < pageCount - 1" @click="changePage(++pageNumber)"
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md bg-white text-sm font-medium text-gray-400 hover:bg-gray-50">
                             <span class="sr-only">Next</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                  aria-hidden="true">
@@ -463,11 +453,11 @@
 {#  Pagination block  #}
 <div v-if="pageCount > 1" class="py-4 flex items-center justify-between">
     <div class="flex-1 flex justify-between sm:hidden">
-        <button @click="pageNumber--"
+        <button @click="changePage(--pageNumber)"
            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
             Previous
         </button>
-        <button @click="pageNumber++"
+        <button @click="changePage(++pageNumber)"
            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
             Next
         </button>
@@ -475,8 +465,8 @@
     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
         <div>
             <nav class="relative z-0 inline-flex rounded-md shadow -space-x-px">
-                <button v-if="pageNumber !== 0" @click="pageNumber--"
-                   class="relative inline-flex items-center px-2 py-2 rounded-l-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <button v-if="pageNumber !== 0" @click="changePage(--pageNumber)"
+                   class="relative inline-flex items-center px-2 py-2 rounded-l-md bg-white text-sm font-medium text-gray-400 hover:bg-gray-50">
                     <span class="sr-only">Previous</span>
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                          aria-hidden="true">
@@ -496,36 +486,36 @@
                 </div>
 
                 <div v-if="pageCount <= 7" class="inline-flex">
-                    <button v-for="page in pageCount" :key="page" v-if="page !== pageNumber + 1" @click="pageNumber = page - 1" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="page"></button>
+                    <button v-for="page in pageCount" :key="page" v-if="page !== pageNumber + 1" @click="changePage(page - 1)" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="page"></button>
                     <div v-else class="w-10 z-10 bg-white relative inline-flex items-center text-center px-2 py-1.5 text-sm font-medium cursor-default">
                         <p class="py-0.5 px-2 bg-pink-500 rounded-full text-white">[[ pageNumber + 1 ]]</p>
                     </div>
                 </div>
                 <div v-else-if="pageNumber < 3 || pageNumber > pageCount - 4" class="inline-flex">
-                    <button v-for="page in pageCount" :key="page" v-if="page <= 3 &&page !== pageNumber + 1" @click="pageNumber = page - 1" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="page"></button>
+                    <button v-for="page in pageCount" :key="page" v-if="page <= 3 &&page !== pageNumber + 1" @click="changePage(page - 1)" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="page"></button>
                     <div v-else-if="page <= 3" class="w-10 z-10 bg-white relative inline-flex items-center text-center px-2 py-1.5 text-sm font-medium cursor-default">
                         <p class="py-0.5 px-2 bg-pink-500 rounded-full text-white">[[ pageNumber + 1 ]]</p>
                     </div>
                     <div class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default">...</div>
-                    <button v-for="page in pageCount" :key="page" v-if="page >pageCount - 3 && page !== pageNumber + 1" @click="pageNumber = page - 1" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="page"></button>
+                    <button v-for="page in pageCount" :key="page" v-if="page >pageCount - 3 && page !== pageNumber + 1" @click="changePage(page - 1)" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="page"></button>
                     <div v-else-if="page > pageCount - 3" class="w-10 z-10 bg-white relative inline-flex items-center text-center px-2 py-1.5 text-sm font-medium cursor-default">
                         <p class="py-0.5 px-2 bg-pink-500 rounded-full text-white">[[ pageNumber + 1 ]]</p>
                     </div>
                 </div>
                 <div v-else class="inline-flex">
-                    <button @click="pageNumber = 0" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="1"></button>
+                    <button @click="changePage(0)" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="1"></button>
                     <div class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default">...</div>
-                    <button @click="pageNumber--" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="pageNumber"></button>
+                    <button @click="changePage(--pageNumber)" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="pageNumber"></button>
                     <div class="w-10 z-10 bg-white relative inline-flex items-center text-center px-2 py-1.5 text-sm font-medium cursor-default">
                         <p class="py-0.5 px-2 bg-pink-500 rounded-full text-white">[[ pageNumber + 1 ]]</p>
                     </div>
-                    <button @click="pageNumber++" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="pageNumber + 2"></button>
+                    <button @click="changePage(++pageNumber)" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="pageNumber + 2"></button>
                     <div class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default">...</div>
-                    <button @click="pageNumber = pageCount - 1" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="pageCount"></button>
+                    <button @click="changePage(pageCount - 1)" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium hover:text-gray-500" v-text="pageCount"></button>
                 </div>
 
-                <button v-if="pageNumber < pageCount - 1" @click="pageNumber++"
-                   class="relative inline-flex items-center px-2 py-2 rounded-r-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <button v-if="pageNumber < pageCount - 1" @click="changePage(++pageNumber)"
+                   class="relative inline-flex items-center px-2 py-2 rounded-r-md bg-white text-sm font-medium text-gray-400 hover:bg-gray-50">
                     <span class="sr-only">Next</span>
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                          aria-hidden="true">
@@ -759,255 +749,263 @@
                     })
                 }
 
-                    const start = this.pageNumber * this.size,
-                        end = start + this.size
+                const start = this.pageNumber * this.size,
+                    end = start + this.size
 
-                    this.pageCount = Math.ceil(containers_.length / this.size)
+                this.pageCount = Math.ceil(containers_.length / this.size)
 
-                    return containers_.sort((a, b) => a.updated_time > b.updated_time ? -1 : 1).slice(start, end)
-                },
+                return containers_.sort((a, b) => a.updated_time > b.updated_time ? -1 : 1).slice(start, end)
+            },
 
-                filteredChannels() {
-                    let channels_ = this.channels
+            filteredChannels() {
+                let channels_ = this.channels
 
                 if (this.selectedProject) {
                     channels_ = channels_.filter(channel => channel.project_id === this.selectedProject.id)
-                }
-
-                return channels_
-            }
-        },
-
-        methods: {
-            slugify(str) {
-                return str.toLowerCase()
-                    .trim()
-                    .replace(/[^\w\s-]/g, '')
-                    .replace(/[\s_-]+/g, '-')
-                    .replace(/^-+|-+$/g, '')
-            },
-
-            checkWindowLocation(path) {
-                return window.location.pathname === path
-            },
-
-            getProjectName(project_id) {
-                const project = this.projects.filter(item => item.id === project_id)[0]
-                return project.name
-            },
-
-            getChannelName(channel_id) {
-                const channel = this.channels.filter(item => item.id === channel_id)[0]
-                return channel.name
-            },
-
-            changeUrl() {
-                if (history.pushState) {
-                    let newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?project=' + this.selectedProject.slug;
-
-                    if (this.selectedChannel) {
-                        newUrl += '&channel=' + this.selectedChannel.slug;
-
-                    }
-
-                    window.history.pushState({path: newUrl}, '', newUrl);
-                }
-            },
-
-            async createProject() {
-                const data = {
-                    name: this.newProjectName,
-                    slug: this.slugify(this.newProjectName),
-                    description: this.newProjectDescription
-                }
-                const project = await fetch("/api/v1/projects/", {
-                    method: "POST",
-                    body: JSON.stringify(data)
-                }).then(r => r.json())
-
-                this.projects.push(project)
-                this.closeProjectForm()
-                this.newProjectName = null
-                this.newProjectDescription = null
-                this.selectProject(project)
-            },
-
-            async createChannel() {
-                const data = {
-                    name: this.newChannelName,
-                    slug: this.slugify(this.newChannelName),
-                    description: this.newChannelDescription,
-                    project_id: this.selectedProject.id
-                }
-                const channel = await fetch("/api/v1/channels/", {
-                    method: "POST",
-                    body: JSON.stringify(data)
-                }).then(r => r.json())
-
-                this.closeChannelForm()
-                this.newChannelName = ''
-                this.newChannelDescription = ''
-                this.channels.push(channel)
-                await this.selectChannel(channel)
-            },
-
-            async getProjects() {
-                return await fetch("/api/v1/projects/").then(r => r.json())
-            },
-
-            async getChannels() {
-                return await fetch("/api/v1/channels/").then(r => r.json())
-            },
-
-            hideProjects: function () {
-                this.showProjects = false
-            },
-
-            hideChannelProjects: function () {
-                this.showChannelProjects = false
-            },
-
-            hideChannels: function () {
-                this.showChannels = false
-            },
-
-            selectProject(project) {
-                this.selectedProject = project
-                this.selectedChannel = null
-                if (project) {
-                    this.changeUrl()
-                }
-                this.hideProjects()
-            },
-
-            async selectChannel(channel) {
-                if (!this.selectedProject) {
-                    this.selectedProject = this.projects.filter(item => item.id === channel.project_id)[0]
-                }
-                this.selectedChannel = channel
-                if (channel) {
-                    this.changeUrl()
-                }
-                this.hideChannels()
-            },
-
-            async deleteContainer(container) {
-                const result = confirm(`Are you sure you want to delete the "${container.slug}" container`)
-
-                if (result) {
-                    await fetch(`/api/v1/container/${container.id}/`, {method: "DELETE"})
-                    this.containers = this.containers.filter(item => item !== container)
-                }
-            },
-
-            async deleteChannel(channel) {
-                const result = confirm(`Are you sure you want to delete the "${channel.name}" channel`)
-
-                if (result) {
-                    await fetch(`/api/v1/channels/${channel.id}/`, {method: "DELETE"})
-                    this.channels = this.channels.filter(item => item !== channel)
-                }
-            },
-
-            async deleteProject(project) {
-                const result = confirm(`Are you sure you want to delete the "${project.name}" project`)
-
-                if (result) {
-                    await fetch(`/api/v1/projects/${project.id}/`, {method: "DELETE"})
-                    this.projects = this.projects.filter(item => item !== project)
-                }
-            },
-
-            openProjectForm() {
-                setTimeout(() => {
-                    this.showProjectForm = true
-                }, 0)
-            },
-
-            openChannelForm() {
-                setTimeout(() => {
-                    this.showChannelForm = true
-                }, 0)
-            },
-
-            closeProjectForm() {
-                if (this.showProjectForm) {
-                    this.showProjectForm = false
-                }
-            },
-
-            closeChannelForm() {
-                if (this.showChannelForm) {
-                    this.showChannelForm = false
-                }
-            },
-
-            openContainerDetails(container) {
-                setTimeout(() => {
-                    this.selectedContainer = container
-                }, 0)
-            },
-
-            closeContainerDetails() {
-                if (this.selectedContainer) {
-                    this.selectedContainer = null
-                    this.containerEditing = false
-                }
-            },
-
-            async getContainers() {
-                const containers = await fetch(`/api/v1/containers/`).then(r => r.json())
-                return containers.map((item) => {
-                    item.updated_time = new Date(item.updated_time).toLocaleString('sv', {timeZoneName: 'short'})
-                    return item
-                })
-            },
-
-            startEditingContainer() {
-                this.containerEditing = true
-                this.editedContainer = JSON.parse(JSON.stringify(this.selectedContainer))
-                this.editedContainer.auth = JSON.stringify(JSON.parse(this.editedContainer.auth), null, '\t')
-                this.editedContainer.parameters = JSON.stringify(this.editedContainer.parameters, null, '\t')
-                // {#this.editedContainer.parameters = JSON.stringify(this.editedContainer.parameters, undefined, 4)#}
-            },
-
-            async editContainer() {
-                this.editedContainer.auth = JSON.parse(this.editedContainer.auth)
-                this.editedContainer.parameters = JSON.parse(this.editedContainer.parameters)
-                delete this.editedContainer.updated_time
-                this.selectedContainer = await fetch(`/api/v1/container/`, {
-                    method: "PATCH",
-                    body: JSON.stringify(this.editedContainer)
-                }).then(r => r.json())
-                this.containers = await this.getContainers()
-                this.containerEditing = false
-            },
-
-            randomColor(channel_id) {
-                if (this.colors.length < channel_id) {
-                    return this.colors[Math.floor(Math.random() * this.colors.length)]
-                }
-                return this.colors[channel_id - 1]
-            }
-        },
-
-            async mounted() {
-                const project = new URLSearchParams(window.location.search).get('project')
-                const channel = new URLSearchParams(window.location.search).get('channel')
-
-            this.projects = await this.getProjects()
-            this.channels = await this.getChannels()
-            this.containers = await this.getContainers()
-
-            if (project) {
-                this.selectedProject = this.projects.filter(item => item.slug === project)[0]
             }
 
-            if (channel) {
-                this.selectedChannel = this.channels.filter(item => item.slug === channel)[0]
-                this.selectedProject = this.projects.filter(item => item.id === this.selectedChannel.id)[0]
-            }
+            return channels_
         }
-    })
+    },
+
+    methods: {
+        slugify(str) {
+            return str.toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+        },
+
+        checkWindowLocation(path) {
+            return window.location.pathname === path
+        },
+
+        getProjectName(project_id) {
+            const project = this.projects.filter(item => item.id === project_id)[0]
+            return project.name
+        },
+
+        getChannelName(channel_id) {
+            const channel = this.channels.filter(item => item.id === channel_id)[0]
+            return channel.name
+        },
+
+        changeUrl() {
+            if (history.pushState) {
+
+                let newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?page=' + (this.pageNumber + 1);
+
+                if (this.selectedProject) {
+                    newUrl += '&project=' + this.selectedProject.slug;
+                }
+
+                if (this.selectedChannel) {
+                    newUrl += '&channel=' + this.selectedChannel.slug;
+                }
+
+                window.history.pushState({path: newUrl}, '', newUrl);
+            }
+        },
+
+        async createProject() {
+            const data = {
+                name: this.newProjectName,
+                slug: this.slugify(this.newProjectName),
+                description: this.newProjectDescription
+            }
+            const project = await fetch("/api/v1/projects/", {
+                method: "POST",
+                body: JSON.stringify(data)
+            }).then(r => r.json())
+
+            this.projects.push(project)
+            this.closeProjectForm()
+            this.newProjectName = null
+            this.newProjectDescription = null
+            this.selectProject(project)
+        },
+
+        async createChannel() {
+            const data = {
+                name: this.newChannelName,
+                slug: this.slugify(this.newChannelName),
+                description: this.newChannelDescription,
+                project_id: this.selectedProject.id
+            }
+            const channel = await fetch("/api/v1/channels/", {
+                method: "POST",
+                body: JSON.stringify(data)
+            }).then(r => r.json())
+
+            this.closeChannelForm()
+            this.newChannelName = ''
+            this.newChannelDescription = ''
+            this.channels.push(channel)
+            await this.selectChannel(channel)
+        },
+
+        async getProjects() {
+            return await fetch("/api/v1/projects/").then(r => r.json())
+        },
+
+        async getChannels() {
+            return await fetch("/api/v1/channels/").then(r => r.json())
+        },
+
+        hideProjects: function () {
+            this.showProjects = false
+        },
+
+        hideChannelProjects: function () {
+            this.showChannelProjects = false
+        },
+
+        hideChannels: function () {
+            this.showChannels = false
+        },
+
+        selectProject(project) {
+            this.selectedProject = project
+            this.selectedChannel = null
+            if (project) {
+                this.changeUrl()
+            }
+            this.hideProjects()
+        },
+
+        async selectChannel(channel) {
+            if (!this.selectedProject) {
+                this.selectedProject = this.projects.filter(item => item.id === channel.project_id)[0]
+            }
+            this.selectedChannel = channel
+            if (channel) {
+                this.changeUrl()
+            }
+            this.hideChannels()
+        },
+
+        async deleteContainer(container) {
+            const result = confirm(`Are you sure you want to delete the "${container.slug}" container`)
+
+            if (result) {
+                await fetch(`/api/v1/container/${container.id}/`, {method: "DELETE"})
+                this.containers = this.containers.filter(item => item !== container)
+            }
+        },
+
+        async deleteChannel(channel) {
+            const result = confirm(`Are you sure you want to delete the "${channel.name}" channel`)
+
+            if (result) {
+                await fetch(`/api/v1/channels/${channel.id}/`, {method: "DELETE"})
+                this.channels = this.channels.filter(item => item !== channel)
+            }
+        },
+
+        async deleteProject(project) {
+            const result = confirm(`Are you sure you want to delete the "${project.name}" project`)
+
+            if (result) {
+                await fetch(`/api/v1/projects/${project.id}/`, {method: "DELETE"})
+                this.projects = this.projects.filter(item => item !== project)
+            }
+        },
+
+        openProjectForm() {
+            setTimeout(() => {
+                this.showProjectForm = true
+            }, 0)
+        },
+
+        openChannelForm() {
+            setTimeout(() => {
+                this.showChannelForm = true
+            }, 0)
+        },
+
+        closeProjectForm() {
+            if (this.showProjectForm) {
+                this.showProjectForm = false
+            }
+        },
+
+        closeChannelForm() {
+            if (this.showChannelForm) {
+                this.showChannelForm = false
+            }
+        },
+
+        openContainerDetails(container) {
+            setTimeout(() => {
+                this.selectedContainer = container
+            }, 0)
+        },
+
+        closeContainerDetails() {
+            if (this.selectedContainer) {
+                this.selectedContainer = null
+                this.containerEditing = false
+            }
+        },
+
+        async getContainers() {
+            const containers = await fetch(`/api/v1/containers/`).then(r => r.json())
+            return containers.map((item) => {
+                item.updated_time = new Date(item.updated_time).toLocaleString('sv', {timeZoneName: 'short'})
+                return item
+            })
+        },
+
+        startEditingContainer() {
+            this.containerEditing = true
+            this.editedContainer = JSON.parse(JSON.stringify(this.selectedContainer))
+            this.editedContainer.auth = JSON.stringify(JSON.parse(this.editedContainer.auth), null, '\t')
+            this.editedContainer.parameters = JSON.stringify(this.editedContainer.parameters, null, '\t')
+            // {#this.editedContainer.parameters = JSON.stringify(this.editedContainer.parameters, undefined, 4)#}
+        },
+
+        async editContainer() {
+            this.editedContainer.auth = JSON.parse(this.editedContainer.auth)
+            this.editedContainer.parameters = JSON.parse(this.editedContainer.parameters)
+            delete this.editedContainer.updated_time
+            this.selectedContainer = await fetch(`/api/v1/container/`, {
+                method: "PATCH",
+                body: JSON.stringify(this.editedContainer)
+            }).then(r => r.json())
+            this.containers = await this.getContainers()
+            this.containerEditing = false
+        },
+
+        changePage(number) {
+            this.pageNumber = Number.parseInt(number)
+            this.changeUrl()
+        },
+
+        randomColor(channel_id) {
+            if (this.colors.length < channel_id) {
+                return this.colors[Math.floor(Math.random() * this.colors.length)]
+            }
+            return this.colors[channel_id - 1]
+        }
+    },
+
+        async mounted() {
+            const project = new URLSearchParams(window.location.search).get('project')
+            const channel = new URLSearchParams(window.location.search).get('channel')
+
+        this.projects = await this.getProjects()
+        this.channels = await this.getChannels()
+        this.containers = await this.getContainers()
+
+        if (project) {
+            this.selectedProject = this.projects.filter(item => item.slug === project)[0]
+        }
+
+        if (channel) {
+            this.selectedChannel = this.channels.filter(item => item.slug === channel)[0]
+        }
+    }
+})
 </script>
 {% endblock %}
