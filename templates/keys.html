@@ -188,8 +188,8 @@
 <div class="flex">
     <button
         @click="showKeyForm" type="button"
-        class="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
-            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+        class="mb-4 inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md
+            shadow-sm text-white bg-pink-600 opacity-90 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
             focus:ring-rose-500">
         Create
     </button>
@@ -267,16 +267,14 @@
                         {% if user.role == "super" %}
                         <td>
                             <button @click="startKeyEditing(key)" class="text-center">
-                                    <span class="px-2 py-1 opacity-90 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 cursor-pointer">edit</span>
+                                <span class="px-2 py-1 opacity-80 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:opacity-100 cursor-pointer">edit</span>
                             </button>
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                            <button @click="deleteKey(key)"
-                                    title="Delete key"
-                                    class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
-                                        <span class="material-icons text-red-500">
-                                            delete_outline
-                                        </span>
+                            <button @click="deleteKey(key)" title="Delete key" class="cursor-pointer">
+                                <span class="material-icons text-red-500 opacity-90 hover:opacity-100">
+                                    delete_outline
+                                </span>
                             </button>
                         </td>
                         {% endif %}

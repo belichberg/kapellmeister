@@ -3,12 +3,11 @@
 {% block content %}
 
 <button
-        @click="showUserForm"
-        type="button"
-        class="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
-            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-            focus:ring-rose-500">
-    + User
+    @click="showUserForm" type="button"
+    class="mb-4 inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md
+        shadow-sm text-white bg-pink-600 opacity-90 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+        focus:ring-rose-500">
+    Create
 </button>
 
 <!-- Modal Background -->
@@ -138,7 +137,7 @@
                     <tbody>
                     <tr v-for="(user, index) in users" :key="user.id"
                         class="container-row text-center hover:bg-gray-50">
-                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1"/>
+                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-400" v-text="index + 1"/>
                         <td class="whitespace-nowrap text-sm font-medium text-gray-900 relative">
                             <div v-if="selectedUser === user" class="ml-5">
                                 <label for="user" class="sr-only">User</label>
