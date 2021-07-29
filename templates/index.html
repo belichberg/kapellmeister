@@ -348,7 +348,7 @@
             </div>
         </div>
 
-        <div class="w-60 mb-4 ml-6 flex-col flex justify-end">
+        <div class="w-56 mb-4 ml-4 justify-end">
             <div class="mt-1 relative">
                 <label for="search" class="sr-only">Search</label>
                 <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center z-10">
@@ -420,8 +420,8 @@
                     </tr>
                     <tr v-else v-for="(container, index) in filteredContainers"
                         :key="container.slug + container.project_id + container.channel_id"
-                        class="container-row text-center"
-                        :style="{backgroundColor: randomColor(container.channel_id)}">
+                        class="text-center"
+                        :class="randomColor(container.channel_id)">
                         <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1"/>
                         <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900"
                             v-text="getProjectName(container.project_id)"/>
@@ -462,67 +462,94 @@
     </div>
 </div>
 
-    {#  Pagination block  #}
-    <div class="py-4 flex items-center justify-between border-t border-gray-200">
-        <div class="flex-1 flex justify-between sm:hidden">
-            <button @click="pageNumber--"
-               class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                Previous
-            </button>
-            <button @click="pageNumber++"
-               class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                Next
-            </button>
-        </div>
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
-{#            <div>#}
-{#                <p class="text-sm text-gray-700">#}
-{#                    Showing#}
-{#                    <span class="font-medium">[[ pageNumber * size + 1 ]]</span>#}
-{#                    to#}
-{#                    <span class="font-medium">[[ pageNumber * size + size ]]</span>#}
-{#                    of#}
-{#                    <span class="font-medium">[[ containers.length ]]</span>#}
-{#                    results#}
-{#                </p>#}
-{#            </div>#}
-            <div>
-                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                    <button v-if="pageNumber !== 0" @click="pageNumber--"
-                       class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                        <span class="sr-only">Previous</span>
-                        <!-- Heroicon name: solid/chevron-left -->
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                             aria-hidden="true">
-                            <path fill-rule="evenodd"
-                                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                  clip-rule="evenodd"/>
-                        </svg>
-                    </button>
-                    <button v-if="pageNumber !== 0" @click="pageNumber = 0"
-                       class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                        1
-                    </button>
-                    <div class="z-10 bg-pink-50 border-pink-500 text-pink-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium" v-text="pageNumber + 1" >
-                    </div>
-                    <button v-if="pageNumber !== pageCount - 1" @click="pageNumber = pageCount - 1"
-                       class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                        [[ pageCount ]]
-                    </button>
-                    <button v-if="pageNumber !== pageCount - 1" @click="pageNumber++"
-                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                        <span class="sr-only">Next</span>
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                             aria-hidden="true">
-                            <path fill-rule="evenodd"
-                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                  clip-rule="evenodd"/>
-                        </svg>
-                    </button>
-                </nav>
-            </div>
+{#  Pagination block  #}
+<div class="py-4 flex items-center justify-between">
+    <div class="flex-1 flex justify-between sm:hidden">
+        <button @click="pageNumber--"
+           class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Previous
+        </button>
+        <button @click="pageNumber++"
+           class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Next
+        </button>
+    </div>
+    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
+        <div>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <button v-if="pageNumber !== 0" @click="pageNumber--"
+                   class="relative inline-flex items-center px-2 py-2 rounded-l-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Previous</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                         aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <div v-else
+                   class="relative inline-flex items-center px-2 py-2 rounded-l-md bg-white text-sm font-medium text-gray-300">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                         aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </div>
+
+                <div class="inline-flex">
+                    <button v-for="page in pageCount" :key="page" v-if="page !== pageNumber + 1" @click="pageNumber = page - 1" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="page"></button>
+                    <div v-else class="w-10 z-10 bg-white text-pink-600 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageNumber + 1"></div>
+                    {#       first page         #}
+{#                    <button @click="pageNumber = 0" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="1"></button>#}
+                    {#       previous page         #}
+{#                    <button @click="pageNumber--" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageNumber"></button>#}
+                    {#       current page         #}
+{#                    <div class="w-10 z-10 bg-white text-pink-600 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageNumber + 1"></div>#}
+{#                    <div class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default">...</div>#}
+                    {#       next page         #}
+{#                    <button @click="pageNumber++" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageNumber + 2"></button>#}
+                    {#       last page         #}
+{#                    <button @click="pageNumber = pageCount - 1" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageCount"></button>#}
+                </div>
+                <div v-else-if="pageNumber > 2 || pageNumber < pageCount - 3" class="inline-flex">
+                    {#       first page         #}
+                    <button @click="pageNumber = 0" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="1"></button>
+                    <div class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default">...</div>
+                    {#       previous page         #}
+                    <button @click="pageNumber--" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageNumber"></button>
+                    {#       current page         #}
+                    <div class="w-10 z-10 bg-white text-pink-600 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageNumber + 1"></div>
+                    {#       next page         #}
+                    <button @click="pageNumber++" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageNumber + 2"></button>
+                    <div class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default">...</div>
+                    {#       last page         #}
+                    <button @click="pageNumber = pageCount - 1" class="w-10 z-10 bg-white text-gray-400 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageCount"></button>
+                </div>
+
+                <button v-if="pageNumber < pageCount - 1" @click="pageNumber++"
+                   class="relative inline-flex items-center px-2 py-2 rounded-r-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Next</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                         aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <div v-else
+                   class="relative inline-flex items-center px-2 py-2 rounded-r-md bg-white text-sm font-medium text-gray-300">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                         aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </div>
+            </nav>
         </div>
     </div>
+</div>
 
     <div v-if="selectedContainer"
          class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
@@ -712,25 +739,35 @@
                 newChannelDescription: null,
 
                 pageNumber: 0,
-                size: 10,
-                pageCount: 0
+                size: 4,
+                pageCount: 0,
 
                 colorCache: {},
 
                 colors: [
-                    "white",
-                    "#EBDEF0",
-                    "#FADBD8",
-                    "#D4E6F1",
-                    "#FCF3CF",
-                    "#D2B4DE",
-                    "#FAE5D3",
-                    "#D6DBDF",
-                    "white",
-                    "#7FB3D5",
-                    "#F7DC6F"
+                    "bg-green-50",
+                    "bg-blue-50",
+                    "bg-yellow-50",
+                    "bg-red-50",
+                    "bg-indigo-50",
+                    "bg-purple-50",
+                    "bg-pink-50",
+                    "bg-white"
                 ],
-                currentColor: ""
+
+                {#colors: [#}
+                {#    "white",#}
+                {#    "#EBDEF0",#}
+                {#    "#FADBD8",#}
+                {#    "#D4E6F1",#}
+                {#    "#FCF3CF",#}
+                {#    "#D2B4DE",#}
+                {#    "#FAE5D3",#}
+                {#    "#D6DBDF",#}
+                {#    "white",#}
+                {#    "#7FB3D5",#}
+                {#    "#F7DC6F"#}
+                {#],#}
             }
         },
 
@@ -888,7 +925,7 @@
             },
 
             async deleteContainer(container) {
-                const result = confirm(`Are you sure you want to delete the ${container.slug} container`)
+                const result = confirm(`Are you sure you want to delete the "${container.slug}" container`)
 
                 if (result) {
                     await fetch(`/api/v1/container/${container.id}/`, {method: "DELETE"})
@@ -897,7 +934,7 @@
             },
 
             async deleteChannel(channel) {
-                const result = confirm(`Are you sure you want to delete the ${channel.name} channel`)
+                const result = confirm(`Are you sure you want to delete the "${channel.name}" channel`)
 
                 if (result) {
                     await fetch(`/api/v1/channels/${channel.id}/`, {method: "DELETE"})
@@ -906,7 +943,7 @@
             },
 
             async deleteProject(project) {
-                const result = confirm(`Are you sure you want to delete the ${project.name} project`)
+                const result = confirm(`Are you sure you want to delete the "${project.name}" project`)
 
                 if (result) {
                     await fetch(`/api/v1/projects/${project.id}/`, {method: "DELETE"})
@@ -981,9 +1018,9 @@
 
             randomColor(channel_id) {
                 if (this.colors.length < channel_id) {
-                    return this.currentColor = this.colors[Math.floor(Math.random() * this.colors.length)]
+                    return this.colors[Math.floor(Math.random() * this.colors.length)]
                 }
-                return this.currentColor = this.colors[channel_id]
+                return this.colors[channel_id - 1]
             }
         },
 
