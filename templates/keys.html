@@ -248,7 +248,7 @@
                         </td>
                     </tr>
                     <tr v-for="(key, index) in keys" :key="key.token" class="container-row text-center hover:bg-gray-50">
-                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1" />
+                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-400" v-text="index + 1" />
                         <td class="relative p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900" :title="key.description || 'No description'">
                             [[ key.token ]]
                                 <button @click="copyText(key.token)"

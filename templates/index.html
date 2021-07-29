@@ -34,8 +34,8 @@
                     </div>
                     <div class="flex items-center justify-end">
                         <button type="reset"
-                            @click="closeProjectForm"
-                            class="mt-3 ml-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                                @click="closeProjectForm"
+                                class="mt-3 ml-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
                             Close
                         </button>
                         <button type="submit"
@@ -109,9 +109,10 @@
                                             <span class="block truncate"
                                                   :class="project === selectedProject ? 'font-semibold' : 'font-normal'"
                                                   v-text="project.name"></span>
-                                                                <span v-if="project === selectedProject"
-                                                                      class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
-                                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                            <span v-if="project === selectedProject"
+                                                  class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg"
+                                                     viewBox="0 0 20 20"
                                                      fill="currentColor"
                                                      aria-hidden="true"
                                                 >
@@ -134,8 +135,8 @@
                     </div>
                     <div class="flex items-center justify-end">
                         <button type="reset"
-                            @click="closeChannelForm"
-                            class="mt-3 ml-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                                @click="closeChannelForm"
+                                class="mt-3 ml-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
                             Close
                         </button>
                         <button type="submit"
@@ -172,11 +173,11 @@
                     </button>
 
                     {% if user.role == "super" %}
-                    <button @click="openProjectForm"
-                            class="ml-4 my-0.5 px-1.5 py-1 border border-transparent text-md font-medium rounded-md opacity-90
+                        <button @click="openProjectForm"
+                                class="ml-4 my-0.5 px-1.5 py-1 border border-transparent text-md font-medium rounded-md opacity-90
                             shadow text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-0">
-                        +
-                    </button>
+                            +
+                        </button>
                     {% endif %}
                 </div>
 
@@ -184,7 +185,8 @@
                     class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
                     tabindex="-1" role="listbox"
                 >
-                    <li class="flex text-gray-500 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md hover:text-white" @click="selectProject(null)">
+                    <li class="flex text-gray-500 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md hover:text-white"
+                        @click="selectProject(null)">
                         <span class="flex-grow truncate font-medium" @click="selectProject(null)">all projects</span>
                     </li>
                     <li v-for="project in projects"
@@ -237,11 +239,11 @@
                     </button>
 
                     {% if user.role == "super" %}
-                    <button @click="openChannelForm"
-                            class="ml-4 my-0.5 px-1.5 py-1 border border-transparent text-md font-medium rounded-md opacity-90
+                        <button @click="openChannelForm"
+                                class="ml-4 my-0.5 px-1.5 py-1 border border-transparent text-md font-medium rounded-md opacity-90
                             shadow text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-0">
-                        +
-                    </button>
+                            +
+                        </button>
                     {% endif %}
                 </div>
 
@@ -260,7 +262,8 @@
                         class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md text-base transition ease-in duration-100 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
                         tabindex="-1" role="listbox"
                 >
-                    <li class="flex text-gray-400 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md hover:text-white"  @click="selectChannel(null)">
+                    <li class="flex text-gray-400 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md hover:text-white"
+                        @click="selectChannel(null)">
                         <span class="flex-grow truncate font-medium">all channels</span>
                     </li>
                     <li
@@ -269,11 +272,12 @@
                             class="project-select flex text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
                             role="option"
                     >
-                        <span class="truncate font-medium text-gray-500 text-sm" v-text="getProjectName(channel.project_id) + ':'" @click="selectChannel(channel)"></span>
+                        <span class="truncate font-medium text-gray-500 text-sm"
+                              v-text="getProjectName(channel.project_id) + ':'" @click="selectChannel(channel)"></span>
                         <span class="flex-grow truncate"
-                          :class="channel === selectedChannel ? 'font-semibold' : 'font-medium'"
-                          @click="selectChannel(channel)"
-                          v-text="channel.name"></span>
+                              :class="channel === selectedChannel ? 'font-semibold' : 'font-medium'"
+                              @click="selectChannel(channel)"
+                              v-text="channel.name"></span>
                         <span v-if="channel === selectedChannel"
                               class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-3">
                             <svg
@@ -295,7 +299,56 @@
             </div>
         </div>
 
-        <div class="w-60 mb-4 ml-6 flex-grow flex justify-end">
+        <div class="flex-grow items-center mb-4 ml-6">
+            <div class="mt-1 hidden sm:flex-1 sm:flex sm:items-center sm:justify-end">
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow -space-x-px">
+                        <button v-if="pageNumber !== 0" @click="pageNumber--"
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Previous</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <div v-else
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md bg-white text-sm font-medium text-gray-300">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="w-10 z-10 bg-white text-pink-600 relative inline-flex items-center text-center px-4 py-2 text-sm font-medium cursor-default" v-text="pageNumber + 1" >
+                        </div>
+                        <button v-if="pageNumber !== pageCount - 1" @click="pageNumber++"
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Next</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <div v-else
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md bg-white text-sm font-medium text-gray-300">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-60 mb-4 ml-6 flex-col flex justify-end">
             <div class="mt-1 relative">
                 <label for="search" class="sr-only">Search</label>
                 <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center z-10">
@@ -351,9 +404,9 @@
                                 Details
                             </th>
                             {% if user.role == "super" %}
-                            <th scope="col" class="relative p-3">
-                                <span class="sr-only">Delete</span>
-                            </th>
+                                <th scope="col" class="relative p-3">
+                                    <span class="sr-only">Delete</span>
+                                </th>
                             {% endif %}
                         </tr>
                         </thead>
@@ -368,13 +421,17 @@
                         <tr v-else v-for="(container, index) in filteredContainers"
                             :key="container.slug + container.project_id + container.channel_id"
                             class="container-row text-center">
-                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="index + 1" />
-                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="getProjectName(container.project_id)" />
-                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="getChannelName(container.channel_id)" />
-                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="container.slug" />
+                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-400" v-text="pageNumber * size + (index + 1)"/>
+                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900"
+                                v-text="getProjectName(container.project_id)"/>
+                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900"
+                                v-text="getChannelName(container.channel_id)"/>
+                            <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900"
+                                v-text="container.slug"/>
                             <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
                                 <div class="flex justify-center items-center">
-                                    <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[ key ]]</p>
+                                    <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[ key
+                                        ]]</p>
                                 </div>
                             </td>
                             <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -389,19 +446,81 @@
                                 </div>
                             </td>
                             {% if user.role == "super" %}
-                            <td class="p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
-                                <button @click="deleteContainer(container)"
-                                        class="text-indigo-600 hover:text-indigo-900">
+                                <td class="p-3 pr-6 whitespace-nowrap text-right text-sm font-medium">
+                                    <button @click="deleteContainer(container)"
+                                            class="text-indigo-600 hover:text-indigo-900">
                                         <span class="material-icons text-red-500">
                                             delete_outline
                                         </span>
-                                </button>
-                            </td>
+                                    </button>
+                                </td>
                             {% endif %}
                         </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {#  Pagination block  #}
+    <div class="py-4 flex items-center justify-between border-t border-gray-200">
+        <div class="flex-1 flex justify-between sm:hidden">
+            <button @click="pageNumber--"
+               class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Previous
+            </button>
+            <button @click="pageNumber++"
+               class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Next
+            </button>
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
+{#            <div>#}
+{#                <p class="text-sm text-gray-700">#}
+{#                    Showing#}
+{#                    <span class="font-medium">[[ pageNumber * size + 1 ]]</span>#}
+{#                    to#}
+{#                    <span class="font-medium">[[ pageNumber * size + size ]]</span>#}
+{#                    of#}
+{#                    <span class="font-medium">[[ containers.length ]]</span>#}
+{#                    results#}
+{#                </p>#}
+{#            </div>#}
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <button v-if="pageNumber !== 0" @click="pageNumber--"
+                       class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Previous</span>
+                        <!-- Heroicon name: solid/chevron-left -->
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                             aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                  clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    <button v-if="pageNumber !== 0" @click="pageNumber = 0"
+                       class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                        1
+                    </button>
+                    <div class="z-10 bg-pink-50 border-pink-500 text-pink-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium" v-text="pageNumber + 1" >
+                    </div>
+                    <button v-if="pageNumber !== pageCount - 1" @click="pageNumber = pageCount - 1"
+                       class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                        [[ pageCount ]]
+                    </button>
+                    <button v-if="pageNumber !== pageCount - 1" @click="pageNumber++"
+                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Next</span>
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                             aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                  clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </nav>
             </div>
         </div>
     </div>
@@ -427,18 +546,18 @@
                             Save
                         </button>
                         {% if user.role == "super" %}
-                        <button v-if="!containerEditing"
-                            @click="startEditingContainer"
-                            type="button"
-                            class="w-full px-4 py-2 ml-3 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-600 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
-                            Edit
-                        </button>
-                        <button v-else
-                            @click="containerEditing = false"
-                            type="button"
-                            class="w-full p-2 ml-3 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-600 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Cancel
-                        </button>
+                            <button v-if="!containerEditing"
+                                    @click="startEditingContainer"
+                                    type="button"
+                                    class="w-full px-4 py-2 ml-3 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-600 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                                Edit
+                            </button>
+                            <button v-else
+                                    @click="containerEditing = false"
+                                    type="button"
+                                    class="w-full p-2 ml-3 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-600 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                Cancel
+                            </button>
                         {% endif %}
                         <button v-if="!containerEditing"
                                 @click="closeContainerDetails"
@@ -464,33 +583,41 @@
                                v-model="editedContainer.slug"
                                class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-default focus:outline-none sm:text-sm cursor-text sm:col-span-2 border border-gray-200"
                         />
-                        <dd v-else class="p-1.5 text-center text-sm text-gray-700 bg-gray-200 col-span-2 rounded-md shadow-inner" v-text="selectedContainer.slug" />
+                        <dd v-else
+                            class="p-1.5 text-center text-sm text-gray-700 bg-gray-200 col-span-2 rounded-md shadow-inner"
+                            v-text="selectedContainer.slug"/>
                         <dt class="p-1.5 text-sm font-medium text-gray-600">
                             Project
                         </dt>
                         <select
-                          v-if="containerEditing"
-                          v-model="editedContainer.project_id"
-                          name="project"
-                          required
-                          class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
+                                v-if="containerEditing"
+                                v-model="editedContainer.project_id"
+                                name="project"
+                                required
+                                class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
                         >
-                          <option v-for="project in projects" :key="project.id" :value="project.id">[[ project.name ]]</option>
+                            <option v-for="project in projects" :key="project.id" :value="project.id">[[ project.name
+                                ]]
+                            </option>
                         </select>
-                        <dd v-else class="p-1.5 text-center text-sm text-gray-700 bg-gray-200 rounded-md shadow-inner" v-text="getProjectName(selectedContainer.project_id)" />
+                        <dd v-else class="p-1.5 text-center text-sm text-gray-700 bg-gray-200 rounded-md shadow-inner"
+                            v-text="getProjectName(selectedContainer.project_id)"/>
                         <dt class="p-1.5 text-sm font-medium text-gray-600">
                             Channel
                         </dt>
                         <select
-                          v-if="containerEditing"
-                          v-model="editedContainer.channel_id"
-                          name="channel"
-                          required
-                          class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
+                                v-if="containerEditing"
+                                v-model="editedContainer.channel_id"
+                                name="channel"
+                                required
+                                class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
                         >
-                          <option v-for="channel in channels" v-if="channel.project_id === editedContainer.project_id" :key="channel.id" :value="channel.id">[[ channel.name ]]</option>
+                            <option v-for="channel in channels" v-if="channel.project_id === editedContainer.project_id"
+                                    :key="channel.id" :value="channel.id">[[ channel.name ]]
+                            </option>
                         </select>
-                        <dd v-else class="p-1.5 text-center text-sm text-gray-700 bg-gray-200 rounded-md shadow-inner" v-text="getChannelName(selectedContainer.channel_id)" />
+                        <dd v-else class="p-1.5 text-center text-sm text-gray-700 bg-gray-200 rounded-md shadow-inner"
+                            v-text="getChannelName(selectedContainer.channel_id)"/>
                     </div>
                     <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-7 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-600">
@@ -533,14 +660,6 @@
                     </div>
                 </dl>
             </div>
-{#            <div class="sticky bg-white inset-x-0 bottom-0 border-t border-gray-200 p-3 sm:px-6 z-20">#}
-{#                <div class="flex items-center justify-end">#}
-{#                    <button type="submit"#}
-{#                            class="mt-3 w-full inline-flex px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">#}
-{#                        Save#}
-{#                    </button>#}
-{#                </div>#}
-{#            </div>#}
         </form>
     </div>
 {% endblock content %}
@@ -579,7 +698,9 @@
                     newChannelName: null,
                     newChannelDescription: null,
 
-                    allContainers: [],
+                    pageNumber: 0,
+                    size: 10,
+                    pageCount: 0
                 }
             },
 
@@ -604,10 +725,15 @@
                         })
                     }
 
-                    return containers_.sort((a, b) => a.updated_time > b.updated_time ? -1 : 1)
+                    const start = this.pageNumber * this.size,
+                        end = start + this.size
+
+                    this.pageCount = Math.ceil(containers_.length / this.size)
+
+                    return containers_.sort((a, b) => a.updated_time > b.updated_time ? -1 : 1).slice(start, end)
                 },
 
-                filteredChannels () {
+                filteredChannels() {
                     let channels_ = this.channels
 
                     if (this.selectedProject) {
@@ -811,17 +937,20 @@
                     {#this.editedContainer.parameters = JSON.stringify(this.editedContainer.parameters, undefined, 4)#}
                 },
 
-                async editContainer () {
+                async editContainer() {
                     this.editedContainer.auth = JSON.parse(this.editedContainer.auth)
                     this.editedContainer.parameters = JSON.parse(this.editedContainer.parameters)
                     delete this.editedContainer.updated_time
-                    this.selectedContainer = await fetch(`/api/v1/container/`, {method: "PATCH", body: JSON.stringify(this.editedContainer)}).then(r => r.json())
+                    this.selectedContainer = await fetch(`/api/v1/container/`, {
+                        method: "PATCH",
+                        body: JSON.stringify(this.editedContainer)
+                    }).then(r => r.json())
                     this.containers = await this.getContainers()
                     this.containerEditing = false
                 }
             },
 
-            async mounted () {
+            async mounted() {
                 const project = new URLSearchParams(window.location.search).get('project')
                 const channel = new URLSearchParams(window.location.search).get('channel')
 
