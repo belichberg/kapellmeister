@@ -395,7 +395,23 @@
             },
 
             copyText(key) {
-                navigator.clipboard.writeText(key);
+                // doesn't work in some browsers
+                // navigator.clipboard.writeText(key);
+
+                // Supported by older browsers
+                //Creating textarea element
+                let textarea = document.createElement("textarea")
+                //Settings its value to the thing you want to copy
+                textarea.value = key
+                //Appending the textarea to body
+                document.body.appendChild(textarea)
+                //Selecting its content
+                textarea.focus()
+                textarea.select()
+                //Copying the selected content to clipboard
+                document.execCommand("copy")
+                //Removing the textarea
+                document.body.removeChild(textarea)
             }
         },
 
