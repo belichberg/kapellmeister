@@ -403,10 +403,17 @@
                     <tbody>
                     <tr v-if="!filteredContainers.length"
                         class="text-center">
+                        {% if user.role == "super" %}
+                        <td colspan="8"
+                            class="py-14 whitespace-nowrap text-md font-medium text-gray-500 bg-white">
+                            No containers...
+                        </td>
+                        {% else %}
                         <td colspan="7"
                             class="py-14 whitespace-nowrap text-md font-medium text-gray-500 bg-white">
                             No containers...
                         </td>
+                        {% endif %}
                     </tr>
                     <tr v-else v-for="(container, index) in filteredContainers"
                         :key="container.slug + container.project_id + container.channel_id"
@@ -416,9 +423,14 @@
                         <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-600" v-text="getProjectName(container.project_id)"/>
                         <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-600" v-text="getChannelName(container.channel_id)"/>
                         <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900" v-text="container.slug"/>
-                        <td v-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
+                        <td v-if="JSON.parse(container.auth) instanceof Object" class="p-3 py-4 text-sm text-gray-500">
                             <div class="flex justify-center items-center">
                                 <p v-for="key in Object.keys(JSON.parse(container.auth).auths)" :key="key">[[ key ]]</p>
+                            </div>
+                        </td>
+                        <td v-else-if="container.auth" class="p-3 py-4 text-sm text-gray-500">
+                            <div class="flex justify-center items-center">
+                                <p>token</p>
                             </div>
                         </td>
                         <td v-else class="p-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -990,9 +1002,9 @@
         }
     },
 
-        async mounted() {
-            const project = new URLSearchParams(window.location.search).get('project')
-            const channel = new URLSearchParams(window.location.search).get('channel')
+    async mounted() {
+        const project = new URLSearchParams(window.location.search).get('project')
+        const channel = new URLSearchParams(window.location.search).get('channel')
 
         this.projects = await this.getProjects()
         this.channels = await this.getChannels()
