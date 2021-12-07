@@ -912,6 +912,7 @@
             if (result) {
                 await fetch(`/api/v1/channels/${channel.id}/`, {method: "DELETE"})
                 this.channels = this.channels.filter(item => item !== channel)
+                this.containers = this.containers.filter(item => item.channel_id !== channel.id)
             }
         },
 
@@ -921,6 +922,8 @@
             if (result) {
                 await fetch(`/api/v1/projects/${project.id}/`, {method: "DELETE"})
                 this.projects = this.projects.filter(item => item !== project)
+                this.channels = this.channels.filter(item => item.project_id !== project.id)
+                this.containers = this.containers.filter(item => item.project_id !== project.id)
             }
         },
 

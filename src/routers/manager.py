@@ -67,6 +67,9 @@ def delete_project(project_id: int, user: Optional[UserAPI] = Depends(get_user))
     project.channels = [
         ChannelAPI.parse_obj(channel.to_dict()) for channel in Channel.delete_all(project_id=project_id)
     ]
+    # deleting all related containers
+    Container.delete_all(project_id=project_id)
+
     return project
 
 
@@ -112,6 +115,9 @@ def delete_channel(channel_id: int, user: Optional[UserAPI] = Depends(get_user))
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Token"},
         )
+
+    # deleting all related containers
+    Container.delete_all(channel_id=channel_id)
 
     # deleting a channel
     return ChannelAPI.parse_obj(Channel.delete(id=channel_id).to_dict())
@@ -199,8 +205,11 @@ async def set_container(
 ) -> ContainerAPI:
     container: ContainerAPI = ContainerAPI.parse_obj(yaml.safe_load(await request.body()))
 
-    project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
-    channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(slug=channel_slug, project_id=project.id).to_dict())
+    try:
+        project: ProjectAPI = ProjectAPI.parse_obj(Project.get(slug=project_slug).to_dict())
+        channel: ChannelAPI = ChannelAPI.parse_obj(Channel.get(slug=channel_slug, project_id=project.id).to_dict())
+    except AttributeError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Authentication check
     if user is None and token is None:
