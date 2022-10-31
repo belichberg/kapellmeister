@@ -1,0 +1,261 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Modal Background -->
+<div v-if="showChoices"
+     class="fixed text-gray-500 flex items-center justify-center overflow-auto z-50 bg-gray-700 bg-opacity-70 left-0 right-0 top-0 bottom-0">
+    <!--Modal-->
+    <div id="modal"
+         v-click-outside="hideUserConfirm"
+         class="mb-4 grid justify-items-center bg-white pt-5 px-8 pb-12 shadow sm:rounded-lg relative">
+        <button
+                v-if="showChoices"
+                @click="hideUserConfirm"
+                class="px-1 absolute right-3 top-3 items-center border border-transparent text-sm font-medium rounded-md
+                            text-white shadow-sm bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            focus:ring-pink-500">
+            <span class="material-icons text-white pb-1.5">&#10006;</span>
+        </button>
+        <div class="text-gray-600 mt-8 mb-5 font-medium tracking-wider ">Confirm changes by current password</div>
+        <div class="relative">
+            <label for="confirm" class="sr-only">Password</label>
+            <input
+                    id="confirm"
+                    v-model="currPassword"
+                    :type="this.show_pass ? 'text' : 'password'"
+                    title="Input current password"
+                    minlength="8"
+                    maxlength="64"
+                    autocomplete="off"
+                    class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default
+                    focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                    placeholder="Password"/>
+            <i class="absolute pt-1.5 right-3 material-icons text-sm text-gray-700 cursor-pointer hover:text-blue-700"
+               @click="show_pass = !show_pass"
+               v-text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
+            <br>
+        </div>
+        <button @click="updateUser(user)"
+                type="submit"
+                class="absolute right-3 bottom-3 p-1.5 border border-transparent text-sm font-medium rounded-md
+                            shadow-sm text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+            Confirm
+        </button>
+        </form>
+    </div>
+</div>
+
+<div class="flex flex-col cursor-default">
+    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="overflow-x-auto border-b border-gray-200 sm:rounded-lg rounded-lg shadow overflow-y-auto relative">
+                <table class="divide-y divide-gray-200 border-collapse min-w-full table-striped relative cursor-default">
+                    <thead class="bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <tr>
+                        <th scope="col"
+                            class="py-2.5"
+                            width="35%">
+                            Username
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5"
+                            width="15%">
+                            Role
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5"
+                            width="10%">
+                            Is active
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5"
+                            width="20%">
+                            Project(s)
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5"
+                            width="10%">
+                            <span class="sr-only">Edit</span>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="container-row text-center hover:bg-gray-50">
+                        <td class="py-3 whitespace-nowrap text-sm font-medium text-gray-900 relative">
+                            <div v-if="selectedUser === user" class="p-3">
+                                <label for="user" class="sr-only">User</label>
+                                <input type="text" id="user" name="user"
+                                       v-model="user.username"
+                                       class="bg-white relative text-center text-gray-700 rounded-md shadow p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text"
+                                       placeholder="New Username"
+                                />
+                                <button v-if="newPasswordBtn"
+                                        @click="newPasswordBtn=false"
+                                        type="button"
+                                        title="Change password"
+                                        class="bg-white ml-2 px-2 h-7 rounded-md shadow text-center shadow-sm hover:bg-gray-200
+                                                                    focus:ring-1 focus:ring-pink-500
+                                                                    focus:border-pink-500 sm:text-sm cursor-pointer"
+                                >
+                                    <span class="text-xs text-gray-500">New password</span>
+                                </button>
+                                <div v-if="!newPasswordBtn" class="inline block">
+                                    <label for="newPassword" class="sr-only">Password</label>
+                                    <input
+                                            id="newPassword"
+                                            v-model="newPassword"
+                                            :type="this.show_pass ? 'text' : 'password'"
+                                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                            title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                            minlength="8"
+                                            maxlength="64"
+                                            autocomplete="off"
+                                            class="bg-white relative w-50 text-gray-700 rounded-md shadow p-2 text-left
+                                   cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
+                                   focus:border-pink-500 sm:text-sm cursor-text"
+                                            placeholder="New password"/>
+                                    <i class="absolute pt-1.5 px-2 right-8 material-icons text-sm text-gray-700 cursor-pointer hover:text-blue-700"
+                                       @click="show_pass = !show_pass"
+                                       v-text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
+                                    <br>
+                                </div>
+                            </div>
+                            <div v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                                [[ user.username ]]
+                            </div>
+                        </td>
+                        <td class="whitespace-nowrap text-sm font-medium text-gray-900 relative">
+                            [[ user.role ]]
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
+                            <span v-if="user.is_active" class="material-icons">check</span>
+                            <span v-else class="material-icons">close</span>
+
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <div v-for="project in user.projects">
+                                [[ project.name ]]
+                            </div>
+                        </td>
+                        <td>
+                            <div v-if="selectedUser === user">
+                                <button @click="openUserConfirm"
+                                        class="pr-1 text-green-500 hover:text-green-600 cursor-pointer">
+                                <span class="material-icons">
+                                    done_outline
+                                </span>
+                                </button>
+
+                                <button @click="closeUpdateUser"
+                                        class="text-gray-400 hover:text-red-600 cursor-pointer">
+                                <span class="material-icons">
+                                    highlight_off
+                                </span>
+                                </button>
+                            </div>
+                            <button v-else @click="selectedUser = user"
+                                    class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                                <span class="material-icons">
+                                    edit
+                                </span>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% if error_message %}
+<div class="place-self-center bg-white text-center text-lg text-blue-700 font-medium shadow-md rounded py-3 px-6 absolute top-1/3 left-2/4">
+    {{ error_message }}
+</div>
+{% endif %}
+{% endblock content %}
+
+
+{% block vuejs %}
+<script>
+    new Vue({
+        el: '#app',
+
+        delimiters: ['[[', ']]'],
+
+        data() {
+            return {
+                user: {},
+                newPassword: '',
+                show_pass: false,
+                selectedUser: null,
+                newPasswordBtn: true,
+                currPassword: '',
+                showChoices: false,
+
+                openMobileNav: false,
+                selectedProject: null,
+                users: [],
+                projects: [],
+            }
+        },
+
+        methods: {
+            checkWindowLocation(path) {
+                return window.location.pathname === path
+            },
+
+            async getProjects() {
+                return await fetch("/api/v1/projects/").then(r => r.json())
+            },
+
+            async getUsers() {
+                return await fetch("/api/v1/users/").then(r => r.json())
+            },
+
+            async getCurrentUser() {
+                return await fetch("/api/v1/users/current/").then(r => r.json())
+            },
+
+            async updateUser(user) {
+                if (this.currPassword) {
+                    user["check_password"] = this.currPassword
+                }
+                if (this.newPassword) {
+                    user["new_password"] = this.newPassword
+                }
+                await fetch(`/api/v1/users/${user.id}/`, {method: "PATCH", body: JSON.stringify(user)})
+                this.user = await this.getCurrentUser()
+                location.reload()
+            },
+
+            closeUpdateUser() {
+                // this.selectedUser = null
+                // this.newPassword = ''
+                // this.newPasswordBtn = true
+                location.reload()
+            },
+
+            openUserConfirm() {
+                setTimeout(() => {
+                    this.showChoices = true
+                }, 1)
+            },
+
+            hideUserConfirm: function () {
+                if (this.showChoices) {
+                    this.showChoices = false
+                }
+            },
+        },
+
+        async mounted() {
+            this.user = await this.getCurrentUser()
+
+            const project = new URLSearchParams(window.location.search).get('project');
+            this.users = await this.getUsers()
+            this.projects = await this.getProjects()
+            this.selectedProject = this.projects.filter(item => item.slug === project)[0]
+        }
+    });
+</script>
+{% endblock %}

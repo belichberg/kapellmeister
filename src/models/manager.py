@@ -5,6 +5,7 @@ from pydantic import constr, BaseModel
 
 
 class ContainerAPI(BaseModel):
+    id: Optional[int]
     slug: constr(max_length=64)
     auth: Union[Dict[str, Any], str]
     digest: constr(max_length=255)
@@ -30,12 +31,16 @@ class ProjectAPI(BaseModel):
     channels: Optional[List[ChannelAPI]] = []
 
 
-class TokenAPI(BaseModel):
+class APIKeyModel(BaseModel):
     id: Optional[int]
     token: str
-    read_only: bool
+    description: Optional[str]
     project_id: Optional[int]
+    write: bool
 
 
-class TokenRequestAPI(BaseModel):
+class APIKeyRequestModel(BaseModel):
     token: Optional[str]
+    description: Optional[str]
+    project_id: Optional[int]
+    write: bool = False

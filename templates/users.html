@@ -3,12 +3,11 @@
 {% block content %}
 
 <button
-        @click="showUserForm"
-        type="button"
-        class="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md
-            shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-            focus:ring-rose-500">
-    + User
+    @click="showUserForm" type="button"
+    class="mb-4 inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md
+        shadow-sm text-white bg-pink-600 opacity-90 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+        focus:ring-rose-500">
+    Create
 </button>
 
 <!-- Modal Background -->
@@ -30,52 +29,53 @@
 
         <form @submit.prevent="createUser()" class="mt-5">
             <div class="w-full sm:max-w-xs">
-            <input id="userName"
-                   class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
-                   type="text"
-                   v-model="newUser"
-                   placeholder="User name" required/>
-            <div class="relative">
-            <input
-                    id="password"
-                    v-model="newPassword"
-                    :type="this.show_pass ? 'text' : 'password'"
-                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                    title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-                    minlength="8"
-                    maxlength="64"
-                    autocomplete="off"
-                    required
-                   class="mb-1 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
-                    placeholder="User password *"/>
-                <div
-                        class="inline-block absolute right-8 w-0 top-1.5 items-center  text-sm leading-5 text-gray-700 cursor-pointer transition duration-200 hover:text-blue-700"
-                >
-                    <i class="material-icons text-sm h-6" @click="show_pass = !show_pass" :text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
-                </div>
+                <input id="userName"
+                       class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                       type="text"
+                       v-model="newUser"
+                       placeholder="User name" required/>
+                <div class="relative">
+                    <input
+                            id="password"
+                            v-model="newPassword"
+                            :type="this.show_pass ? 'text' : 'password'"
+                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                            title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                            minlength="8"
+                            maxlength="64"
+                            autocomplete="off"
+                            required
+                            class="mb-1 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                            placeholder="User password *"/>
+                    <div
+                            class="inline-block absolute right-8 w-0 top-1.5 items-center leading-5 text-gray-700 cursor-pointer transition duration-200 hover:text-blue-700"
+                    >
+                        <i class="material-icons text-sm h-6" @click="show_pass = !show_pass"
+                           v-text="this.show_pass ? 'visibility' : 'visibility_off'"></i>
+                    </div>
                 </div>
                 <div class="mb-4 p-3 text-gray-500 break-words">
                     <p class="text-justify text-xs">* - password must contain at least one number
-                    <br>and one uppercase and lowercase letter, and
-                    <br>at least 8 or more characters
+                        <br>and one uppercase and lowercase letter, and
+                        <br>at least 8 or more characters
                     </p>
                 </div>
-            <select id="userRole"
-                   class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
-                    v-model="selectedRole">
-                <option value="" disabled>Choose a role</option>
-                <option>admin</option>
-                <option>user</option>
-            </select>
-            <br>
-            <select
-                   class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
-                    v-model="selectedProjects" multiple>
-                <option value="" disabled>Choose project</option>
-                <option v-for="project in projects" :key="project.id" :value="project.id">[[
-                    project.name ]]
-                </option>
-            </select>
+                <select id="userRole"
+                        class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                        v-model="selectedRole">
+                    <option value="" disabled>Choose a role</option>
+                    <option>admin</option>
+                    <option>user</option>
+                </select>
+                <br>
+                <select
+                        class="mb-4 bg-white relative w-full text-gray-700 rounded-md shadow pl-5 p-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                        v-model="selectedProjects" multiple>
+                    <option value="" disabled>Choose project</option>
+                    <option v-for="project in projects" :key="project.id" :value="project.id">[[
+                        project.name ]]
+                    </option>
+                </select>
             </div>
             <button type="submit"
                     class="absolute right-3 bottom-3 p-1.5 border border-transparent text-sm font-medium rounded-md
@@ -86,6 +86,13 @@
     </div>
 </div>
 
+{% if error_message %}
+    <div class="place-self-center bg-white text-center text-lg text-blue-700 font-medium
+                shadow-md rounded py-3 px-6 absolute z-10 mt-3 top-20 left-2/4">
+        {{ error_message }}
+    </div>
+{% endif %}
+
 <div class="flex flex-col cursor-default">
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -95,109 +102,164 @@
                     <tr>
                         <th scope="col"
                             class="px-5 py-2.5">
+                            №
+                        </th>
+                        <th scope="col"
+                            class="py-2.5"
+                            width="35%">
                             Username
                         </th>
                         <th scope="col"
-                            class="px-5 py-2.5">
+                            class="px-5 py-2.5"
+                            width="15%">
                             Role
                         </th>
                         <th scope="col"
-                            class="px-5 py-2.5">
+                            class="px-5 py-2.5"
+                            width="10%">
                             Is active
                         </th>
                         <th scope="col"
-                            class="px-5 py-2.5">
-                            Change status
-                        </th>
-                        <th scope="col"
-                            class="px-5 py-2.5">
+                            class="px-5 py-2.5"
+                            width="20%">
                             Project(s)
                         </th>
                         <th scope="col"
-                            class="px-5 py-2.5">
-                            +/- project
+                            class="px-5 py-2.5"
+                            width="10%">
+                            <span class="sr-only">Edit</span>
                         </th>
-                        <th scope="col" class="relative px-6 py-3">
+                        <th scope="col" class="relative px-6 py-3" width="10%">
                             <span class="sr-only">Delete</span>
                         </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="user in users" :key="user.id" class="container-row text-center hover:bg-gray-50">
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                            [[ user.username ]]
+                    <tr v-for="(user, index) in users" :key="user.id"
+                        class="container-row text-center hover:bg-gray-50">
+                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-400" v-text="index + 1"/>
+                        <td class="whitespace-nowrap text-sm font-medium text-gray-900 relative">
+                            <div v-if="selectedUser === user" class="ml-5">
+                                <label for="user" class="sr-only">User</label>
+                                <input type="text" id="user" name="user"
+                                       v-model="user.username"
+                                       class="bg-white relative text-center text-gray-700 rounded-md shadow p-2 text-left cursor-default focus:outline-none sm:text-sm cursor-text"
+                                       placeholder="New Username"
+                                />
+                                <button v-if="selectedUser === user && newPasswordBtn"
+                                        @click="newPasswordBtn=false"
+                                        type="button"
+                                        title="Change password"
+                                        class="inline-block bg-white ml-2 px-2 h-7 rounded-md shadow text-center shadow-sm hover:bg-gray-200
+                                                                    focus:ring-1 focus:ring-pink-500
+                                                                    focus:border-pink-500 sm:text-sm cursor-pointer"
+                                >
+                                    <span class="text-xs text-gray-500">New password</span>
+                                </button>
+                                <div v-if="!newPasswordBtn" class="inline-block">
+                                    <label for="newPassword" class="sr-only">Password</label>
+                                    <input
+                                            id="newPassword"
+                                            v-model="newPassword"
+                                            :type="this.show_pass ? 'text' : 'password'"
+                                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                            title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                                            minlength="8"
+                                            maxlength="64"
+                                            autocomplete="off"
+                                            class="mb-1 bg-white relative w-50 text-gray-700 rounded-md shadow p-2 text-left
+                                   cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
+                                   focus:border-pink-500 sm:text-sm cursor-text"
+                                            placeholder="New password *"/>
+                                </div>
+                            </div>
+                            <div v-else class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                                [[ user.username ]]
+                            </div>
                         </td>
                         <td class="p-3 py-4 text-sm text-gray-500">
                             [[ user.role ]]
                         </td>
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
-                            <div v-if="user.is_active" class="inline-block">
-                                <span class="material-icons">&#10004;</span>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500 relative">
+                            <div v-if="user.role != 'super' && selectedUser === user">
+                                <input v-if="selectedUser === user" type="radio" id="isActive" name="isActive"
+                                       value="true" :checked="user.is_active" @click="is_active=true">
+                                <label for="isActive"><span class="material-icons">check</span></label>
+                                <input v-if="selectedUser === user" type="radio" id="noActive" name="isActive"
+                                       value="false" :checked="!user.is_active" @click="is_active=false">
+                                <label for="noActive"><span class="material-icons">close</span></label>
                             </div>
-                            <div v-else class="inline-block">
-                                <span class="material-icons">&#10006;</span>
+                            <div v-else-if="user.role != 'super' ">
+                                <span v-if="user.is_active" class="material-icons">check</span>
+                                <span v-else class="material-icons">close</span>
                             </div>
                         </td>
                         <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                            <button v-if="user.role != 'super'"
-                                    @click="showIsActive(user.id)"
-                                    type="button"
-                                    class="bg-white relative w-7 h-7 rounded-md shadow text-center
-                                            cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
-                                            focus:border-pink-500 sm:text-sm cursor-pointer"
-                            >
-                                <span class="text-sm text-gray-500">...</span>
-                            </button>
-                            <ul v-if="user.role != 'super' && menuIsActive == user.id"
-                                v-click-outside="hideIsActive"
-                                class="absolute z-10 bg-white shadow-lg rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                <li>
-                                            <span
-                                                    @click="changeIsActive(user.id, true)"
-                                                    role="option"
-                                                    class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"
-                                            >active</span>
-                                </li>
-                                <li>
-                                            <span
-                                                    @click="changeIsActive(user.id, false)"
-                                                    class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"
-                                            >no active</span>
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <span v-for="project in user.projects">
-                                        [[ project.name ]]
-                                        <span v-if="user.projects.length > 1"> ,</span>
+                            <div v-if="user.role != 'super' && selectedUser === user" class="relative">
+                                <div v-for="(project, index) in userProjectsList" :key="project.id" class="relative">
+                                    [[ project.name ]]
+                                    <span
+                                            @click="userProjectsList.splice(index, 1)"
+                                            class="material-icons pl-1 text-xs text-gray-400 hover:text-red-600 cursor-pointer absolute bottom-2"
+                                            title="Delete project">
+                                    &#10006;
                                     </span>
+                                </div>
+                                <br>
+                                <button v-if="user.role != 'super' && selectedUser === user"
+                                        @click="showProjectsList(user.id)"
+                                        type="button"
+                                        title="Add project"
+                                        class="inline-block bg-white w-7 h-7 rounded-md shadow text-center
+                                                                    hover:bg-gray-200 focus:ring-1 focus:ring-pink-500
+                                                                    focus:border-pink-500 sm:text-sm cursor-pointer absolute top-0 -right-2"
+                                >
+                                    <span class="text-lg text-gray-500">+</span>
+                                </button>
+                                <ul v-if="projectMenuIsActive == user.id"
+                                    v-click-outside="hideProjectsList"
+                                    class="absolute top-8 -right-2 z-10 bg-white shadow-lg rounded-md text-base ring-1 ring-black
+                                    ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                    <li v-for="project in projects">
+                                        <span
+                                                @click="addProjectToUser(project)"
+                                                role="option"
+                                                class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"
+                                        >[[ project.name ]]</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div v-else-if="user.role != 'super' || !selectedUser">
+                                <div v-for="project in user.projects">
+                                    [[ project.name ]]
+                                </div>
+                            </div>
                         </td>
-                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
-                            <button v-if="user.role != 'super'"
-                                    @click="showProjectsList(user.id)"
-                                    type="button"
-                                    title="Add(delete) project to user"
-                                    class="bg-white relative w-7 h-7 rounded-md shadow text-center
-                                            cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500
-                                            focus:border-pink-500 sm:text-sm cursor-pointer"
-                            >
-                                <span class="text-sm text-gray-500">+/-</span>
+                        <td>
+                            <div v-if="selectedUser === user">
+                                <button @click="updateUser(user)"
+                                        class="pr-1 text-green-500 hover:text-green-600 cursor-pointer">
+                                    <span class="material-icons">
+                                        done_outline
+                                    </span>
+                                </button>
+                                <button @click="closeUpdateUser"
+                                        class="text-gray-400 hover:text-red-600 cursor-pointer">
+                                    <span class="material-icons">
+                                        highlight_off
+                                    </span>
+                                </button>
+                            </div>
+                            <button v-else-if="user.role != 'super'" @click="editUser(user)"
+                                    class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                                <span class="material-icons">
+                                    edit
+                                </span>
                             </button>
-                            <ul v-if="projectMenuIsActive == user.id"
-                                v-click-outside="hideProjectsList"
-                                class="absolute z-10 bg-white shadow-lg rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                <li v-for="project in projects">
-                                            <span
-                                                    @click="addProjectToUser(user.id, project.id)"
-                                                    role="option"
-                                                    class="m-2 text-gray-900 cursor-pointer select-none relative hover:bg-indigo-300 rounded-md"
-                                            >[[ project.name ]]</span>
-                                </li>
-                            </ul>
                         </td>
                         <td class="p-3 pr-6 whitespace-nowrap text-sm font-medium text-gray-900">
                             <button v-if="user.role != 'super'"
-                                    @click="deleteUser(user.id)"
+                                    @click="deleteUser(user)"
                                     title="Delete user"
                                     class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
                                         <span class="material-icons text-red-500">
@@ -236,7 +298,10 @@
                 selectedProject: null,
                 show_pass: false,
                 menuIsActive: 0,
-                projectMenuIsActive: 0
+                projectMenuIsActive: 0,
+                selectedUser: null,
+                userProjectsList: [],
+                newPasswordBtn: true,
             }
         },
 
@@ -268,6 +333,7 @@
                     this.newPassword = ''
                     this.selectedRole = ''
                     this.selectedProjects = ''
+                    this.show_pass = false
                 }
             },
 
@@ -283,25 +349,23 @@
                     method: "POST",
                     body: JSON.stringify(data)
                 }).then(r => r.json())
-                this.newUser = ''
-                this.newPassword = ''
-                this.selectedRole = ''
-                this.selectedProjects = ''
-                this.hideUserForm()
+                // this.newUser = ''
+                // this.newPassword = ''
+                // this.selectedRole = ''
+                // this.selectedProjects = ''
+                // this.hideUserForm()
                 if (user) {
                     this.users.push(user)
                 }
+                location.reload()
             },
 
-            async deleteUser(user_id) {
-                await fetch(`/api/v1/users/${user_id}/`, {method: "DELETE"})
-                this.users = await this.getUsers()
-            },
-
-            async changeIsActive(user_id, is_active) {
-                await fetch(`/api/v1/users/${user_id}/`, {method: "PATCH", body: JSON.stringify({is_active})})
-                this.users = await this.getUsers()
-                this.hideIsActive()
+            async deleteUser(user) {
+                const result = confirm(`Are you sure you want to delete the ${user.username}?`)
+                    if (result) {
+                        await fetch(`/api/v1/users/${user.id}/`, {method: "DELETE"})
+                        this.users = await this.getUsers()
+                    }
             },
 
             // show user is active menu
@@ -332,18 +396,38 @@
                 }
             },
 
-            async addProjectToUser(user_id, project_id) {
-                await fetch(`/api/v1/users/${user_id}/${project_id}/`, {method: "PATCH"})
+            addProjectToUser(project) {
+                if (!this.userProjectsList.filter(data => data.id === project.id).length) {
+                    this.userProjectsList.push(project)
+                }
+            },
+
+            async updateUser(user) {
+                user.is_active = this.is_active
+                user.projects = this.userProjectsList
+                if (this.newPassword) {
+                    user["new_password"] = this.newPassword
+                }
+                await fetch(`/api/v1/users/${user.id}/`, {method: "PATCH", body: JSON.stringify(user)})
                 this.users = await this.getUsers()
-                this.hideProjectsList()
-            }
+                // location.reload()
+            },
+
+            editUser(user) {
+                this.selectedUser = user
+                this.userProjectsList = JSON.parse(JSON.stringify(user.projects))
+            },
+
+            closeUpdateUser() {
+                this.selectedUser = null
+                this.newPassword = ''
+                this.newPasswordBtn = true
+            },
         },
 
         async mounted() {
             const project = new URLSearchParams(window.location.search).get('project');
-
             this.users = await this.getUsers()
-
             this.projects = await this.getProjects()
             this.selectedProject = this.projects.filter(item => item.slug === project)[0]
         }

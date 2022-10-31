@@ -2,16 +2,19 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.database.models import APIToken, UserRole
+from src.database.models import APIKey, UserRole
 from src.dependencies import get_user, generate_api_token
-from src.models.manager import TokenAPI, TokenRequestAPI
+from src.models.manager import APIKeyModel, APIKeyRequestModel
 from src.models.user import UserAPI
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/keys",
+    tags=["keys"],
+)
 
 
-@router.get("/tokens/", response_model=List[TokenAPI])
-async def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenAPI]:
+@router.get("/", response_model=List[APIKeyModel])
+async def get_keys(user: Optional[UserAPI] = Depends(get_user)) -> List[APIKeyModel]:
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -19,13 +22,11 @@ async def get_tokens(user: Optional[UserAPI] = Depends(get_user)) -> List[TokenA
             headers={"WWW-Authenticate": "Token"},
         )
 
-    return [TokenAPI.parse_obj(token.to_dict()) for token in APIToken.get_all()]
+    return [APIKeyModel.parse_obj(token.to_dict()) for token in APIKey.get_all()]
 
 
-@router.post("/tokens/", response_model=TokenAPI)
-async def create_token(
-    read_only: bool = True, project: Optional[int] = None, user: Optional[UserAPI] = Depends(get_user)
-) -> TokenAPI:
+@router.post("/", response_model=APIKeyModel)
+async def create_key(data: APIKeyRequestModel, user: Optional[UserAPI] = Depends(get_user)) -> APIKeyModel:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -33,12 +34,14 @@ async def create_token(
             headers={"WWW-Authenticate": "Token"},
         )
 
-    data = dict(token=generate_api_token(), read_only=read_only, project_id=project)
-    return TokenAPI.parse_obj(APIToken.create(data).to_dict())
+    # Generating a random string for the token
+    data.token = generate_api_token()
+
+    return APIKeyModel.parse_obj(APIKey.create(data.dict()).to_dict())
 
 
-@router.patch("/tokens/{token_id}/", response_model=TokenAPI)
-async def update_token(token_id: int, data: TokenRequestAPI, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
+@router.patch("/{key_id}/", response_model=APIKeyModel)
+async def update_key(key_id: int, data: APIKeyRequestModel, user: Optional[UserAPI] = Depends(get_user)) -> APIKeyModel:
     if user is None or user.role != UserRole.super:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -46,11 +49,11 @@ async def update_token(token_id: int, data: TokenRequestAPI, user: Optional[User
             headers={"WWW-Authenticate": "Token"},
         )
 
-    return TokenAPI.parse_obj(APIToken.update(data.dict(), id=token_id).to_dict())
+    return APIKeyModel.parse_obj(APIKey.update(data.dict(), id=key_id).to_dict())
 
 
-@router.delete("/tokens/{token_id}/", response_model=TokenAPI)
-async def delete_token(token_id: int, user: Optional[UserAPI] = Depends(get_user)) -> TokenAPI:
+@router.delete("/{key_id}/", response_model=APIKeyModel)
+async def delete_token(key_id: int, user: Optional[UserAPI] = Depends(get_user)) -> APIKeyModel:
     """Delete chosen token"""
     if user is None or user.role != UserRole.super:
         raise HTTPException(
@@ -59,4 +62,4 @@ async def delete_token(token_id: int, user: Optional[UserAPI] = Depends(get_user
             headers={"WWW-Authenticate": "Token"},
         )
 
-    return TokenAPI.parse_obj(APIToken.delete(id=token_id).to_dict())
+    return APIKeyModel.parse_obj(APIKey.delete(id=key_id).to_dict())

@@ -28,19 +28,14 @@ class ModelMixin(object):
     @classmethod
     def get(cls, **kwargs):
         obj: cls = session.query(cls).filter_by(**kwargs).first()
+
         return obj
-        # if obj:
-        #     return obj
-        #
-        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     @classmethod
     def get_all(cls, **kwargs) -> Query:
         obj: Query = session.query(cls).filter_by(**kwargs)
-        # if obj.first():
-        return obj
 
-        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return obj
 
     @classmethod
     def get_or_create(cls, body: Dict, **kwargs):
@@ -77,24 +72,44 @@ class ModelMixin(object):
 
         except SQLAlchemyError as err:
             print("Database error:", err)
+            session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return obj
 
     @classmethod
     def delete(cls, **kwargs):
-        obj: cls = cls.get(**kwargs)
-        session.delete(obj)
-        session.commit()
+        try:
+            obj: cls = cls.get(**kwargs)
+            session.delete(obj)
+            session.commit()
 
-        return obj
+            return obj
+
+        except SQLAlchemyError as err:
+            print("Database error:", err)
+            session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     @classmethod
     def delete_all(cls, **kwargs):
         objs: Query = cls.get_all(**kwargs)
         remote = []
         for obj in objs:
-            session.delete(obj)
-            session.commit()
-            remote.append(obj)
+            try:
+                session.delete(obj)
+                session.commit()
+                remote.append(obj)
+
+            except SQLAlchemyError as err:
+                print("Database error:", err)
+                session.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
         return remote

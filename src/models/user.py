@@ -3,7 +3,7 @@ from typing import Optional, Any, List
 
 from pydantic import BaseModel
 
-from src.database.models import UserRole, Project
+from src.database.models import UserRole
 
 
 class UserAPI(BaseModel):
@@ -28,4 +28,9 @@ class JWTToken(BaseModel):
 
 
 class UserRequestAPI(BaseModel):
+    username: str
+    password: str
+    check_password: str = ""
+    new_password: str = ""
     is_active: Optional[bool]
+    projects: List[Any] = []

@@ -1,0 +1,422 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div v-if="showChoices"
+     class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
+    <div v-click-outside="hideKeyForm" class="bg-gray-50 mb-44 shadow sm:rounded-xl sm:max-w-xl sm:mx-auto">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Create a new key
+            </h3>
+            <div class="mt-2 max-w-xl text-sm text-gray-500">
+                <p>
+                    Add a access and description to your key
+                </p>
+            </div>
+            <form class="mt-5" @submit.prevent="createKey">
+                <div class="w-full sm:max-w-xs">
+                    <label for="key_description" class="sr-only">Description</label>
+                    <div class="flex">
+                        <div class="flex justify-between w-full text-gray-700 font-medium p-2 text-left sm:text-sm">
+                            <div class="cursor-pointer">
+                                <label for="writeAccess" class="cursor-pointer">Write</label>
+                                <input id="writeAccess" type="checkbox" v-model="writeAccess" class="cursor-pointer" />
+                            </div>
+                            <div class="cursor-pointer">
+                                <label for="assignProject" class="cursor-pointer">Assign</label>
+                                <input id="assignProject" type="checkbox" v-model="assignProject" class="cursor-pointer" />
+                            </div>
+                        </div>
+                        <div class="w-48 ml-3 flex-initial" v-click-outside="hideProjects">
+                            <div class="relative">
+                                <div class="flex">
+                                    <button
+                                            @click="showProjects = !showProjects"
+                                            type="button"
+                                            class="bg-white relative w-full rounded-md shadow pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-pointer"
+                                    >
+                                        <span v-if="selectedProject"
+                                              class="block truncate text-sm font-medium text-gray-700"
+                                              v-text="selectedProject.name"></span>
+                                        <span v-else class="block truncate text-sm text-gray-400">Project</span>
+
+                                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                                                 viewBox="0 0 20 20"
+                                                 fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                      d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                                      clip-rule="evenodd"/>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <ul v-if="showProjects"
+                                    class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                                    tabindex="-1" role="listbox"
+                                >
+                                    <li v-for="project in projects"
+                                        :key="project.id"
+                                        class="project-select text-gray-900 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 rounded-md"
+                                        role="option"
+                                        @click="selectProject(project)"
+                                    >
+                                        <span class="block truncate"
+                                              :class="project === selectedProject ? 'font-semibold' : 'font-normal'"
+                                              v-text="project.name"></span>
+                                                            <span v-if="project === selectedProject"
+                                                                  class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                 fill="currentColor"
+                                                 aria-hidden="true"
+                                            >
+                                                <path fill-rule="evenodd"
+                                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                      clip-rule="evenodd"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <textarea name="key_description" id="key_description" rows="3"
+                              v-model="newKeyDescription"
+                              placeholder="Key description (optional)"
+                              class="bg-white my-4 relative w-full text-gray-700 rounded-md shadow pl-5 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm cursor-text"
+                    ></textarea>
+                </div>
+                <div class="flex items-center justify-end">
+                    <button type="reset"
+                            @click="hideKeyForm"
+                            class="mt-3 ml-3 w-full inline-flex px-4 py-2 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                    <button type="submit"
+                            class="mt-3 w-full inline-flex px-3 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Create
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    <div v-if="editedKey"
+         class="fixed z-50 inset-0 min-h-screen bg-gray-700 bg-opacity-70 py-6 flex flex-col justify-center sm:py-12">
+        <form v-click-outside="cancelKeyEditing"
+              @submit.prevent="updateKey"
+              class="bg-white shadow overflow-hidden overflow-y-scroll sm:rounded-lg sm:max-w-xl sm:mx-auto relative">
+            <div class="sticky top-0 bg-white px-4 py-5 sm:px-6 relative border-b border-gray-200">
+                <h3 class="text-xl leading-6 font-medium text-gray-900">
+                    Key editing
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    Making changes to the key
+                </p>
+                <div class="absolute right-6 top-6">
+                    <div class="flex items-center justify-end">
+                        <button type="submit"
+                                class="mt-3 ml-3 w-full inline-flex px-3 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-700 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                            Save
+                        </button>
+                        <button type="reset"
+                                @click="cancelKeyEditing"
+                                class="mt-3 ml-3 w-full inline-flex py-2 px-2.5 border border-gray-200 shadow-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <dl>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-2 sm:px-6">
+                        <dt class="p-1.5 text-sm font-medium text-gray-600">
+                            Access
+                        </dt>
+                        <select
+                          v-model="editedKey.write"
+                          name="write"
+                          required
+                          class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
+                        >
+                          <option value="true">write / read</option>
+                          <option value="false">read</option>
+                        </select>
+                        <div></div>
+                        <dt class="p-1.5 text-sm text-center font-medium text-gray-600">
+                            Project
+                        </dt>
+                        <select
+                          v-model="editedKey.project_id"
+                          name="project"
+                          class="bg-white text-gray-700 rounded-md shadow p-0.5 text-center cursor-pointer focus:outline-none sm:text-sm border border-gray-200"
+                        >
+                            <option :value="null" class="text-gray-500">No project</option>
+                            <option v-for="project in projects" :key="project.id" :value="project.id">[[ project.name ]]</option>
+                        </select>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-600">
+                            Token
+                        </dt>
+                        <label for="token" class="sr-only"></label>
+                        <input type="text" name="token" id="token"
+                               required
+                               v-model="editedKey.token"
+                               class="bg-gray-50 text-gray-700 rounded-md shadow pl-4 p-2 text-left cursor-default focus:outline-none sm:text-sm font-medium cursor-text sm:col-span-4 border border-gray-200"
+                        />
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-5 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-600">
+                            Description
+                        </dt>
+                        <textarea v-model="editedKey.description" rows="2"
+                                  spellcheck="false" cols="64"
+                                  placeholder="Description for key (optional)"
+                                  class="bg-white text-gray-700 rounded-md shadow pl-4 p-1 text-left cursor-default focus:outline-none text-sm cursor-text sm:col-span-4 border border-gray-200"></textarea>
+                    </div>
+                </dl>
+            </div>
+        </form>
+    </div>
+
+{% if user.role == "super" %}
+<div class="flex">
+    <button
+        @click="showKeyForm" type="button"
+        class="mb-4 inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md
+            shadow-sm text-white bg-pink-600 opacity-90 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+            focus:ring-rose-500">
+        Create
+    </button>
+
+    <div v-if="curr_key"
+         class="flex-grow text-center mb-5 text-gray-600 font-bold">
+        KEY: <span class="bg-white py-1 px-2">[[ curr_key ]]</span>
+        <button @click="copyText(curr_key)"
+                class="text-gray-400 hover:text-gray-700 cursor-pointer"
+                title="Copy">
+            <span class="material-icons">content_copy</span>
+        </button>
+    </div>
+</div>
+{% endif %}
+
+<div class="flex flex-col cursor-default">
+    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="overflow-x-auto border-b border-gray-200 sm:rounded-lg rounded-lg shadow overflow-y-auto relative">
+                <table class="divide-y divide-gray-200 border-collapse min-w-full table-striped relative cursor-default">
+                    <thead class="bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <tr>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            №
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            Key
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            Access
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            Project
+                        </th>
+                        {% if user.role == "super" %}
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            <span class="sr-only">Edit</span>
+                        </th>
+                        <th scope="col"
+                            class="px-5 py-2.5">
+                            <span class="sr-only">Delete</span>
+                        </th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-if="!keys.length" class="text-center hover:bg-gray-50">
+                        <td colspan="6" class="py-14 whitespace-nowrap text-md font-medium text-gray-500 bg-white">
+                            No keys...
+                        </td>
+                    </tr>
+                    <tr v-for="(key, index) in keys" :key="key.token" class="container-row text-center hover:bg-gray-50">
+                        <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-400" v-text="index + 1" />
+                        <td class="relative p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900" :title="key.description || 'No description'">
+                            [[ key.token ]]
+                                <button @click="copyText(key.token)"
+                                        class=" absolute right-8 text-gray-400 hover:text-gray-700 cursor-pointer"
+                                        title="Copy">
+                                    <span class="material-icons">content_copy</span>
+                                </button>
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-500">
+                            <div v-if="key.write"><span>read / write</span></div>
+                            <div v-else><span>read</span></div>
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900 relative">
+                            [[ getProjectName(key.project_id) ]]
+                        </td>
+                        {% if user.role == "super" %}
+                        <td>
+                            <button @click="startKeyEditing(key)" class="text-center">
+                                <span class="px-2 py-1 opacity-80 text-sm rounded-md shadow-sm text-white bg-pink-600 hover:opacity-100 cursor-pointer">edit</span>
+                            </button>
+                        </td>
+                        <td class="p-3 pl-6 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <button @click="deleteKey(key)" title="Delete key" class="cursor-pointer">
+                                <span class="material-icons text-red-500 opacity-90 hover:opacity-100">
+                                    delete_outline
+                                </span>
+                            </button>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block vuejs %}
+<script>
+    new Vue({
+        el: "#app",
+
+        delimiters: ['[[', ']]'],
+
+        data() {
+            return {
+                showProjects: false,
+                openMobileNav: false,
+
+                selectedProject: null,
+                editedKey: null,
+
+                projects: [],
+                keys: [],
+
+                assignProject: false,
+                showChoices: false,
+                curr_key: '',
+                writeAccess: false,
+                newKeyDescription: ''
+            }
+        },
+
+        methods: {
+            checkWindowLocation(path) {
+                return window.location.pathname === path
+            },
+
+            getProjectName(project_id) {
+                const project = this.projects.filter(item => item.id === project_id)[0]
+                return project?.name
+            },
+
+            async createKey() {
+                const data = {
+                    description: this.newKeyDescription,
+                    project_id: this.assignProject ? this.selectedProject?.id : null,
+                    write: this.writeAccess,
+                }
+                const key = await fetch('/api/v1/keys/', {method: "POST", body: JSON.stringify(data)}).then(r => r.json())
+                this.keys.push(key)
+                this.curr_key = key.token
+                this.writeAccess = true
+                this.hideKeyForm()
+            },
+
+            async getProjects() {
+                return await fetch("/api/v1/projects/").then(r => r.json())
+            },
+
+            async getKeys() {
+                return await fetch("/api/v1/keys/").then(r => r.json())
+            },
+
+            hideProjects: function () {
+                this.showProjects = false
+            },
+
+            selectProject(project) {
+                this.selectedProject = project
+            },
+
+            // show input key form
+            showKeyForm() {
+                setTimeout(() => {
+                    this.showChoices = true
+                }, 1)
+            },
+
+            // hide input key form
+            hideKeyForm() {
+                if (this.showChoices) {
+                    this.showChoices = false
+                    this.selectedProject = null
+                }
+            },
+
+            async deleteKey(key) {
+                const result = confirm(`Are you sure you want to delete the ${key.token} key?`)
+
+                    if (result) {
+                        await fetch(`/api/v1/keys/${key.id}/`, {method: "DELETE"})
+                        this.keys = await this.getKeys()
+                    }
+            },
+
+            async updateKey() {
+                await fetch(`/api/v1/keys/${this.editedKey.id}/`, {method: "PATCH", body: JSON.stringify(this.editedKey)})
+                this.editedKey = null
+                this.keys = await this.getKeys()
+            },
+
+            startKeyEditing(key) {
+                setTimeout(() => {
+                        this.editedKey = JSON.parse(JSON.stringify(key))
+                    }, 0)
+            },
+
+            cancelKeyEditing() {
+                this.editedKey = null
+            },
+
+            copyText(key) {
+                // doesn't work in some browsers
+                // navigator.clipboard.writeText(key);
+
+                // Supported by older browsers
+                //Creating textarea element
+                let textarea = document.createElement("textarea")
+                //Settings its value to the thing you want to copy
+                textarea.value = key
+                //Appending the textarea to body
+                document.body.appendChild(textarea)
+                //Selecting its content
+                textarea.focus()
+                textarea.select()
+                //Copying the selected content to clipboard
+                document.execCommand("copy")
+                //Removing the textarea
+                document.body.removeChild(textarea)
+            }
+        },
+
+        async mounted() {
+            this.projects = await this.getProjects()
+            this.keys = await this.getKeys()
+        }
+    })
+</script>
+{% endblock %}
